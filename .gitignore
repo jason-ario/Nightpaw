@@ -1,0 +1,5 @@
+node_modules/
+dist/
+release/
+# empty clone of the GitHub repo made by accident; safe to delete
+/Nightpaw/
