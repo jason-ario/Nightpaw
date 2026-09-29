@@ -13,7 +13,7 @@ Nightpaw is published on Vibe-Games like any creator's game: upload the package 
 | Cover / key art (600×900) | `release/store/cover.png` |
 | Header capsule (920×430) | `release/store/header.png` |
 | Store banner (1920×620) | `release/store/banner.png` |
-| Screenshots | `release/store/shot1.png` … `shot5.png` |
+| Screenshots | `release/store/shot1.png` … `shot7.png` |
 
 The store art comes from `node tools/store/make-store-media.cjs --shots http://localhost:8123/index.html`
 (serve `dist/` on port 8123 first). Re-run it when the look of the game changes.
@@ -33,7 +33,9 @@ One stormy night Mira follows a pale moth out of her window, and in the morning 
 
 The Underneath used to be lit by the Hearthlamp. Now it is dark, and lost things are forgetting what they were: thimbles, socks and buttons gone hollow. Scratch your way through them, find the Shadow Dash and Moth Wings, and recover the lost lives you left down here long ago.
 
-A story-driven metroidvania with painted storybook cutscenes, a cast of polite, frightened creatures, secrets, and the Hollow Warden waiting in his hall. Keyboard, gamepad and touch.
+Then climb into the Drowned Nursery, where the water rises and falls with a music box nobody winds. Befriend Dunk, a rubber duck who is delighted by everything, find the Velvet Claws, and face the Music Box Queen, who has danced alone for sixty years.
+
+A story-driven metroidvania with painted storybook cutscenes, a cast of polite, frightened creatures, secrets, and two chapters to explore. Keyboard, gamepad and touch.
 
 **Tags:** Metroidvania, Action, Dark Fantasy, Cute, Exploration, Platformer
 

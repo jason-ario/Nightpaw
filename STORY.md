@@ -84,7 +84,7 @@ At the Hearthlamp, Nightpaw finds Mira asleep inside the great glass lantern, gl
 The Underneath is a vertical world: deeper means more forgotten.
 
 1. **The Hollows** (Area 1, the demo). The bottom of the well: ash, roots, fallen stones, pale grass, candle shrines. Lost things that fell most recently. *Enemies:* Thimble Mites, Sock Wisps, Button Snails, Marble Toads. *Boss:* the Hollow Warden. *Ability:* Shadow Dash (found), Moth Wings (gift).
-2. **The Drowned Nursery.** A flooded room of lost toys; music boxes that play by themselves. *Ability:* wall cling ("Velvet Claws").
+2. **The Drowned Nursery** (Area 2, built in 2.1). A flooded room of lost toys; music boxes that play by themselves. *Enemies:* Wind-up Mice, Jack-in-the-Boxes, Tin Fish. *Boss:* the Music Box Queen. *Ability:* wall cling ("Velvet Claws"). *Friend:* Dunk, a rubber duck.
 3. **Mousewick Market.** A bustling town of mice who trade in lost buttons. Nib's shop. Funny area. *Ability:* the pounce.
 4. **The Clockless Orchard.** Lost time: trees that grow clocks, stopped at the minute things were lost. *Ability:* the Thread (grapple).
 5. **The Lampless Court.** The dark around the Hearthlamp. The Hush. Mothmother. The ending.
@@ -104,4 +104,57 @@ The Underneath is a vertical world: deeper means more forgotten.
 | **Nib's Nook** | **Meet Nib**, stuck behind a rockfall. Second shrine. |
 | **Warden's Approach** | Old coats and umbrellas hung like trophies. Chalk: "NIGHTPAW DONT" (the rest is scratched out). |
 | **The Warden's Hall** | **Boss: the Hollow Warden.** Afterwards he remembers, and Tallow gives you the Moth Wings. |
-| **The Updraft** | A vertical climb with the new double jump, up to the exit into the Drowned Nursery (end of demo). Coming back to the Crossroads with wings gets **Shade 1: The Rain Box**. |
+| **The Updraft** | A vertical climb with the new double jump, up into the Drowned Nursery. Mira's voice calls down from above. Coming back to the Crossroads with wings gets **Shade 1: The Rain Box**. |
+
+## Area 2 in detail: The Drowned Nursery
+
+*Built in 2.1: every room below is in `content/areas/nursery.json`, with the story in `content/cutscenes/nursery.json`. The Nursery ends the chapter at the plughole, with Mira's voice from Mousewick Market.*
+
+Above the Updraft is a nursery that got lost all at once: the cot, the rocking horse, the
+mobile of tin moons, a whole shelf of dolls, and a bathtub that never stopped running.
+The water is waist-deep on a cat and warm as tea. Somewhere a music box keeps playing a
+waltz by itself, and the water rises and falls in time with it.
+
+*The funny thing:* **Dunk**, a rubber duck who is delighted by everything and floats
+wherever he likes. *The sad thing:* **the Music Box Queen**, a wind-up ballerina who has
+danced for sixty years for a child who never came back to wind her.
+
+**New ability: Velvet Claws.** A pair of velvet mittens with pins still stuck in them, left
+in the Toy Chest. Nightpaw can cling to walls, slide down them slowly, and leap off them.
+Clinging also refreshes the double jump and the dash.
+
+**Water.** Nightpaw floats at the surface (a cat will not put his head under), moves slowly
+and can jump straight out. Some rooms have a *tide*: a music box raises and lowers the water,
+carrying him up to ledges that are out of reach when it is low.
+
+**Enemies** (every one was somebody's toy):
+- *Wind-up Mice*: patrol, spot you, wind their keys and charge. Dizzy for a moment after.
+- *Jack-in-the-Boxes*: sit shut until you come close, then spring out and punch. Hit the
+  head while it is out.
+- *Tin Fish*: wind-up bath toys that leap out of the water in arcs when you're above them.
+- Sock Wisps drift up here too; the nursery lost a great many socks.
+
+| Room | What happens |
+|------|--------------|
+| **The Block Stair** | Entry from the Updraft. Toy blocks stacked into a stair. A music box, far off. Chalk: "NIGHTPAW ↑ (it's WET)". Shrine. |
+| **The Shallows** | First water. Paper boats, Tin Fish, a sunken rattle. |
+| **The Cot** (hub) | A drowned nursery under a mobile of tin moons. **Meet Dunk.** Tallow has flown up to light the shrine; she tells you this was once Mothmother's room. Mira's hair ribbon floats in the cot. |
+| **The Toy Chest** | Jack-in-the-Boxes. The **Velvet Claws** sit on the lid of an enormous chest; climb out between its walls. |
+| **The Tidewheel** | A music box turns a paddle-wheel; the water rises and falls with the waltz. Ride the high tide to the upper door. |
+| **The Cold Hearth** | A dead fireplace. Wall-jump up the chimney to **Shade 3: The Fireworks Night**. |
+| **The Bathtub Sea** | A clawfoot bath the size of a lake. Tin Fish, floating ducks, a long crossing that needs claws, wings and dash together. |
+| **The Doll Shelf** | Dolls on shelves whose heads turn to watch you. Chalk: "SHE SINGS TO THEM". An echo of Mira singing the rhyme to them. |
+| **The Pincushion** | A vertical wall-jump climb between walls bristling with pins. |
+| **The Winding Stair** | The outside of a giant music box. A huge wing-shadow passes: Mothmother's tiny voice, "Not yet, little light." Second shrine. |
+| **The Music Box** | **Boss: the Music Box Queen.** |
+| **The Stopper Chain** | After the fight the water drains and the bath chain leads up. Nib is here, packing: the market is above. End of the chapter. |
+| *Button Cupboard* (secret) | Behind a cracked wall in the Doll Shelf: buttons, and Mira's drawing of a cat with a crown. |
+
+**Shade 3, The Fireworks Night.** Hiding up the chimney from the noise. It was very warm,
+and then it was very quiet.
+
+**Boss: the Music Box Queen.** She pirouettes across the arena (you can't hurt her while she
+spins; she's dizzy when she stops), leaps and lands on pointe with a shockwave, and flings
+glowing notes in arcs. The water in the box rises and falls with her music, and at half
+health the tune speeds up. When she winds down she remembers a small girl who hummed
+along to her once: *Lose a penny, lose a key*. She stops, and the box drains.

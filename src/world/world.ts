@@ -2,7 +2,7 @@
 // Moving past a room's edge puts you in whichever room occupies that spot — so
 // adding a room anywhere on the grid "just connects" if the openings line up.
 import { T, PH } from '../core/config';
-import type { AreaDef, RoomDef, EntityDef, WorldDef, CutsceneDef, SpeakerDef } from '../content/types';
+import type { AreaDef, RoomDef, EntityDef, WorldDef, CutsceneDef, SpeakerDef, WaterDef } from '../content/types';
 import { Game } from '../core/state';
 
 export const DEFAULT_LEGEND: Record<string, EntityDef> = {
@@ -18,8 +18,18 @@ export const DEFAULT_LEGEND: Record<string, EntityDef> = {
   G: { type: 'gate', flag: 'warden_dead' },
 };
 
+export interface WaterVol {
+  def: WaterDef;
+  x0: number; x1: number; // world units
+  top: number; bottom: number; // world units: highest and lowest possible surface
+  y: number; // current surface (world units)
+  target: number | null; // when a boss or cutscene drives the level
+  drained: boolean;
+}
+
 export interface Room extends RoomDef {
   area: AreaDef;
+  pools: WaterVol[];
   grid: string[][];
   w: number; h: number; // tiles
   px: number; py: number; pw: number; ph: number; // world units
@@ -69,7 +79,13 @@ function buildRoom(rd: RoomDef, area: AreaDef): Room {
   });
   for (const e of rd.entities || []) spawns.push({ ...e, id: e.id ?? `${rd.id}:${e.type}:${e.x},${e.y}` });
   const h = grid.length;
-  return { ...rd, area, grid, spawns, w, h, px: rd.x * T, py: rd.y * T, pw: w * T, ph: h * T };
+  const pools: WaterVol[] = (rd.water || []).map((wd) => {
+    const x0 = (rd.x + (wd.x ?? 0)) * T, x1 = (rd.x + (wd.x ?? 0) + (wd.w ?? w - (wd.x ?? 0))) * T;
+    const surf = (row: number) => (rd.y + row) * T + 4;
+    const lo = surf(wd.low ?? wd.level), hi = surf(wd.high ?? wd.level);
+    return { def: wd, x0, x1, top: Math.min(lo, hi), bottom: Math.max(lo, hi), y: surf(wd.level), target: null, drained: false };
+  });
+  return { ...rd, area, grid, spawns, pools, w, h, px: rd.x * T, py: rd.y * T, pw: w * T, ph: h * T };
 }
 
 // ---------------------------------------------------------------------------
@@ -141,3 +157,34 @@ export function groundBelow(r: Room, sx: number, sy: number) {
 }
 
 export const GRAVITY = PH.G;
+
+// ---------------------------------------------------------------------------
+// Water
+// ---------------------------------------------------------------------------
+/** Advance tides / drains / driven levels for a room's pools. */
+export function updateWater(r: Room, t: number, dt: number) {
+  for (const p of r.pools) {
+    const d = p.def;
+    if (d.drainIf && Game.test(d.drainIf)) { p.drained = true; p.y = Math.min(r.py + r.ph + 32, p.y + 40 * dt); continue; }
+    p.drained = false;
+    let goal: number;
+    if (p.target !== null) goal = p.target;
+    else if (d.low !== undefined && d.high !== undefined) {
+      const k = (Math.sin(((t + (d.phase ?? 0)) / (d.period ?? 8)) * Math.PI * 2) + 1) / 2; // 0 = low, 1 = high
+      goal = p.bottom + (p.top - p.bottom) * k;
+      p.y = goal; continue;
+    } else goal = (r.y + d.level) * T + 4;
+    p.y += (goal - p.y) * Math.min(1, dt * 1.6);
+  }
+}
+/** Surface y if (x, y) is under water in the current room, else null. */
+export function waterAt(x: number, y: number): number | null {
+  if (!current) return null;
+  for (const p of current.pools) if (x >= p.x0 && x < p.x1 && y >= p.y) return p.y;
+  return null;
+}
+export function waterSurface(x: number): number | null {
+  if (!current) return null;
+  for (const p of current.pools) if (x >= p.x0 && x < p.x1) return p.y;
+  return null;
+}

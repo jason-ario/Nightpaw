@@ -6,7 +6,7 @@ import { Input } from '../core/input';
 import { sfx, Audio, Music } from '../core/audio';
 import { Game } from '../core/state';
 import { Platform } from '../core/platform';
-import { World, Room, setCurrentRoom, tileAt, isSolid, groundBelow } from '../world/world';
+import { World, Room, setCurrentRoom, tileAt, isSolid, groundBelow, updateWater } from '../world/world';
 import { roomTexture } from '../render/roomArt';
 import { Fx } from '../render/fx';
 import { Player } from '../entities/player';
@@ -15,8 +15,10 @@ import { Warden } from '../entities/warden';
 import { runCutscene, CutsceneHost } from '../story/cutscene';
 import '../entities/enemies';
 import '../entities/props';
+import '../entities/nursery';
+import '../entities/queen';
 
-const GROUNDED = new Set(['shrine', 'jar', 'npc', 'pickup', 'warden']);
+const GROUNDED = new Set(['shrine', 'jar', 'npc', 'pickup', 'warden', 'jackbox', 'musicbox', 'queen']);
 
 export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
   room!: Room;
@@ -25,6 +27,7 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
   fx!: Fx;
   ui: any; light: any; backdrop: any;
   roomImg: any = null;
+  waterGfx: any = null;
   cracks: { img: any; key: string; tx: number; ty: number }[] = [];
   staticLights: Light[] = [];
   lightList: Light[] = [];
@@ -59,6 +62,7 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
     const cam = this.cameras.main;
     cam.setZoom(ZOOM); cam.setRoundPixels(false); cam.transparent = true;
     this.fx = new Fx(this);
+    this.waterGfx = this.add.graphics().setDepth(DEPTH.player + 3);
     const sp = (this as any).sys.scenePlugin;
     sp.launch('backdrop'); sp.launch('light'); sp.launch('ui');
     this.backdrop = sp.get('backdrop'); this.light = sp.get('light'); this.ui = sp.get('ui');
@@ -279,11 +283,15 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
     this.player.place((r.x + x) * T + 3, (r.y + y) * T + 2);
     this.enterRoom(r, { snap: true, noSave: true });
   }
-  wakeBoss(_id: string) {
-    const b = this.ents.find((e) => e instanceof Warden) as Warden | undefined;
+  wakeBoss(id: string) {
+    const b = (this.ents.find((e) => (e as any).isBoss && (!id || (e as any).bossId === id)) ?? this.ents.find((e) => e instanceof Warden)) as any;
     if (!b) return;
     b.wake(); this.bossActive = true; this.bossBar(b, b.name); this.bossActive = true;
-    Music.play('boss'); Audio.ambience('boss');
+    Music.play(b.music ?? 'boss'); Audio.ambience(b.ambience ?? 'boss');
+  }
+  /** Scripted water: raise/lower a pool to a row, or hand control back to its tide. */
+  setWater(id: string | undefined, level: number | null) {
+    for (const p of this.room.pools) if (!id || p.def.id === id) p.target = level === null ? null : (this.room.y + level) * T + 4;
   }
   saveNow() {
     const P = this.player;
@@ -297,7 +305,8 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
     await this.ui.fade(1, 1200);
     Music.stop(); Audio.ambience('none');
     this.saveNow();
-    await this.ui.storybook([{ image: 'sb_card_bg', title: 'End of the Hollows', lines: ['Nightpaw climbs toward the sound of water,', 'and a music box playing somewhere below.', '', 'The Drowned Nursery is coming soon.'] }], { card: true });
+    const card = this.room.area.endCard ?? { title: 'End of the Hollows', lines: ['Nightpaw climbs toward the sound of water,', 'and a music box playing somewhere above.'] };
+    await this.ui.storybook([{ image: 'sb_card_bg', title: card.title, lines: card.lines }], { card: true });
     this.goTitle();
   }
   goTitle() {
@@ -339,6 +348,7 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
 
   step(dt: number) {
     const P = this.player;
+    updateWater(this.room, this.time_, dt);
     P.update(dt);
     for (const e of this.ents) {
       if (!e.dead) e.update(dt);
@@ -371,6 +381,39 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
       } else if (!next) { P.x = P.safeX; P.y = P.safeY; P.vx = P.vy = 0; }
     }
     if (P.dead === false && P.y > r.py + r.ph + 64) { P.x = P.safeX; P.y = P.safeY; }
+  }
+
+  drawWater(L: Light[]) {
+    const g = this.waterGfx, r = this.room;
+    g.clear();
+    if (!r.pools.length) return;
+    const look = r.area.water ?? { tint: 0x2a5a78, surface: 0xbfe6ff, alpha: 0.5 };
+    const t = this.time_;
+    const bottom = r.py + r.ph;
+    for (const p of r.pools) {
+      if (p.y >= bottom) continue;
+      const top = Math.max(p.y, r.py);
+      g.fillStyle(look.tint, look.alpha ?? 0.5);
+      g.fillRect(p.x0, top, p.x1 - p.x0, bottom - top);
+      // darker toward the bottom
+      g.fillStyle(0x040810, 0.35);
+      g.fillRect(p.x0, top + 18, p.x1 - p.x0, Math.max(0, bottom - top - 18));
+      // bright wavy surface
+      g.lineStyle(1, look.surface, 0.8);
+      g.beginPath();
+      for (let x = p.x0; x <= p.x1; x += 4) {
+        const y = p.y + Math.sin(x * 0.12 + t * 2.2) * 0.8 + Math.sin(x * 0.05 - t * 1.3) * 0.6;
+        if (x === p.x0) g.moveTo(x, y); else g.lineTo(x, y);
+      }
+      g.strokePath();
+      g.fillStyle(look.surface, 0.12); g.fillRect(p.x0, p.y, p.x1 - p.x0, 3);
+      // glints
+      for (let i = 0; i < (p.x1 - p.x0) / 20; i++) {
+        const gx = p.x0 + ((i * 53.7 + t * 9) % (p.x1 - p.x0)), a = 0.3 + 0.3 * Math.sin(t * 3 + i);
+        g.fillStyle(0xffffff, a); g.fillRect(gx, p.y + 1 + (i % 3), 3, 0.6);
+      }
+      for (let x = p.x0 + 40; x < p.x1; x += 90) L.push({ x, y: p.y, r: 40, color: look.surface, a: 0.18 });
+    }
   }
 
   // ------------------------------------------------------------------ camera & render
@@ -413,6 +456,7 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
     if (!P.dead) L.push({ x: P.cx, y: P.cy - 2, r: 56, color: 0xb8b0ff, a: 0.28 });
     for (const e of this.ents) { const l = e.light(); if (l) L.push(l); }
     L.push(...this.fx.lights());
+    this.drawWater(L);
     this.lightList = L;
     // cracked wall crop fix (images created with setCrop keep display origin)
     this.backdrop?.follow(this.camX, this.camY, dt);

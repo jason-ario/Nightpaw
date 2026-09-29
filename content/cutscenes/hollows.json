@@ -683,42 +683,5 @@
         "ms": 4000
       }
     ]
-  },
-  {
-    "id": "demo_end",
-    "steps": [
-      {
-        "do": "letterbox"
-      },
-      {
-        "do": "music",
-        "stop": true
-      },
-      {
-        "do": "wait",
-        "ms": 800
-      },
-      {
-        "do": "say",
-        "who": "mira",
-        "lines": [
-          "Nightpaw! I can hear you!",
-          "It's warm here. The moth says I'll be the brightest thing in the whole Underneath.",
-          "Is that good? It sounds good.",
-          "...Why does everyone look so sad?"
-        ]
-      },
-      {
-        "do": "flag",
-        "set": "hollows_done"
-      },
-      {
-        "do": "achieve",
-        "id": "hollows_done"
-      },
-      {
-        "do": "end"
-      }
-    ]
   }
 ]

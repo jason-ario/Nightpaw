@@ -18,6 +18,7 @@ export interface CutsceneHost {
   emote(target: any, kind: string): void;
   teleport(room: string, x: number, y: number): void;
   wakeBoss(id: string): void;
+  setWater(id: string | undefined, level: number | null): void;
   saveNow(): void;
   endDemo(): Promise<void>;
   refreshEntities(): void;
@@ -29,7 +30,7 @@ interface RunCtx { entity?: any }
 const find = (h: CutsceneHost, who: string, ctx: RunCtx) => {
   if (!who || who === 'player' || who === 'nightpaw') return h.player;
   if (who === 'self') return ctx.entity;
-  return h.ents.find((e) => e.def?.npcId === who || e.def?.speaker === who || e.id === who) ?? null;
+  return h.ents.find((e) => e.def?.npcId === who || e.def?.speaker === who || e.bossId === who || e.id === who) ?? null;
 };
 
 const STEPS: Record<string, StepFn> = {
@@ -102,6 +103,18 @@ const STEPS: Record<string, StepFn> = {
   async storybook(h, s) { await h.ui.storybook(s.pages, s); },
   async if(h, s, ctx) { await runSteps(h, Game.test(s.cond) ? s.then ?? [] : s.else ?? [], ctx); },
   boss(h, s) { if (s.action === 'wake') h.wakeBoss(s.id ?? 'warden'); },
+  water(h, s) { h.setWater(s.id, s.release ? null : s.level); },
+  /** A big shape sweeps across the view (Mothmother's wing-shadow, say). */
+  async flyover(h, s) {
+    const sc = h.scene, v = sc.cameras.main.worldView;
+    const dir = s.dir ?? 1, ms = s.ms ?? 2600;
+    const img = sc.add.image(dir > 0 ? v.x - 60 : v.right + 60, v.y + v.height * (s.y ?? 0.35), s.art ?? 'nur_mothshadow')
+      .setScale(0.25 * (s.scale ?? 1)).setDepth(5000).setAlpha(s.alpha ?? 0.8).setFlipX(dir < 0);
+    sc.tweens.add({ targets: img, x: dir > 0 ? v.right + 60 : v.x - 60, y: img.y - 30, duration: ms, ease: 'Sine.easeInOut' });
+    sc.tweens.add({ targets: img, scaleY: img.scaleY * 0.8, duration: 380, yoyo: true, repeat: Math.floor(ms / 760) });
+    await sleep(sc, ms);
+    img.destroy();
+  },
   emote(h, s, ctx) { const e = find(h, s.who, ctx); if (e) h.emote(e, s.kind ?? '!'); },
   player(h, s) {
     const P = h.player;
@@ -128,7 +141,7 @@ const STEPS: Record<string, StepFn> = {
 // While skipping, presentation-only steps are dropped; everything that changes the game
 // (flags, abilities, lives, positions, music) still runs, so a skipped cutscene leaves the
 // world in exactly the state the full one would.
-const PRESENTATION = new Set(['say', 'narrate', 'wait', 'emote', 'shake', 'sfx', 'item', 'memory', 'storybook', 'title', 'camera', 'waitLand', 'hint', 'jump', 'face']);
+const PRESENTATION = new Set(['flyover', 'say', 'narrate', 'wait', 'emote', 'shake', 'sfx', 'item', 'memory', 'storybook', 'title', 'camera', 'waitLand', 'hint', 'jump', 'face']);
 
 export async function runSteps(h: CutsceneHost, steps: Step[], ctx: RunCtx) {
   for (const s of steps) {

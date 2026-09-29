@@ -24,8 +24,9 @@ export class BackdropScene extends Phaser.Scene {
     this.far.setTexture(a.backdrop.far); this.far.setTileScale(scaleFor(a.backdrop.far));
     this.mid.setTexture(a.backdrop.mid); this.mid.setTileScale(scaleFor(a.backdrop.mid));
     this.far.setTint(a.backdrop.tint ?? 0x6c6690); this.far.setAlpha(0.8);
-    this.mid.setTint(0x55506e); this.mid.setAlpha(0.8);
+    this.mid.setTint(a.backdrop.midTint ?? 0x55506e); this.mid.setAlpha(0.8);
     this.fog.setVisible(a.backdrop.fog !== false); this.fog2.setVisible(a.backdrop.fog !== false);
+    this.fog.setTint(a.backdrop.fogTint ?? 0xffffff); this.fog2.setTint(a.backdrop.fogTint ?? 0xffffff);
   }
   follow(camX: number, camY: number, dt: number) {
     if (!this.far) return;

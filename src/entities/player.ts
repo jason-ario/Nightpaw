@@ -4,7 +4,7 @@ import { clamp, damp, rand, overlap, Box } from '../core/util';
 import { Input } from '../core/input';
 import { sfx } from '../core/audio';
 import { Game } from '../core/state';
-import { moveBody, boxHasTile, tileAt, isSolid } from '../world/world';
+import { moveBody, boxHasTile, tileAt, isSolid, waterAt } from '../world/world';
 import { Puppet } from '../render/puppet';
 import { nightpawRig } from '../render/rigs';
 import type { Ctx } from './entity';
@@ -25,6 +25,10 @@ export class Player {
   slash: any;
   shadow: any;
   sleepy = 0; // 0..1 blend toward resting loaf pose
+  // water: floats at the surface
+  inWater = false; waterJumpT = 0; splashT = 0; floatReady = false;
+  // Velvet Claws: wall cling / slide / wall jump
+  clingDir = 0; wallCoyote = 0; wallDir = 0; wallJumpT = 0; wallJumpDir = 0; scrapeT = 0;
 
   constructor(public g: Ctx) {
     const s = g.scene;
@@ -79,17 +83,56 @@ export class Player {
       if (Math.random() < 0.7) this.g.burst(this.cx - this.face * 4, this.y + rand(3, 12), 1, 0x1c1826, { spd: 40, life: 0.35, size: 3, grav: 0 });
     } else if (this.knockT > 0) { this.knockT -= dt; this.vx = this.knockVx; }
     else if (this.recoilT > 0) { this.recoilT -= dt; this.vx = -this.face * 110 + dir * 30; }
+    else if (this.wallJumpT > 0) { this.wallJumpT -= dt; this.vx = this.wallJumpDir * PH.RUN * 1.25; this.face = this.wallJumpDir; }
     else { this.vx = dir * PH.RUN * (this.locked && this.scripted ? 0.75 : 1); if (dir) this.face = dir; }
 
+    // water: float at the surface, move slowly, jump straight out
+    this.waterJumpT = Math.max(0, this.waterJumpT - dt);
+    const surf = this.dashT > 0 ? null : waterAt(this.cx, this.y + this.h - 2);
+    const wasWet = this.inWater;
+    this.inWater = surf !== null && this.waterJumpT <= 0;
+    this.floatReady = false;
+    if (this.inWater) {
+      if (!wasWet && this.vy > 60) this.splash(Math.min(1.5, this.vy / 300));
+      const depth = this.y + this.h - (surf! + 6);
+      this.vy += (-depth * 70 - this.vy * 6) * dt;
+      this.vy = Math.max(-150, Math.min(140, this.vy));
+      this.vx *= 0.62;
+      if (Math.abs(depth) < 8) this.floatReady = true;
+      this.airJumps = Game.has('wings') ? 1 : 0; this.airDash = true; this.clingDir = 0;
+      this.splashT -= dt; if (this.vx && this.splashT <= 0) { this.splashT = 0.18; this.g.burst(this.cx - this.face * 4, surf!, 2, 0xbfe6ff, { spd: 40, life: 0.4, size: 1.3, grav: 300, glow: true }); }
+    }
+
+    // Velvet Claws: cling to a wall you're pushing into while falling; slide; jump away
+    const touchL = boxHasTile(this.x - 1, this.y + 3, 1, this.h - 6, isSolid);
+    const touchR = boxHasTile(this.x + this.w, this.y + 3, 1, this.h - 6, isSolid);
+    const canCling = Game.has('claws') && !this.onGround && !this.inWater && this.dashT <= 0 && this.knockT <= 0 && this.wallJumpT <= 0 && !this.locked;
+    const want = dir < 0 && touchL ? -1 : dir > 0 && touchR ? 1 : 0;
+    if (canCling && want && this.vy > -80) {
+      if (!this.clingDir) { sfx.cling?.(); this.airJumps = Game.has('wings') ? 1 : 0; this.airDash = true; }
+      this.clingDir = want; this.face = -want;
+    } else if (this.clingDir && !(canCling && ((this.clingDir < 0 && touchL) || (this.clingDir > 0 && touchR)) && (dir === this.clingDir || this.vy > -80))) {
+      this.wallCoyote = 0.12; this.wallDir = this.clingDir; this.clingDir = 0;
+    }
+    if (this.clingDir) { this.wallDir = this.clingDir; this.wallCoyote = 0.12; this.airJumps = Game.has('wings') ? 1 : 0; this.airDash = true; }
+    else this.wallCoyote -= dt;
+
     // jump / double jump / drop-through
-    this.coyote = this.onGround ? PH.COYOTE : this.coyote - dt;
+    this.coyote = this.onGround || this.floatReady ? PH.COYOTE : this.coyote - dt;
     this.buffer = I.jumpP ? PH.BUFFER : this.buffer - dt;
     if (this.buffer > 0 && I.down && this.onGround && boxHasTile(this.x, this.y + this.h, this.w, 1, (ch) => ch === '=') && !boxHasTile(this.x, this.y + this.h, this.w, 1, isSolid)) {
       this.dropT = 0.22; this.buffer = 0; this.onGround = false; this.y += 1;
     } else if (this.buffer > 0 && this.coyote > 0 && this.dashT <= 0) {
       this.vy = -PH.JUMP; this.coyote = 0; this.buffer = 0; this.onGround = false; sfx.jump();
+      if (this.inWater) { this.waterJumpT = 0.3; this.inWater = false; this.splash(0.8); }
       this.g.burst(this.cx, this.y + this.h, 5, 0x3a3448, { spd: 50, life: 0.35, size: 2, grav: 100, key: 'fx_dust' });
       this.puppet.squash(0.8, 1.25); this.stretchT = 0.12;
+    } else if (this.buffer > 0 && !this.onGround && (this.clingDir || this.wallCoyote > 0) && Game.has('claws') && this.dashT <= 0) {
+      const away = -(this.clingDir || this.wallDir);
+      this.vy = -PH.JUMP * 0.95; this.buffer = 0; this.clingDir = 0; this.wallCoyote = 0;
+      this.wallJumpT = 0.15; this.wallJumpDir = away; this.face = away; sfx.jump();
+      this.g.burst(away > 0 ? this.x : this.x + this.w, this.y + this.h - 4, 6, 0x3a3448, { spd: 70, life: 0.35, size: 2, grav: 120, key: 'fx_dust' });
+      this.puppet.squash(0.82, 1.2); this.stretchT = 0.12;
     } else if (this.buffer > 0 && !this.onGround && Game.has('wings') && this.airJumps > 0 && this.dashT <= 0) {
       this.vy = -PH.JUMP2; this.airJumps--; this.buffer = 0; sfx.wing(); this.wingT = 0.35;
       this.g.burst(this.cx, this.y + 10, 12, 0xe9e2ff, { spd: 70, life: 0.6, size: 1.6, grav: 60, glow: true });
@@ -104,7 +147,12 @@ export class Player {
       this.afterT = 0;
     }
 
-    if (this.dashT <= 0) this.vy = Math.min(PH.MAXFALL, this.vy + PH.G * dt);
+    if (this.dashT <= 0 && !this.inWater) this.vy = Math.min(PH.MAXFALL, this.vy + PH.G * dt);
+    if (this.clingDir) {
+      this.vy = Math.min(this.vy, 55);
+      this.scrapeT -= dt;
+      if (this.scrapeT <= 0 && this.vy > 20) { this.scrapeT = 0.07; this.g.burst(this.clingDir > 0 ? this.x + this.w : this.x, this.y + 4, 1, 0xd8d0ff, { spd: 30, life: 0.3, size: 1, grav: -20, glow: true }); }
+    }
 
     // attack
     if (I.atkP && this.atkCd <= 0) {
@@ -134,6 +182,12 @@ export class Player {
     if (boxHasTile(this.x + 3, this.y + 4, this.w - 6, this.h - 4, (ch, _tx, ty) => ch === '^' && this.y + this.h > ty * T + 7)) this.g.hurtPlayer(1, this.cx, true);
   }
   stretchT = 0; wingT = 0; afterT = 0;
+  splash(k = 1) {
+    sfx.splash?.(k);
+    const surf = waterAt(this.cx, this.y + this.h + 8) ?? this.y + this.h;
+    this.g.burst(this.cx, surf, Math.round(10 * k) + 4, 0xcfeeff, { spd: 110 * k + 40, life: 0.6, size: 1.6, grav: 420, glow: true });
+    if (!Game.flag('first_splash')) { Game.setFlag('first_splash'); (this.g as any).emote?.(this, '!'); }
+  }
 
   attackBox(): Box {
     const cx = this.cx;
@@ -210,7 +264,7 @@ export class Player {
     p.squash(sx, sy);
 
     const t = this.t;
-    const air = !this.onGround && !this.resting;
+    const air = !this.onGround && !this.resting && !this.inWater && !this.clingDir;
     const running = this.onGround && Math.abs(this.vx) > 5 && this.dashT <= 0;
     this.runPhase += dt * (running ? 14 : 0);
     const ph = this.runPhase;
@@ -231,6 +285,12 @@ export class Player {
       bodyY = Math.sin(t * 2) * 0.8; headY = Math.sin(t * 2 + 0.6) * 0.7; headRot = Math.sin(t * 0.55) * 0.05;
     }
     if (this.dashT > 0) { lean = 0.45; legN = -0.9; legF = -1.1; legLift = 4; }
+    if (this.inWater) { // paddling: little legs kick under the cloak, body bobs
+      legN = Math.sin(t * 9) * 0.6; legF = Math.sin(t * 9 + Math.PI) * 0.6; bodyY = Math.sin(t * 3) * 0.8; headRot = -0.08 + Math.sin(t * 2) * 0.04; lean = this.vx ? 0.08 : 0;
+    }
+    if (this.clingDir) { // back to the wall, claws dug in, legs braced
+      lean = -0.16; legN = -0.7; legF = -0.4; legLift = 3; headRot = 0.05; bodyY = 1;
+    }
     if (this.landT > 0) bodyY += 3;
     // resting: sits down, the cloak pools, eyes close
     bodyY = bodyY * (1 - Z) + 10 * Z; lean *= 1 - Z; headRot = headRot * (1 - Z) + 0.12 * Z; headY *= 1 - Z;
@@ -248,11 +308,12 @@ export class Player {
     p.set('body', { y: bodyY, rot: lean });
     p.set('legNear', { rot: legN, y: -legLift, sy: 1 - Z * 0.6 }); p.set('legFar', { rot: legF, y: -legLift, sy: 1 - Z * 0.6 });
     p.set('head', { y: headY, rot: headRot });
+    if (this.clingDir && this.atkAnim <= 0) { armA = 1; armRot = 1.5; armX = -6; armY = 2; }
     p.set('arm', { alpha: armA, rot: armRot, x: armX, y: armY });
 
     // ---- cloak: sways, flares when jumping, streams back when running or dashing
     const flow = Math.min(1.3, speed * 0.6 + (this.dashT > 0 ? 0.9 : 0));
-    const flare = air ? (this.vy > 0 ? 1 : 0.4) : 0;
+    const flare = air ? (this.vy > 0 ? 1 : 0.4) : this.clingDir ? 0.6 : this.inWater ? 0.35 : 0;
     const sway = Math.sin(t * (2 + flow * 6)) * (0.03 + flow * 0.05);
     p.set('cloak', { rot: flow * 0.22 + sway - lean * 0.5, sx: 1 + flare * 0.1 + Z * 0.12 });
     p.set('hem', { rot: flow * 0.35 + Math.sin(t * (2.6 + flow * 7) - 1) * (0.05 + flow * 0.08), sx: 1 + flare * 0.22 + Z * 0.18, sy: 1 - flare * 0.25 - Z * 0.2 });

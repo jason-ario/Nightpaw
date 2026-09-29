@@ -164,19 +164,109 @@ const scenarios = {
     await T.teleport('updraft', 5, 7); await T.adv(0.6);
     await T.hold('KeyZ', 0.28); await T.hold('KeyZ', 0.4); await T.adv(0.3);
     s = await T.state();
-    check('reaches the top of the Updraft (demo end)', s.cut || s.flags.includes('hollows_done'), JSON.stringify(s));
+    check('reaches the top of the Updraft (Mira calls)', s.cut || s.flags.includes('hollows_done'), JSON.stringify(s));
     await T.shot('12_end');
+    await T.finishCutscene(60);
+    // the old demo end is now a way up: climb into the Drowned Nursery
+    await T.teleport('updraft', 5, 2); await T.adv(0.5);
+    s = await climb(null);
+    if (s.room === 'updraft') s = await climb(null);
+    check('climbs into the Drowned Nursery', s.room === 'block_stair', JSON.stringify(s));
+    await T.finishCutscene(30);
+    await T.page.close();
+  },
+
+  // The Drowned Nursery: water, the Velvet Claws, tides, the Music Box Queen, the chapter end.
+  async nursery(browser) {
+    const ALL = '&abilities=needle,dash,wings&flags=nursery_arrived,met_dunk';
+    let T = await open(browser, '?room=shallows&x=12&y=8' + ALL);
+    await T.adv(1.2);
+    let w = await T.page.evaluate(() => ({ wet: window.__NP.player.inWater, vy: window.__NP.player.vy }));
+    check('floats in water', w.wet && Math.abs(w.vy) < 30, JSON.stringify(w));
+    const y0 = (await T.state()).y;
+    await T.page.keyboard.down('KeyZ'); await T.adv(0.2);
+    w = await T.page.evaluate(() => ({ wet: window.__NP.player.inWater, vy: window.__NP.player.vy }));
+    await T.page.keyboard.up('KeyZ');
+    const y1 = (await T.state()).y;
+    check('jumps out of water', !w.wet && y1 < y0 - 1.5, JSON.stringify({ ...w, y0, y1 }));
+    await T.page.close();
+
+    T = await open(browser, '?room=toy_chest&x=14&y=16' + ALL);
+    await T.adv(0.5);
+    await T.finishCutscene(20);
+    await T.hold('ArrowRight', 0.8);
+    await T.finishCutscene(40);
+    let s = await T.state();
+    check('Velvet Claws collected', s.abilities.includes('claws'), JSON.stringify(s));
+    await T.shot('30_chest');
+    // climb out of the chest on one wall: hold toward it, jump, jump, jump
+    await T.teleport('toy_chest', 12, 16); await T.adv(0.4);
+    await T.page.keyboard.down('ArrowLeft');
+    let clung = false;
+    let top = 99;
+    for (let i = 0; i < 12 && top > 10.9; i++) { await T.hold('KeyZ', 0.3); await T.adv(0.06); clung = clung || (await T.page.evaluate(() => window.__NP.player.clingDir !== 0)); top = Math.min(top, (await T.state()).y); }
+    await T.page.keyboard.up('ArrowLeft'); await T.adv(0.6);
+    s = await T.state();
+    check('clings to the wall', clung);
+    check('wall-jumps out of the chest', top <= 10.9, JSON.stringify({ top, ...s }));
+    await T.page.close();
+
+    T = await open(browser, '?room=tidewheel&x=4&y=10' + ALL.replace('wings', 'wings,claws'));
+    await T.adv(0.3);
+    const lv = [];
+    for (let i = 0; i < 5; i++) { lv.push(await T.page.evaluate(() => window.__NP.room.pools[0].y)); await T.adv(2); }
+    check('the tide rises and falls', Math.max(...lv) - Math.min(...lv) > 40, lv.map((x) => x.toFixed(0)).join(','));
+    await T.page.close();
+
+    T = await open(browser, '?room=music_box&x=6&y=15' + ALL.replace('wings', 'wings,claws'));
+    await T.adv(0.3);
+    await T.hold('ArrowRight', 1.0);
+    s = await T.state();
+    check('queen intro starts', s.cut, JSON.stringify(s));
+    await T.finishCutscene();
+    const q = () => T.page.evaluate(() => { const b = window.__NP.ents.find((e) => e.bossId === 'queen'); return b ? { state: b.state, hp: b.hp, phase: b.phase } : null; });
+    let qs = await q();
+    check('queen awake', qs && qs.state !== 'dormant', JSON.stringify(qs));
+    check('arena gate closes', await T.page.evaluate(() => window.__NP.room.grid[6][2] === '#'));
+    check('exit stays shut', await T.page.evaluate(() => window.__NP.room.grid[6][31] === '#'));
+    await T.adv(6);
+    await T.shot('31_queen');
+    await T.page.evaluate(() => { const b = window.__NP.ents.find((e) => e.bossId === 'queen'); b.state = 'dizzy'; for (let i = 0; i < 12; i++) b.onHit(1, 1, 'side'); });
+    await T.adv(4);
+    qs = await q();
+    const pool = await T.page.evaluate(() => { const r = window.__NP.room; const p = r.pools[0]; return { y: p.y, floor: (r.y + 16) * 16 }; });
+    check('second half: the box floods', qs.phase === 2 && pool.y < pool.floor, JSON.stringify({ qs, pool }));
+    await T.shot('32_queen_flood');
+    await T.page.evaluate(() => { const b = window.__NP.ents.find((e) => e.bossId === 'queen'); b.state = 'dizzy'; for (let i = 0; i < 40; i++) b.onHit(1, 1, 'side'); });
+    await T.adv(4);
+    s = await T.state();
+    check('queen defeat cutscene', s.cut && s.flags.includes('queen_dead'), JSON.stringify(s));
+    await T.finishCutscene(120);
+    await T.adv(4);
+    const after = await T.page.evaluate(() => { const r = window.__NP.room; return { drained: r.pools[0].drained, exit: r.grid[6][31], entry: r.grid[6][2], tempo: window.__NP_MUSIC ? window.__NP_MUSIC.tempo : 1 }; });
+    check('box drains, both gates open', after.drained && after.exit === '.' && after.entry === '.', JSON.stringify(after));
+    await T.page.close();
+
+    T = await open(browser, '?room=stopper_chain&x=12&y=6' + ALL + ',queen_dead');
+    await T.adv(0.5);
+    await T.finishCutscene(60);
+    s = await T.state();
+    check('Nib at the plughole', s.flags.includes('nib_market'), JSON.stringify(s));
+    await T.hold('ArrowRight', 0.8);
+    s = await T.state();
+    check('chapter end plays', s.cut && s.flags.includes('nursery_done'), JSON.stringify(s));
     await T.finishCutscene(60);
     await T.adv(5);
     const scene = await T.page.evaluate(() => window.__NP.sys.game.scene.getScenes(true).map((x) => x.sys.settings.key));
-    check('returns to title after the demo', scene.includes('title'), JSON.stringify(scene));
+    check('returns to the title after the chapter', scene.includes('title'), JSON.stringify(scene));
+    check('no errors in the nursery', T.errors.length === 0, T.errors.join(' | '));
     await T.page.close();
   },
 
   // Every cutscene runs to completion without errors.
   async cutscenes(browser) {
     const T = await open(browser, '?room=ashen_gate&x=12&y=14&abilities=needle');
-    const ids = await T.page.evaluate(() => [...window.__NP_WORLD.cutscenes.keys()].filter((k) => !['intro', 'demo_end', 'warden_defeat', 'warden_intro'].includes(k)));
+    const ids = await T.page.evaluate(() => [...window.__NP_WORLD.cutscenes.keys()].filter((k) => !['intro', 'nursery_end', 'warden_defeat', 'warden_intro'].includes(k)));
     for (const id of ids) {
       await T.page.evaluate((id) => { window.__NP.runCutscene(id); }, id);
       const done = await T.finishCutscene();

@@ -92,8 +92,11 @@ export function roomTexture(scene: any, r: Room): RoomArtResult {
   // ---- 6. seeded decoration ----
   const amount = r.decor ?? 1;
   if (amount > 0) {
-    const floorDecor = ['deco_mushroom', 'deco_bones', 'deco_teacup', 'deco_key'].map((k) => [k, img(k)] as const).filter(([, i]) => i);
-    const roots = img('deco_roots');
+    const dec = r.area.decor ?? {};
+    const floorDecor = (dec.floor ?? ['deco_mushroom', 'deco_bones', 'deco_teacup', 'deco_key']).map((k) => [k, img(k)] as const).filter(([, i]) => i);
+    const ceilKeys = (dec.ceil ?? ['deco_roots']).filter((k) => img(k));
+    const roots = ceilKeys.length ? img(ceilKeys[0]) : null;
+    const glowOf = (k: string) => dec.glow?.[k] ?? (k === 'deco_mushroom' ? [0xa0e0ff, 30] : null);
     for (let y = 1; y < r.h; y++) for (let x = 0; x < r.w; x++) {
       const floor = r.grid[y][x] === '#' && r.grid[y - 1][x] === '.';
       const ceil = r.grid[y - 1][x] === '#' && r.grid[y][x] === '.';
@@ -101,9 +104,10 @@ export function roomTexture(scene: any, r: Room): RoomArtResult {
         const [k, im] = floorDecor[R() < 0.6 ? 0 : Math.floor(R() * floorDecor.length)];
         const dx = x * TP + R() * (TP - im!.width), dy = y * TP - im!.height + 4;
         c.drawImage(im!, dx, dy);
-        if (k === 'deco_mushroom') lights.push({ x: (dx + 16) / ART, y: (dy + 14) / ART, r: 30, color: 0xa0e0ff, a: 0.5 });
+        const gl = glowOf(k);
+        if (gl) lights.push({ x: (dx + im!.width / 2) / ART, y: (dy + im!.height * 0.45) / ART, r: gl[1], color: gl[0], a: 0.5 });
       }
-      if (ceil && roots && R() < 0.14 * amount) { const s = 0.5 + R() * 0.6; c.drawImage(roots, x * TP + R() * 20, y * TP - 6, roots.width * s, roots.height * s); }
+      if (ceil && roots && R() < 0.14 * amount) { const ck = img(ceilKeys[Math.floor(R() * ceilKeys.length)])!; const s = 0.5 + R() * 0.6; c.drawImage(ck, x * TP + R() * 20, y * TP - 6, ck.width * s, ck.height * s); }
     }
   }
 

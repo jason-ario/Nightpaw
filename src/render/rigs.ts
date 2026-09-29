@@ -183,3 +183,103 @@ export function nightpawRig(): PartDef {
     ],
   };
 }
+
+// ====================================================================
+// The Drowned Nursery
+// ====================================================================
+
+/** Wind-up mouse: a tin mouse on wheels with a big key in its back. */
+export function windupRig(): PartDef {
+  return {
+    name: 'root', x: 0, y: 0,
+    front: [
+      { name: 'wheelB', key: 'wm_wheel', x: -12, y: -7 },
+      { name: 'tail', key: 'wm_tail', x: -24, y: -12, ox: 0.95, oy: 0.5 },
+      { name: 'key', key: 'wm_key', x: -6, y: -30, ox: 0.5, oy: 0.95 },
+      { name: 'body', key: 'wm_body', x: 0, y: -21, front: [
+        { name: 'ear', key: 'wm_ear', x: 12, y: -14, ox: 0.5, oy: 0.9 },
+      ] },
+      { name: 'wheelF', key: 'wm_wheel', x: 13, y: -7 },
+    ],
+  };
+}
+
+/** Jack-in-the-box: the spring and head rise out of the box; the lid flips open. */
+export function jackRig(): PartDef {
+  return {
+    name: 'root', x: 0, y: 0,
+    front: [
+      { name: 'spring', key: 'jb_spring', x: 0, y: -52, ox: 0.5, oy: 1 },
+      { name: 'head', key: 'jb_head', x: 0, y: -52, ox: 0.5, oy: 0.85, front: [
+        { name: 'fist', key: 'jb_fist', x: 18, y: -6, ox: 0.1, oy: 0.5 },
+      ] },
+      { name: 'box', key: 'jb_box', x: 0, y: -30 },
+      { name: 'lid', key: 'jb_lid', x: -32, y: -58, ox: 0.03, oy: 0.5 },
+    ],
+  };
+}
+
+/** Tin fish: a wind-up bath toy. */
+export function fishRig(): PartDef {
+  return {
+    name: 'root', x: 0, y: 0,
+    front: [
+      { name: 'tail', key: 'tf_tail', x: -24, y: -15, ox: 0.9, oy: 0.5 },
+      { name: 'fin', key: 'tf_fin', x: -2, y: -26, ox: 0.4, oy: 0.95 },
+      { name: 'body', key: 'tf_body', x: 0, y: -15, front: [
+        { name: 'key', key: 'tf_key', x: -8, y: 6, ox: 0.5, oy: 0.1 },
+      ] },
+    ],
+  };
+}
+
+/** Dunk the rubber duck. */
+export function duckRig(): PartDef {
+  return {
+    name: 'root', x: 0, y: 0,
+    front: [{
+      name: 'body', key: 'duck_body', x: 0, y: -22, oy: 0.6,
+      front: [
+        { name: 'wing', key: 'duck_wing', x: -6, y: -4, ox: 0.2, oy: 0.3 },
+        { name: 'head', key: 'duck_head', x: 20, y: -18, ox: 0.5, oy: 0.85, front: [
+          { name: 'beak', key: 'duck_beak', x: 17, y: -16, ox: 0.1, oy: 0.5 },
+        ] },
+      ],
+    }],
+  };
+}
+
+/** A doll on a shelf. Only its head moves. */
+export function dollRig(): PartDef {
+  return {
+    name: 'root', x: 0, y: 0,
+    front: [
+      { name: 'body', key: 'doll_body', x: 0, y: -26 },
+      { name: 'head', key: 'doll_head', x: 0, y: -48, ox: 0.5, oy: 0.85 },
+    ],
+  };
+}
+
+/** The Music Box Queen: a porcelain wind-up ballerina. Pivot 'hips' carries the body. */
+export function queenRig(): PartDef {
+  return {
+    name: 'root', x: 0, y: 0,
+    front: [
+      { name: 'legB', key: 'q_leg', x: -5, y: -76, ox: 0.5, oy: 0.03 },
+      { name: 'legF', key: 'q_leg', x: 5, y: -76, ox: 0.5, oy: 0.03 },
+      {
+        name: 'hips', x: 0, y: -78,
+        behind: [
+          { name: 'key', key: 'q_key', x: -20, y: -26, ox: 0.9, oy: 0.5 },
+          { name: 'armB', key: 'q_arm_u', x: -15, y: -44, ox: 0.5, oy: 0.08, rot: 0.4, front: [{ name: 'foreB', key: 'q_arm_l', x: 0, y: 30, ox: 0.5, oy: 0.08, rot: 0.3 }] },
+        ],
+        front: [
+          { name: 'torso', key: 'q_torso', x: 0, y: 2, ox: 0.5, oy: 0.95 },
+          { name: 'tutu', key: 'q_tutu', x: 0, y: 2, ox: 0.5, oy: 0.4 },
+          { name: 'head', key: 'q_head', x: 0, y: -50, ox: 0.5, oy: 0.9 },
+          { name: 'armF', key: 'q_arm_u', x: 15, y: -44, ox: 0.5, oy: 0.08, rot: -0.4, front: [{ name: 'foreF', key: 'q_arm_l', x: 0, y: 30, ox: 0.5, oy: 0.08, rot: -0.3 }] },
+        ],
+      },
+    ],
+  };
+}

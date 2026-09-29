@@ -25,6 +25,20 @@ export interface RoomDef {
   onEnterIf?: string;
   decor?: number; // amount of automatic decoration (0 = none, 1 = default)
   camera?: { lockY?: boolean };
+  water?: WaterDef[]; // pools of water (see WaterDef)
+}
+
+/**
+ * A body of water in a room. `level` is the row the surface sits in (room-local tiles).
+ * With `low`/`high` it is a tide that rises and falls between those rows every `period`
+ * seconds. `drainIf` (a condition) empties it; a boss can also drive `level` directly.
+ */
+export interface WaterDef {
+  x?: number; w?: number; // horizontal span in tiles (default: whole room)
+  level: number;
+  low?: number; high?: number; period?: number; phase?: number;
+  drainIf?: string;
+  id?: string;
 }
 
 export interface AreaDef {
@@ -32,12 +46,16 @@ export interface AreaDef {
   name: string;
   subtitle?: string;
   tileset: string; // art prefix, e.g. "hol" → hol_rock, hol_top, ...
-  backdrop: { far: string; mid: string; fg?: string; tint?: number; fog?: boolean };
+  backdrop: { far: string; mid: string; fg?: string; tint?: number; midTint?: number; fog?: boolean; fogTint?: number };
   dark: number; // default darkness 0..1
   music?: string;
   ambience?: string;
   legend?: Record<string, EntityDef>;
   rooms: RoomDef[];
+  /** Automatic room decoration: painted parts scattered on floors / hung from ceilings. */
+  decor?: { floor?: string[]; ceil?: string[]; glow?: Record<string, [number, number]> };
+  water?: { tint: number; surface: number; alpha?: number };
+  endCard?: { title: string; lines: string[] };
 }
 
 export interface WorldDef {

@@ -60,6 +60,7 @@ export class LightScene extends Phaser.Scene {
     if (holes.length) { this.rt.erase(holes); this.glow.draw(glows); }
     const room = game.room;
     const showFg = room && room.area && room.area.backdrop.fg;
+    if (showFg && this.fg.texture.key !== showFg) this.fg.setTexture(showFg);
     this.fg.setVisible(!!showFg);
     if (showFg) {
       this.fg.tilePositionX = (mx * ZOOM * 1.25) / 1.4;

@@ -1,6 +1,6 @@
 // Generates Vibe-Games store media for Nightpaw into store-media/:
 //   cover.svg (600x900), header.svg (920x430), hero.svg (1920x620)  — composed capsule art
-//   shot1..5.png (1280x720)                                         — real gameplay captures
+//   shot1..7.png (1280x720)                                         — real gameplay captures
 // Usage: node tools/store/make-store-media.cjs [--shots http://localhost:8123/index.html]
 // tools/pack.cjs copies the results into release/store/ for upload.
 const fs = require('fs');
@@ -90,6 +90,20 @@ async function shots(browser) {
   await s.page.keyboard.down('KeyZ'); await s.adv(0.22); await s.page.keyboard.up('KeyZ');
   await s.page.keyboard.down('KeyC'); await s.adv(0.1);
   await s.freeze(); await s.snap(5); await s.page.close();
+  // 6 — The Drowned Nursery: Dunk in the cot room
+  s = await open('?room=cot&x=16&y=13&abilities=dash,wings&flags=intro_done,met_dunk,nursery_arrived');
+  await s.adv(1.5);
+  await s.page.evaluate(() => { const g = window.__NP; g.player.face = -1; g.inCutscene = true; g.player.locked = true; g.ui.letterbox(true);
+    g.ui.say('dunk', "A CAT! In MY bath! Oh, this is the best day. Every day is the best day, but this one especially."); });
+  await s.adv(4); await s.freeze(); await s.snap(6); await s.page.close();
+  // 7 — The Music Box Queen, second half: the box floods with her waltz
+  s = await open('?room=music_box&x=8&y=15&abilities=dash,wings,claws&flags=intro_done,queen_met,nursery_arrived');
+  await s.adv(0.3);
+  await s.page.evaluate(() => { const g = window.__NP; g.wakeBoss('queen'); const b = g.ents.find((e) => e.bossId === 'queen'); b.hp = 15; b.phase = 2; g.player.hp = 3; });
+  await s.adv(3.2);
+  await s.page.evaluate(() => { const g = window.__NP, b = g.ents.find((e) => e.bossId === 'queen'); b.set('notes'); g.player.x = b.x - 70; g.player.face = 1; });
+  await s.adv(1.0);
+  await s.freeze(); await s.snap(7); await s.page.close();
 }
 
 (async () => {

@@ -429,5 +429,301 @@
  "title_near": {
   "w": 1280,
   "h": 720
+ },
+ "sb_fireworks": {
+  "w": 1280,
+  "h": 720,
+  "file": "sb_fireworks.jpg"
+ },
+ "nur_rock": {
+  "w": 512,
+  "h": 512
+ },
+ "nur_top": {
+  "w": 64,
+  "h": 32
+ },
+ "nur_top2": {
+  "w": 64,
+  "h": 32
+ },
+ "nur_bottom": {
+  "w": 64,
+  "h": 28
+ },
+ "nur_side": {
+  "w": 24,
+  "h": 64
+ },
+ "nur_plank": {
+  "w": 64,
+  "h": 24
+ },
+ "nur_thorns": {
+  "w": 64,
+  "h": 44
+ },
+ "nur_block_small": {
+  "w": 36,
+  "h": 36
+ },
+ "nur_marble": {
+  "w": 16,
+  "h": 16
+ },
+ "nur_thimble": {
+  "w": 20,
+  "h": 22
+ },
+ "nur_bead": {
+  "w": 24,
+  "h": 14
+ },
+ "nur_bunting": {
+  "w": 96,
+  "h": 48
+ },
+ "nur_bg_far": {
+  "w": 1024,
+  "h": 640,
+  "file": "nur_bg_far.jpg"
+ },
+ "nur_bg_mid": {
+  "w": 1024,
+  "h": 640
+ },
+ "nur_fg": {
+  "w": 1024,
+  "h": 256
+ },
+ "chalk_nursery": {
+  "w": 256,
+  "h": 128
+ },
+ "chalk_up": {
+  "w": 256,
+  "h": 128
+ },
+ "chalk_fire": {
+  "w": 256,
+  "h": 128
+ },
+ "chalk_sings": {
+  "w": 256,
+  "h": 128
+ },
+ "nur_block": {
+  "w": 256,
+  "h": 256
+ },
+ "nur_rattle": {
+  "w": 200,
+  "h": 120
+ },
+ "nur_boat": {
+  "w": 280,
+  "h": 160
+ },
+ "nur_bear": {
+  "w": 200,
+  "h": 240
+ },
+ "nur_cot": {
+  "w": 640,
+  "h": 480
+ },
+ "nur_mobile": {
+  "w": 512,
+  "h": 512
+ },
+ "nur_horse": {
+  "w": 512,
+  "h": 400
+ },
+ "nur_chest": {
+  "w": 640,
+  "h": 480,
+  "file": "nur_chest.jpg"
+ },
+ "nur_hearth": {
+  "w": 512,
+  "h": 544
+ },
+ "nur_faucet": {
+  "w": 256,
+  "h": 256
+ },
+ "nur_shelf": {
+  "w": 512,
+  "h": 256,
+  "file": "nur_shelf.jpg"
+ },
+ "nur_pincushion": {
+  "w": 512,
+  "h": 400
+ },
+ "nur_musicbox_big": {
+  "w": 512,
+  "h": 320
+ },
+ "nur_comb": {
+  "w": 512,
+  "h": 256
+ },
+ "nur_chain": {
+  "w": 16,
+  "h": 896
+ },
+ "nur_plughole": {
+  "w": 320,
+  "h": 200
+ },
+ "nur_mothshadow": {
+  "w": 512,
+  "h": 320
+ },
+ "nur_wheel": {
+  "w": 256,
+  "h": 256
+ },
+ "musicbox": {
+  "w": 160,
+  "h": 140
+ },
+ "mb_crank": {
+  "w": 40,
+  "h": 16
+ },
+ "wm_body": {
+  "w": 46,
+  "h": 28
+ },
+ "wm_ear": {
+  "w": 14,
+  "h": 16
+ },
+ "wm_wheel": {
+  "w": 14,
+  "h": 14
+ },
+ "wm_tail": {
+  "w": 24,
+  "h": 10
+ },
+ "wm_key": {
+  "w": 20,
+  "h": 18
+ },
+ "jb_box": {
+  "w": 64,
+  "h": 60
+ },
+ "jb_lid": {
+  "w": 68,
+  "h": 12
+ },
+ "jb_spring": {
+  "w": 24,
+  "h": 38
+ },
+ "jb_head": {
+  "w": 40,
+  "h": 44
+ },
+ "jb_fist": {
+  "w": 18,
+  "h": 16
+ },
+ "tf_body": {
+  "w": 52,
+  "h": 28
+ },
+ "tf_tail": {
+  "w": 20,
+  "h": 22
+ },
+ "tf_fin": {
+  "w": 20,
+  "h": 12
+ },
+ "tf_key": {
+  "w": 14,
+  "h": 12
+ },
+ "duck_body": {
+  "w": 64,
+  "h": 40
+ },
+ "duck_wing": {
+  "w": 26,
+  "h": 18
+ },
+ "duck_head": {
+  "w": 34,
+  "h": 34
+ },
+ "duck_beak": {
+  "w": 20,
+  "h": 12
+ },
+ "doll_body": {
+  "w": 36,
+  "h": 44
+ },
+ "doll_head": {
+  "w": 34,
+  "h": 36
+ },
+ "q_leg": {
+  "w": 12,
+  "h": 78
+ },
+ "q_torso": {
+  "w": 36,
+  "h": 56
+ },
+ "q_tutu": {
+  "w": 92,
+  "h": 36
+ },
+ "q_head": {
+  "w": 40,
+  "h": 46
+ },
+ "q_arm_u": {
+  "w": 12,
+  "h": 32
+ },
+ "q_arm_l": {
+  "w": 10,
+  "h": 32
+ },
+ "q_key": {
+  "w": 34,
+  "h": 28
+ },
+ "q_note": {
+  "w": 48,
+  "h": 48
+ },
+ "relic_claws": {
+  "w": 48,
+  "h": 48
+ },
+ "ribbon": {
+  "w": 44,
+  "h": 40
+ },
+ "drawing": {
+  "w": 44,
+  "h": 44
+ },
+ "pt_dunk": {
+  "w": 192,
+  "h": 192
+ },
+ "pt_queen": {
+  "w": 192,
+  "h": 192
  }
 }

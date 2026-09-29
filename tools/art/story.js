@@ -670,6 +670,57 @@
   });
 
   // Plain page behind title cards ("End of the Hollows").
+  // 6. The Fireworks Night (Shade 3): curled up high inside a chimney while the sky bangs overhead.
+  AJ('sb_fireworks', W, H, (c) => {
+    c.fillStyle = '#07060b'; c.fillRect(0, 0, W, H);
+    // the square of night sky at the chimney top, full of colour
+    const sx0 = 470, sx1 = 810, sy0 = 0, sy1 = 150;
+    vgrad(c, [[0, '#120e2a'], [1, '#2a1f44']], sx0, sy0, sx1, sy1);
+    const bursts = [[560, 60, 90, '#ff6a8a'], [720, 40, 70, '#ffd45a'], [650, 120, 60, '#7ae0ff'], [520, 130, 40, '#b890ff']];
+    const r = rng('fw');
+    c.save(); c.beginPath(); c.rect(sx0, sy0, sx1 - sx0, sy1 - sy0); c.clip();
+    for (const [x, y, R, col] of bursts) {
+      glow(c, x, y, R * 1.6, col, 0.35);
+      c.strokeStyle = col; c.lineCap = 'round';
+      for (let i = 0; i < 36; i++) {
+        const a = (i / 36) * Math.PI * 2 + r() * 0.1, l = R * (0.6 + r() * 0.4);
+        c.globalAlpha = 0.5 + r() * 0.5; c.lineWidth = 1.5 + r() * 1.5;
+        c.beginPath(); c.moveTo(x + Math.cos(a) * l * 0.3, y + Math.sin(a) * l * 0.3); c.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l + l * 0.1); c.stroke();
+        c.fillStyle = '#ffffff'; ell(c, x + Math.cos(a) * l, y + Math.sin(a) * l + l * 0.1, 1.6, 1.6); c.fill();
+      }
+      c.globalAlpha = 1;
+    }
+    c.restore();
+    // coloured light pouring down the flue
+    shaft(c, [sx0 + 20, sy1, sx1 - 20], [300, H, 980], '#ffc0d8', 0.22, 16);
+    // the flue walls: brick, converging to the square of sky
+    const wallL = (q) => poly(q, [[0, 0], [sx0, 0], [sx0, sy1], [360, H], [0, H]]);
+    const wallR = (q) => poly(q, [[W, 0], [sx1, 0], [sx1, sy1], [920, H], [W, H]]);
+    stones(c, wallL, [0, 0, sx0 + 10, H], 'fwl', '#3a2a2a', 30);
+    stones(c, wallR, [sx1 - 10, 0, W, H], 'fwr', '#3a2a2a', 30);
+    // soot, and the coloured flashes on the brick edges
+    c.save(); wallL(c); c.clip(); vgrad(c, [[0, 'rgba(0,0,0,0.7)'], [0.5, 'rgba(0,0,0,0.25)'], [1, 'rgba(0,0,0,0.6)']]); glow(c, 430, 260, 260, '#ff6a8a', 0.18); c.restore();
+    c.save(); wallR(c); c.clip(); vgrad(c, [[0, 'rgba(0,0,0,0.7)'], [0.5, 'rgba(0,0,0,0.25)'], [1, 'rgba(0,0,0,0.6)']]); glow(c, 860, 220, 260, '#ffd45a', 0.16); c.restore();
+    // the back of the flue, dark and warm, and the sooty ledge he's curled on
+    vgrad(c, [[0, '#1a1418'], [1, '#2a1a16']], 360, sy1, 920, H);
+    c.save(); c.beginPath(); c.moveTo(sx0, sy1); c.lineTo(sx1, sy1); c.lineTo(920, H); c.lineTo(360, H); c.closePath(); c.clip();
+    stones(c, (q) => { q.beginPath(); q.rect(300, sy1, 700, H); }, [300, sy1, 1000, H], 'fwb', '#241a1a', 22);
+    c.fillStyle = 'rgba(0,0,0,0.45)'; c.fillRect(300, sy1, 700, H);
+    shaft(c, [sx0 + 30, sy1, sx1 - 30], [380, H, 900], '#ffd6e8', 0.16, 12);
+    c.restore();
+    const lp = (q) => poly(q, [[420, 540], [860, 540], [880, 572], [400, 572]]);
+    paint(c, lp, { base: '#2a2024', light: '#6a5058', dark: '#08060a', rim: '#ffb0c8', rimW: 1.6, bbox: [400, 540, 880, 572], seed: 'fwledge', tex: 0.08 });
+    // an ember glow far below, the fire that's been put out
+    glow(c, 640, H + 40, 320, '#ff7a3a', 0.22);
+    // Nightpaw curled in a loaf, ears back, eyes half shut, the colours on his fur
+    storyCat(c, 650, 542, 2.1, { pose: 'loaf', ears: 0.8, eyes: 'half', look: -0.4, rimCol: '#ffc0d8', seed: 'fwcat' });
+    glow(c, 650, 420, 220, '#ff9ab8', 0.1);
+    // sparks drifting down the flue
+    motes(c, 90, [380, 150, 900, 600], '#ffd9a0', 'fwm', 1.1);
+    motes(c, 40, [440, 150, 840, 500], '#ff9ad0', 'fwm2', 0.9);
+    finish(c, { vig: 0.7, tint: '#c090b0', tintA: 0.12, seed: 'gfw' });
+  });
+
   AJ('sb_card_bg', W, H, (c) => {
     c.fillStyle = '#07060b'; c.fillRect(0, 0, W, H);
     glow(c, 640, 360, 560, '#2a2440', 0.55);
@@ -759,5 +810,6 @@
     c.restore();
   });
   // Where the well's rim is on title_near (screen px), for placing the puppet.
+  window.__S = { W, H, AJ, part, vgrad, mass, shaft, fogBand, motes, rainHaze, brush, finish, taper, storyCat, boards, stones, moon, clouds };
   window.__TITLE = { rimX: 900, rimY: 486 };
 })();

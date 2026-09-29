@@ -1,4 +1,4 @@
-// Renders every asset in painter.js and story.js to assets/art/<key>.png and writes assets/art/art.json.
+// Renders every asset in painter.js, story.js and nursery.js to assets/art/<key>.png and writes assets/art/art.json.
 // Usage: node tools/art/build-art.cjs [key1,key2,...]
 // Needs Playwright + Chromium (npm i -D playwright && npx playwright install chromium).
 const fs = require('fs');
@@ -18,6 +18,7 @@ try { ({ chromium } = require('playwright')); } catch { ({ chromium } = require(
   await page.setContent('<html><body></body></html>');
   await page.addScriptTag({ path: path.join(__dirname, 'painter.js') });
   await page.addScriptTag({ path: path.join(__dirname, 'story.js') });
+  await page.addScriptTag({ path: path.join(__dirname, 'nursery.js') });
   const assets = await page.evaluate((o) => window.renderAll(o), only);
   const manifestPath = path.join(outDir, 'art.json');
   const manifest = fs.existsSync(manifestPath) ? JSON.parse(fs.readFileSync(manifestPath, 'utf8')) : {};

@@ -80,6 +80,19 @@ export const sfx: Record<string, (...a: any[]) => void> = {
   whoosh: () => noise(0.5, 400, 0.4, 0.2, 1600),
   thunder: () => { noise(2.4, 120, 0.5, 0.4, -60); noise(0.6, 900, 0.3, 0.15, -600); },
   gate: () => { noise(0.6, 200, 0.8, 0.4, -100); tone(80, 0.5, 'square', 0.08, -30); },
+  // the Drowned Nursery
+  splash: (k = 1) => { noise(0.35 * k + 0.1, 900, 0.5, 0.25 * k + 0.05, -500); tone(180, 0.15, 'sine', 0.05 * k, 120); },
+  cling: () => noise(0.12, 2600, 2, 0.08, -1200),
+  windup: () => { for (let i = 0; i < 5; i++) tone(2400 + i * 90, 0.03, 'square', 0.02, 0, i * 0.06); },
+  spring: () => { tone(300, 0.35, 'triangle', 0.08, 600); noise(0.12, 1800, 1, 0.1); },
+  pop: () => { tone(900, 0.08, 'sine', 0.06, -500); noise(0.05, 3000, 1, 0.1); },
+  fishLeap: () => { noise(0.2, 1200, 0.6, 0.12, 800); tone(700, 0.1, 'sine', 0.03, 300); },
+  note: () => chime(880 + Math.random() * 440, 0, 0.05, sfxBus),
+  twirl: () => { for (let i = 0; i < 6; i++) chime(1046 * Math.pow(2, i / 12), i * 0.05, 0.03, sfxBus); noise(0.4, 3000, 0.5, 0.06, 1500); },
+  windDown: () => { for (let i = 0; i < 8; i++) chime(784 / (1 + i * 0.08), i * (0.18 + i * 0.05), 0.05, sfxBus); },
+  drain: () => { noise(3.5, 300, 0.5, 0.25, -200); tone(60, 3, 'sine', 0.08, -20); },
+  squeak: () => { tone(1500, 0.09, 'sine', 0.06, 900); tone(1900, 0.07, 'sine', 0.05, 700, 0.1); },
+  tinkle: () => { const r = [0, 4, 7, 12]; r.forEach((n, i) => chime(1318 * Math.pow(2, n / 12), i * 0.12, 0.018, sfxBus)); },
 };
 
 /** Per-speaker "voice": short pitched blips, like mumbling in a music box. */
@@ -117,7 +130,7 @@ export const Audio = {
     if (kind === 'none') return;
     const f = AC.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 220;
     const g = AC.createGain(); g.gain.value = 0.0001; g.gain.linearRampToValueAtTime(0.045, AC.currentTime + 3);
-    const hz = kind === 'rain' ? [0] : kind === 'boss' ? [41, 41.5, 61.7] : [55, 55.6, 82.4];
+    const hz = kind === 'rain' ? [0] : kind === 'boss' ? [41, 41.5, 61.7] : kind === 'nursery' ? [65.4, 65.9, 98] : [55, 55.6, 82.4];
     const oscs: OscillatorNode[] = [];
     for (const h of hz) { if (!h) continue; const o = AC.createOscillator(); o.type = 'sawtooth'; o.frequency.value = h; o.connect(f); o.start(); oscs.push(o); }
     const lfo = AC.createOscillator(), lg = AC.createGain(); lfo.frequency.value = 0.07; lg.gain.value = 90; lfo.connect(lg).connect(f.frequency); lfo.start();
@@ -129,11 +142,22 @@ export const Audio = {
       const rg = AC.createGain(); rg.gain.value = 0.16; rainSrc.connect(rf).connect(rg).connect(g); rainSrc.start();
       g.gain.linearRampToValueAtTime(0.5, AC.currentTime + 2);
     }
-    const drip = setInterval(() => { if (Math.random() < 0.45) tone(rand(1200, 2400), 0.4, 'sine', 0.012, -200, 0, ambBus); }, 2300);
+    const wet = kind === 'nursery';
+    const drip = setInterval(() => {
+      if (Math.random() < (wet ? 0.8 : 0.45)) tone(rand(1200, 2400), 0.4, 'sine', wet ? 0.016 : 0.012, -200, 0, ambBus);
+      if (wet && Math.random() < 0.3) { const f = rand(1500, 2600); [0, 4, 7].forEach((n, i) => tone(f * Math.pow(2, n / 12), 0.9, 'sine', 0.006, 0, i * 0.2, ambBus)); }
+    }, wet ? 1500 : 2300);
+    let lap: AudioBufferSourceNode | null = null;
+    if (wet) {
+      lap = AC.createBufferSource(); lap.buffer = noiseBuf; lap.loop = true;
+      const lf = AC.createBiquadFilter(); lf.type = 'lowpass'; lf.frequency.value = 500;
+      const lg2 = AC.createGain(); lg2.gain.value = 0.05; lap.connect(lf).connect(lg2).connect(g); lap.start();
+      const wl = AC.createOscillator(), wg = AC.createGain(); wl.frequency.value = 0.18; wg.gain.value = 0.04; wl.connect(wg).connect(lg2.gain); wl.start(); oscs.push(wl);
+    }
     ambNodes = {
       stop() {
         const t = AC!.currentTime; g.gain.cancelScheduledValues(t); g.gain.setValueAtTime(g.gain.value, t); g.gain.linearRampToValueAtTime(0.0001, t + 1.2);
-        setTimeout(() => { oscs.forEach((o) => o.stop()); lfo.stop(); rainSrc?.stop(); }, 1400);
+        setTimeout(() => { oscs.forEach((o) => o.stop()); lfo.stop(); rainSrc?.stop(); lap?.stop(); }, 1400);
         clearInterval(drip);
       },
     };
@@ -147,6 +171,10 @@ const THEMES: Record<string, { root: number; notes: (number | null)[]; beat: num
   hollows: { root: 293.66, notes: [0, null, 7, null, 3, null, 10, null, 12, null, 10, 7, 3, null, null, null, 0, null, 5, null, 3, null, 2, null, -2, null, 0, null, null, null, null, null], beat: 0.5, detune: 0.008 },
   boss: { root: 146.83, notes: [0, 0, 3, 0, 6, 0, 3, 1, 0, 0, 3, 0, 7, 6, 3, 1], beat: 0.22, detune: 0.015 },
   memory: { root: 523.25, notes: [0, 4, 7, 12, 7, 4, 0, null, -1, 2, 7, 11, 7, 2, -1, null], beat: 0.55, detune: 0.003 },
+  // The Drowned Nursery: a lopsided music-box waltz (3/4), a little flat and a little slow.
+  nursery: { root: 392, notes: [0, 4, 7, 12, 11, 7, 9, null, 5, 4, null, 2, 0, 4, 7, 5, 4, 2, 0, null, null, -1, 2, 5, 4, null, 2, 0, null, null, null, null, null], beat: 0.4, detune: 0.012 },
+  // The Music Box Queen: the same waltz wound too tight.
+  queen: { root: 392, notes: [0, 7, 12, 11, 7, 9, 5, 4, 2, 0, 4, 7, 5, 4, 2, 0, -1, 2, -5, -1, 2, 5, 4, 2], beat: 0.2, detune: 0.018 },
 };
 let musicName = '';
 export const Music = {
@@ -164,11 +192,15 @@ export const Music = {
         const wob = 1 + (Math.random() - 0.5) * th.detune * 2;
         chime(th.root * Math.pow(2, n / 12) * wob, 0, name === 'boss' ? 0.045 : 0.05);
         if (name === 'boss' && i % 4 === 1) tone(th.root / 2, 0.4, 'triangle', 0.06, 0, 0, musicBus);
+        if (name === 'queen' && i % 3 === 1) tone(th.root / 4, 0.3, 'triangle', 0.05, 0, 0, musicBus);
+        if (name === 'nursery' && i % 3 === 1) tone(th.root / 2, 0.5, 'sine', 0.025, 0, 0, musicBus);
       }
-      musicTimer = setTimeout(step, th.beat * 1000 * (name === 'hollows' ? rand(0.9, 1.25) : 1));
+      musicTimer = setTimeout(step, th.beat * 1000 * (name === 'hollows' ? rand(0.9, 1.25) : name === 'nursery' ? rand(0.95, 1.12) : 1) / Music.tempo);
     };
     musicTimer = setTimeout(step, 400);
   },
   stop() { if (musicTimer) clearTimeout(musicTimer); musicTimer = null; musicName = ''; },
   get current() { return musicName; },
+  /** Playback speed multiplier (the Queen winds her music up). */
+  tempo: 1,
 };

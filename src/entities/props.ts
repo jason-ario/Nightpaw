@@ -3,9 +3,9 @@ import { DEPTH, INV_ART, T } from '../core/config';
 import { rand, damp, overlap } from '../core/util';
 import { sfx } from '../core/audio';
 import { Game } from '../core/state';
-import { World } from '../world/world';
+import { World, waterSurface } from '../world/world';
 import { Puppet } from '../render/puppet';
-import { mothRig, mouseRig } from '../render/rigs';
+import { mothRig, mouseRig, duckRig } from '../render/rigs';
 import { Entity, register, Ctx } from './entity';
 import type { EntityDef } from '../content/types';
 
@@ -73,12 +73,15 @@ class Jar extends Entity {
 register('jar', (g, d, x, y) => (Game.taken.has(d.id!) ? null : new Jar(g, d, x, y)));
 
 // ------------------------------------------------------------------ pickups (abilities, story items, lost lives)
-const PICKUP_ART: Record<string, { key: string; scale: number; glow: number; color: number }> = {
+export const PICKUP_ART: Record<string, { key: string; scale: number; glow: number; color: number }> = {
   needle: { key: 'needle', scale: 0.9, glow: 0xffffff, color: 0xffffff },
   dash: { key: 'relic_dash', scale: 0.4, glow: 0x8a7aff, color: 0xbfb0ff },
   wings: { key: 'relic_wings', scale: 0.4, glow: 0xe9e2ff, color: 0xe9e2ff },
   slipper: { key: 'slipper', scale: 0.4, glow: 0xffc0d0, color: 0xffc0d0 },
   shade: { key: 'shade', scale: 0.4, glow: 0xbfeaff, color: 0xbfeaff },
+  claws: { key: 'relic_claws', scale: 0.8, glow: 0xff9ab0, color: 0xffc0d0 },
+  ribbon: { key: 'ribbon', scale: 0.8, glow: 0xff8a9a, color: 0xffc0d0 },
+  drawing: { key: 'drawing', scale: 0.8, glow: 0xfff0c0, color: 0xfff0c0 },
 };
 class Pickup extends Entity {
   img: any; art: typeof PICKUP_ART[string]; baseY: number;
@@ -128,9 +131,10 @@ class Coin extends Entity {
 register('coin', (g, d, x, y) => (Game.taken.has(d.id!) ? null : new Coin(g, d, x, y)));
 
 // ------------------------------------------------------------------ NPCs
-const NPC_RIGS: Record<string, { rig: () => any; scale: number; w: number; h: number; light?: [number, number] }> = {
+export const NPC_RIGS: Record<string, { rig: () => any; scale: number; w: number; h: number; light?: [number, number] }> = {
   moth: { rig: mothRig, scale: 0.8, w: 22, h: 22, light: [0xffcf7a, 60] },
   mouse: { rig: mouseRig, scale: 0.75, w: 22, h: 16 },
+  duck: { rig: duckRig, scale: 0.8, w: 20, h: 16, light: [0xffe07a, 36] },
 };
 export class Npc extends Entity {
   puppet: Puppet; kind: string; talking = false; hover = 0;
@@ -155,11 +159,12 @@ export class Npc extends Entity {
   update(dt: number) {
     if (!this.g.inCutscene && Math.abs(this.g.player.cx - this.cx) < 60 && this.def.watch !== false) this.face = this.g.player.cx > this.cx ? 1 : -1;
     this.hover = damp(this.hover, this.kind === 'moth' ? 1 : 0, 3, dt);
+    if (this.def.float === 'water') { const s = waterSurface(this.cx); if (s !== null) this.y = damp(this.y, s - this.h + 6, 4, dt); }
   }
   render(dt: number) {
     this.t += dt;
     const p = this.puppet, t = this.t;
-    const bob = this.kind === 'moth' ? Math.sin(t * 2.4) * 2 - 3 : 0;
+    const bob = this.kind === 'moth' ? Math.sin(t * 2.4) * 2 - 3 : this.kind === 'duck' ? Math.sin(t * 1.6) * 0.8 : 0;
     p.place(this.cx, this.y + this.h + bob, this.face);
     if (this.kind === 'moth') {
       const flap = this.talking ? Math.sin(t * 16) * 0.35 : Math.sin(t * 5) * 0.2;
@@ -167,6 +172,11 @@ export class Npc extends Entity {
       p.set('antF', { rot: Math.sin(t * 3) * 0.12 }); p.set('antB', { rot: Math.sin(t * 3 + 1) * 0.12 });
       p.set('body', { rot: Math.sin(t * 1.6) * 0.06 });
       p.set('flame', { sy: 1 + Math.sin(t * 11) * 0.1, alpha: 0.85 + Math.sin(t * 17) * 0.15 });
+    } else if (this.kind === 'duck') {
+      p.set('body', { rot: Math.sin(t * 1.8) * 0.06 });
+      p.set('head', { rot: Math.sin(t * 1.1) * 0.08 + (this.talking ? Math.sin(t * 12) * 0.08 : 0) });
+      p.set('beak', { rot: this.talking ? Math.abs(Math.sin(t * 16)) * 0.35 : 0 });
+      p.set('wing', { rot: this.talking ? Math.sin(t * 10) * 0.3 : Math.sin(t * 2) * 0.05 });
     } else {
       p.set('head', { rot: Math.sin(t * 1.2) * 0.05 + (this.talking ? Math.sin(t * 14) * 0.06 : 0) });
       p.set('earF', { rot: Math.sin(t * 0.7) > 0.95 ? 0.3 : 0 });
