@@ -53,7 +53,7 @@ export interface AreaDef {
   legend?: Record<string, EntityDef>;
   rooms: RoomDef[];
   /** Automatic room decoration: painted parts scattered on floors / hung from ceilings. */
-  decor?: { floor?: string[]; ceil?: string[]; glow?: Record<string, [number, number]> };
+  decor?: { floor?: string[]; ceil?: string[]; glow?: Record<string, [number, number]>; organic?: boolean; density?: number };
   water?: { tint: number; surface: number; alpha?: number };
   endCard?: { title: string; lines: string[] };
 }

@@ -12,6 +12,28 @@
  "dark": 0.5,
  "music": "hollows",
  "ambience": "hollows",
+ "decor": {
+  "organic": true,
+  "density": 1.25,
+  "floor": [
+   "deco_mushroom",
+   "deco_pebbles",
+   "deco_bones",
+   "deco_teacup",
+   "deco_key",
+   "deco_spool",
+   "deco_specs"
+  ],
+  "ceil": [
+   "deco_roots"
+  ],
+  "glow": {
+   "deco_mushroom": [
+    10543359,
+    30
+   ]
+  }
+ },
  "rooms": [
   {
    "id": "well_bottom",

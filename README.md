@@ -1,4 +1,4 @@
-# Nightpaw 2.1 — source
+# Nightpaw 2.2 — source
 
 A story-driven metroidvania for Vibe-Games, built with Phaser 3 + TypeScript.
 The story bible is in [STORY.md](STORY.md).
@@ -106,7 +106,12 @@ gameplay parts so the cutscenes match the game. Full-screen pages are saved as J
 are copied into the build. To use real art, drop a PNG over the same name in `assets/art/`. If
 the size changes, update `assets/art/art.json` and the pivot in `src/render/rigs.ts`.
 The Drowned Nursery's tiles, backdrops, toys, Dunk, the Music Box Queen and their portraits
-are in `tools/art/nursery.js`.
+are in `tools/art/nursery.js`. `tools/art/pass2.js` loads last and repaints keys in place with
+the 2.2 art pass (ink contours, three-tone form shading): Hollows enemies and props, Nightpaw's
+whiskers and scarf, and the animated claw strip. An asset can be a strip of frames
+(`R(key, w, h, draw, { frames: n })`); `art.json` records `frames` and the game numbers them 0..n-1.
+Areas with `"decor": { "organic": true }` get procedural grass, stalactites and stones set in the
+rock instead of stamped edge tiles (see `src/render/roomArt.ts`).
 
 ## Checking your work
 

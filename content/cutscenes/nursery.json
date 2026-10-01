@@ -1,325 +1,903 @@
 [
-  { "id": "hollows_climb", "steps": [
-    { "do": "flag", "set": "hollows_done" },
-    { "do": "achieve", "id": "hollows_done" },
-    { "do": "letterbox" },
-    { "do": "wait", "ms": 500 },
-    { "do": "say", "who": "mira", "lines": [
-      "Nightpaw! I can hear you!",
-      "It's warm up here, and there's water everywhere, like a bath.",
-      "The moth says I'll be the brightest thing in the whole Underneath.",
-      "...Why does everyone look so sad?"
-    ] },
-    { "do": "wait", "ms": 400 },
-    { "do": "emote", "who": "player", "kind": "!" },
-    { "do": "letterbox", "on": false },
-    { "do": "hint", "text": "Keep climbing.", "ms": 3000 }
-  ] },
-
-  { "id": "nursery_arrive", "steps": [
-    { "do": "flag", "set": "nursery_arrived" },
-    { "do": "letterbox" },
-    { "do": "wait", "ms": 700 },
-    { "do": "sfx", "id": "tinkle" },
-    { "do": "narrate", "lines": [
-      "Somewhere above, a music box is playing a waltz.",
-      "Nobody is winding it."
-    ] },
-    { "do": "emote", "who": "player", "kind": "?" },
-    { "do": "letterbox", "on": false }
-  ] },
-  { "id": "read_wet", "steps": [
-    { "do": "narrate", "lines": [
-      "NIGHTPAW ↑",
-      "and underneath, smaller: (its WET)",
-      "Mira's chalk. The last letter is smudged, as if she wiped her hand on her nightie."
-    ] }
-  ] },
-
-  { "id": "meet_dunk", "steps": [
-    { "do": "flag", "set": "met_dunk" },
-    { "do": "letterbox" },
-    { "do": "camera", "to": "dunk", "ms": 800 },
-    { "do": "sfx", "id": "squeak" },
-    { "do": "say", "who": "dunk", "lines": [
-      "A CAT! In MY bath! Oh, this is the best day. Every day is the best day, but this one especially.",
-      "I'm Dunk. I float. Watch.",
-      "...",
-      "Still floating! Amazing."
-    ] },
-    { "do": "emote", "who": "player", "kind": "..." },
-    { "do": "say", "who": "dunk", "lines": [
-      "You're looking for the girl with the ribbon! She waved at me. Nobody's waved at me in forty years.",
-      "She lost the ribbon in the cot. She was going to go back for it, but the moth said no time, no time.",
-      "They went up. Past the Queen. Everyone who goes up goes past the Queen."
-    ] },
-    { "do": "say", "who": "dunk", "lines": [
-      "Oh! And you can't climb that shaft. Cats can't climb walls. Everybody knows that.",
-      "Unless they've got the mittens. The velvet ones, in the Toy Chest, through there. With the pins in.",
-      "Mind the boxes. They pop."
-    ] },
-    { "do": "camera", "release": true },
-    { "do": "letterbox", "on": false }
-  ] },
-  { "id": "dunk_idle", "steps": [
-    { "do": "say", "who": "dunk", "lines": [
-      "Still floating!",
-      "The Toy Chest is through the door past the candles. Mittens. Velvet. Pins. Pop."
-    ] }
-  ] },
-  { "id": "dunk_claws", "steps": [
-    { "do": "flag", "set": "dunk_claws" },
-    { "do": "say", "who": "dunk", "lines": [
-      "You found the mittens! Now you can climb the shaft! You're a climbing cat now. A cat that climbs.",
-      "Up there is the Tidewheel. The water goes up and down, up and down. Like me, but sideways.",
-      "Wait for it to go up."
-    ] }
-  ] },
-  { "id": "dunk_after", "steps": [
-    { "do": "say", "who": "dunk", "lines": [
-      "The music stopped. I didn't know it could stop.",
-      "It's very quiet. I think I like it. I think I'm sad. Can you be both?",
-      "Still floating, though."
-    ] }
-  ] },
-
-  { "id": "tallow_nursery", "steps": [
-    { "do": "flag", "set": "tallow_nursery" },
-    { "do": "letterbox" },
-    { "do": "face", "who": "tallow", "at": "player" },
-    { "do": "say", "who": "tallow", "lines": [
-      "Good evening. I flew up the draught. It was very undignified.",
-      "Somebody has to light the candles, and nobody up here remembers how."
-    ] },
-    { "do": "say", "who": "tallow", "lines": [
-      "I know this room. We all do, all of Mothmother's moths.",
-      "This was her nursery. Before she was Mothmother, she was a nightlight, shaped like a moth, on that shelf there.",
-      "A child loved her very much. Then the child grew up, and the nightlight was lost."
-    ] },
-    { "do": "say", "who": "tallow", "lines": [
-      "She never stopped wanting to be somebody's light.",
-      "I'm telling you so you understand her. Not so you forgive her. I haven't decided about that myself."
-    ] },
-    { "do": "letterbox", "on": false }
-  ] },
-  { "id": "tallow_nursery_idle", "steps": [
-    { "do": "say", "who": "tallow", "lines": [
-      "Rest by the candle whenever you like. It's the least I can do. Well. It's the most I can do. It's about all I can do."
-    ] }
-  ] },
-
-  { "id": "find_ribbon", "steps": [
-    { "do": "flag", "set": "has_ribbon" },
-    { "do": "achieve", "id": "ribbon" },
-    { "do": "letterbox" },
-    { "do": "music", "stop": true },
-    { "do": "item", "title": "Mira's Ribbon", "icon": "ribbon", "text": "Red, to match the scarf. It still smells like her shampoo." },
-    { "do": "wait", "ms": 600 },
-    { "do": "say", "who": "mira", "lines": [
-      "...lose a ribbon off a tree...",
-      "I dropped it, Nightpaw. The moth wouldn't let me go back.",
-      "If you find it, keep it for me. You can wear it. You'd look very handsome."
-    ] },
-    { "do": "wait", "ms": 500 },
-    { "do": "emote", "who": "player", "kind": "!" },
-    { "do": "music", "id": "nursery" },
-    { "do": "letterbox", "on": false }
-  ] },
-
-  { "id": "chest_look", "steps": [
-    { "do": "letterbox" },
-    { "do": "narrate", "lines": [
-      "The inside of the chest is very deep, and the walls are very smooth.",
-      "At the bottom, something soft is glowing."
-    ] },
-    { "do": "letterbox", "on": false }
-  ] },
-  { "id": "get_claws", "steps": [
-    { "do": "letterbox" },
-    { "do": "narrate", "lines": [
-      "A pair of velvet mittens, very small, with the pins still in them.",
-      "Somebody was making them for a doll. Or a cat."
-    ] },
-    { "do": "item", "title": "Velvet Claws", "icon": "relic_claws", "text": "Soft on the outside. Not on the inside.", "hint": "Hold toward a wall to cling to it. Jump to leap off. Clinging refreshes your double jump and dash." },
-    { "do": "give", "ability": "claws", "achievement": "velvet_claws" },
-    { "do": "letterbox", "on": false },
-    { "do": "hint", "text": "Climb out: jump between the walls.", "ms": 4000 }
-  ] },
-
-  { "id": "tide_hint", "steps": [
-    { "do": "hint", "text": "The water rises and falls with the music. Ride it up.", "ms": 4500 }
-  ] },
-
-  { "id": "shade_fireworks", "steps": [
-    { "do": "memory", "title": "The Third Life — The Fireworks Night", "image": "sb_fireworks", "lines": [
-      "Bang. Bang. The sky coming apart in colours.",
-      "You ran and ran and went up the only place that was dark and small: the chimney.",
-      "It was very warm in there, and it smelled of old toast.",
-      "Then it was very warm, and then it was very quiet.",
-      "In the morning Mira drew you a picture with forty-one stars on it, so you would never be scared of the sky again."
-    ] },
-    { "do": "shade", "id": "fireworks" },
-    { "do": "achieve", "id": "three_lives" },
-    { "do": "item", "title": "A Life Remembered", "icon": "shade", "text": "One of your lost lives has come home.", "hint": "Maximum health +1" }
-  ] },
-
-  { "id": "pins_hint", "steps": [
-    { "do": "hint", "text": "Too far to jump. Jump, jump again, then dash.", "ms": 4000 }
-  ] },
-
-  { "id": "doll_echo", "steps": [
-    { "do": "letterbox" },
-    { "do": "music", "stop": true },
-    { "do": "wait", "ms": 700 },
-    { "do": "narrate", "text": "Every doll on every shelf is looking at you." },
-    { "do": "wait", "ms": 500 },
-    { "do": "say", "who": "mira", "lines": [
-      "Hush now, hush, and hold on tight...",
-      "There. Now you're all tucked in. You look scared. You don't have to be scared.",
-      "I'll come back and wind you all up. I promise. Pinky promise."
-    ] },
-    { "do": "wait", "ms": 800 },
-    { "do": "narrate", "text": "One of the dolls, very slowly, closes its eyes." },
-    { "do": "music", "id": "nursery" },
-    { "do": "letterbox", "on": false }
-  ] },
-  { "id": "read_sings", "steps": [
-    { "do": "narrate", "lines": [
-      "SHE SINGS TO THEM",
-      "Not Mira's writing. Much older. The chalk is almost gone."
-    ] }
-  ] },
-
-  { "id": "find_drawing", "steps": [
-    { "do": "flag", "set": "has_drawing" },
-    { "do": "achieve", "id": "cupboard" },
-    { "do": "letterbox" },
-    { "do": "item", "title": "Mira's Drawing", "icon": "drawing", "text": "A black cat wearing a crown, and a red scarf, and a very serious expression. Underneath: KING NIGHTPAW." },
-    { "do": "emote", "who": "player", "kind": "♥" },
-    { "do": "letterbox", "on": false }
-  ] },
-
-  { "id": "mothmother_pass", "steps": [
-    { "do": "flag", "set": "mothmother_seen" },
-    { "do": "letterbox" },
-    { "do": "music", "stop": true },
-    { "do": "sfx", "id": "whoosh" },
-    { "do": "shake", "amount": 3 },
-    { "do": "flyover", "art": "nur_mothshadow", "ms": 3200, "scale": 1.1, "y": 0.3 },
-    { "do": "wait", "ms": 400 },
-    { "do": "say", "who": "mothmother", "lines": [
-      "Not yet, little light.",
-      "Not yet."
-    ] },
-    { "do": "wait", "ms": 900 },
-    { "do": "emote", "who": "player", "kind": "!" },
-    { "do": "music", "id": "nursery" },
-    { "do": "letterbox", "on": false }
-  ] },
-
-  { "id": "queen_intro", "steps": [
-    { "do": "if", "cond": "queen_met", "then": [
-      { "do": "letterbox" },
-      { "do": "camera", "to": "queen", "ms": 600 },
-      { "do": "say", "who": "queen", "text": "Again? Yes. Again. Always again." },
-      { "do": "boss", "action": "wake", "id": "queen" },
-      { "do": "sfx", "id": "twirl" },
-      { "do": "camera", "release": true, "ms": 500 },
-      { "do": "letterbox", "on": false }
-    ], "else": [
-      { "do": "flag", "set": "queen_met" },
-      { "do": "letterbox" },
-      { "do": "wait", "ms": 500 },
-      { "do": "camera", "to": "queen", "ms": 1400 },
-      { "do": "wait", "ms": 700 },
-      { "do": "sfx", "id": "windup" },
-      { "do": "wait", "ms": 600 },
-      { "do": "say", "who": "queen", "lines": [
-        "Oh. Someone came.",
-        "Sixty years I have danced in this box. Sixty years, and nobody came back to wind me.",
-        "The little girl came. She hummed along. She said she would come back.",
-        "They all say that."
-      ] },
-      { "do": "say", "who": "queen", "lines": [
-        "Well. You are here now, little cat. So you shall watch me dance.",
-        "You shall watch me dance forever."
-      ] },
-      { "do": "boss", "action": "wake", "id": "queen" },
-      { "do": "sfx", "id": "twirl" },
-      { "do": "shake", "amount": 6 },
-      { "do": "title", "name": "The Music Box Queen", "sub": "Who Dances Alone", "boss": true },
-      { "do": "wait", "ms": 1200 },
-      { "do": "camera", "release": true, "ms": 700 },
-      { "do": "letterbox", "on": false }
-    ] }
-  ] },
-  { "id": "queen_defeat", "steps": [
-    { "do": "letterbox" },
-    { "do": "camera", "to": "self", "ms": 900 },
-    { "do": "wait", "ms": 900 },
-    { "do": "say", "who": "queen", "lines": [
-      "Slower... the music is going slower...",
-      "The little girl. She hummed. She didn't know the tune, so she hummed her own.",
-      "Lose a penny, lose a key..."
-    ] },
-    { "do": "wait", "ms": 700 },
-    { "do": "say", "who": "queen", "lines": [
-      "She went up the chain, with the moth. To the market, and the lamp beyond it.",
-      "Tell her... tell her the Queen said thank you. For the humming.",
-      "I think I can stop now."
-    ] },
-    { "do": "wait", "ms": 600 },
-    { "do": "sfx", "id": "drain" },
-    { "do": "shake", "amount": 3 },
-    { "do": "narrate", "text": "Somewhere far below, a plug is pulled. The whole nursery begins, very slowly, to drain." },
-    { "do": "camera", "release": true, "ms": 800 },
-    { "do": "music", "id": "nursery" },
-    { "do": "letterbox", "on": false },
-    { "do": "save" }
-  ] },
-
-  { "id": "nib_market", "steps": [
-    { "do": "flag", "set": "nib_market" },
-    { "do": "letterbox" },
-    { "do": "camera", "to": "nib", "dx": -1, "ms": 700 },
-    { "do": "face", "who": "nib", "at": "player" },
-    { "do": "say", "who": "nib", "lines": [
-      "You again! The cat with no pockets!",
-      "I'm packing. You heard that music stop? That's the Nursery going quiet. Quiet's bad for business.",
-      "Market's up through the plughole. Mousewick. Loudest place in the whole Underneath."
-    ] },
-    { "do": "if", "cond": "has_ribbon", "then": [
-      { "do": "say", "who": "nib", "lines": [
-        "Is that a ribbon? Red? Real silk? I'll give you three buttons for it.",
-        "No? Four. No? Fine. Keep your sentimental ribbon."
-      ] }
-    ] },
-    { "do": "say", "who": "nib", "lines": [
-      "Your girl came through here an hour ago, holding a moth's hand. Or a moth's leg. Whatever moths have.",
-      "Come up to the market. I'll have my shop open. There will be hats."
-    ] },
-    { "do": "camera", "release": true },
-    { "do": "letterbox", "on": false }
-  ] },
-  { "id": "nib_market_idle", "steps": [
-    { "do": "say", "who": "nib", "lines": [ "Up through the plughole. Mind the drop. Mind the mice. Mind your manners." ] }
-  ] },
-
-  { "id": "nursery_end", "steps": [
-    { "do": "flag", "set": "nursery_done" },
-    { "do": "achieve", "id": "nursery_done" },
-    { "do": "letterbox" },
-    { "do": "music", "stop": true },
-    { "do": "wait", "ms": 600 },
-    { "do": "narrate", "lines": [
-      "Through the plughole, a roar of voices, bells, wheels, and a thousand small feet.",
-      "It smells of cheese and brass polish."
-    ] },
-    { "do": "say", "who": "mira", "lines": [
-      "Nightpaw, there's a whole town of mice! They're selling buttons!",
-      "The moth says we can't stop. She's in a hurry. She keeps looking at me like I'm a candle.",
-      "...Nightpaw? Hurry up."
-    ] },
-    { "do": "end" }
-  ] }
+  {
+    "id": "hollows_climb",
+    "steps": [
+      {
+        "do": "flag",
+        "set": "hollows_done"
+      },
+      {
+        "do": "achieve",
+        "id": "hollows_done"
+      },
+      {
+        "do": "letterbox"
+      },
+      {
+        "do": "wait",
+        "ms": 500
+      },
+      {
+        "do": "say",
+        "who": "mira",
+        "lines": [
+          "Nightpaw! I can hear you!",
+          "It's warm up here, and there's water everywhere, like a bath.",
+          "The moth says I'll be the brightest thing in the whole Underneath.",
+          "...Why does everyone look so sad?"
+        ]
+      },
+      {
+        "do": "wait",
+        "ms": 400
+      },
+      {
+        "do": "emote",
+        "who": "player",
+        "kind": "!"
+      },
+      {
+        "do": "letterbox",
+        "on": false
+      },
+      {
+        "do": "hint",
+        "text": "Keep climbing.",
+        "ms": 3000
+      }
+    ]
+  },
+  {
+    "id": "nursery_arrive",
+    "steps": [
+      {
+        "do": "flag",
+        "set": "nursery_arrived"
+      },
+      {
+        "do": "letterbox"
+      },
+      {
+        "do": "wait",
+        "ms": 700
+      },
+      {
+        "do": "sfx",
+        "id": "tinkle"
+      },
+      {
+        "do": "narrate",
+        "lines": [
+          "Somewhere above, a music box is playing a waltz.",
+          "Nobody is winding it."
+        ]
+      },
+      {
+        "do": "emote",
+        "who": "player",
+        "kind": "?"
+      },
+      {
+        "do": "letterbox",
+        "on": false
+      }
+    ]
+  },
+  {
+    "id": "read_wet",
+    "steps": [
+      {
+        "do": "narrate",
+        "lines": [
+          "NIGHTPAW ↑",
+          "and underneath, smaller: (its WET)",
+          "Mira's chalk. The last letter is smudged, as if she wiped her hand on her nightie."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "meet_dunk",
+    "steps": [
+      {
+        "do": "flag",
+        "set": "met_dunk"
+      },
+      {
+        "do": "letterbox"
+      },
+      {
+        "do": "camera",
+        "to": "dunk",
+        "ms": 800
+      },
+      {
+        "do": "sfx",
+        "id": "squeak"
+      },
+      {
+        "do": "say",
+        "who": "dunk",
+        "lines": [
+          "A CAT! In MY bath! Oh, this is the best day. Every day is the best day, but this one especially.",
+          "I'm Dunk. I float. Watch.",
+          "...",
+          "Still floating! Amazing."
+        ]
+      },
+      {
+        "do": "emote",
+        "who": "player",
+        "kind": "..."
+      },
+      {
+        "do": "say",
+        "who": "dunk",
+        "lines": [
+          "You're looking for the girl with the ribbon! She waved at me. Nobody's waved at me in forty years.",
+          "She lost the ribbon in the cot. She was going to go back for it, but the moth said no time, no time.",
+          "They went up. Past the Queen. Everyone who goes up goes past the Queen."
+        ]
+      },
+      {
+        "do": "say",
+        "who": "dunk",
+        "lines": [
+          "Oh! And you can't climb that shaft. Cats can't climb walls. Everybody knows that.",
+          "Unless they've got the mittens. The velvet ones, in the Toy Chest, through there. With the pins in.",
+          "Mind the boxes. They pop."
+        ]
+      },
+      {
+        "do": "camera",
+        "release": true
+      },
+      {
+        "do": "letterbox",
+        "on": false
+      }
+    ]
+  },
+  {
+    "id": "dunk_idle",
+    "steps": [
+      {
+        "do": "say",
+        "who": "dunk",
+        "lines": [
+          "Still floating!",
+          "The Toy Chest is through the door past the candles. Mittens. Velvet. Pins. Pop."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dunk_claws",
+    "steps": [
+      {
+        "do": "flag",
+        "set": "dunk_claws"
+      },
+      {
+        "do": "say",
+        "who": "dunk",
+        "lines": [
+          "You found the mittens! Now you can climb the shaft! You're a climbing cat now. A cat that climbs.",
+          "Up there is the Tidewheel. The water goes up and down, up and down. Like me, but sideways.",
+          "Wait for it to go up."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dunk_after",
+    "steps": [
+      {
+        "do": "say",
+        "who": "dunk",
+        "lines": [
+          "The music stopped. I didn't know it could stop.",
+          "It's very quiet. I think I like it. I think I'm sad. Can you be both?",
+          "Still floating, though."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tallow_nursery",
+    "steps": [
+      {
+        "do": "flag",
+        "set": "tallow_nursery"
+      },
+      {
+        "do": "letterbox"
+      },
+      {
+        "do": "face",
+        "who": "tallow",
+        "at": "player"
+      },
+      {
+        "do": "say",
+        "who": "tallow",
+        "lines": [
+          "Good evening. I flew up the draught. It was very undignified.",
+          "Somebody has to light the candles, and nobody up here remembers how."
+        ]
+      },
+      {
+        "do": "say",
+        "who": "tallow",
+        "lines": [
+          "I know this room. We all do, all of Mothmother's moths.",
+          "This was her nursery. Before she was Mothmother, she was a nightlight, shaped like a moth, on that shelf there.",
+          "A child loved her very much. Then the child grew up, and the nightlight was lost."
+        ]
+      },
+      {
+        "do": "say",
+        "who": "tallow",
+        "lines": [
+          "She never stopped wanting to be somebody's light.",
+          "I'm telling you so you understand her. Not so you forgive her. I haven't decided about that myself."
+        ]
+      },
+      {
+        "do": "letterbox",
+        "on": false
+      }
+    ]
+  },
+  {
+    "id": "tallow_nursery_idle",
+    "steps": [
+      {
+        "do": "say",
+        "who": "tallow",
+        "lines": [
+          "Rest by the candle whenever you like. It's the least I can do. Well. It's the most I can do. It's about all I can do."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "find_ribbon",
+    "steps": [
+      {
+        "do": "flag",
+        "set": "has_ribbon"
+      },
+      {
+        "do": "achieve",
+        "id": "ribbon"
+      },
+      {
+        "do": "letterbox"
+      },
+      {
+        "do": "music",
+        "stop": true
+      },
+      {
+        "do": "item",
+        "title": "Mira's Ribbon",
+        "icon": "ribbon",
+        "text": "Red, to match the scarf. It still smells like her shampoo."
+      },
+      {
+        "do": "wait",
+        "ms": 600
+      },
+      {
+        "do": "say",
+        "who": "mira",
+        "lines": [
+          "...lose a ribbon off a tree...",
+          "I dropped it, Nightpaw. The moth wouldn't let me go back.",
+          "If you find it, keep it for me. You can wear it. You'd look very handsome."
+        ]
+      },
+      {
+        "do": "wait",
+        "ms": 500
+      },
+      {
+        "do": "emote",
+        "who": "player",
+        "kind": "!"
+      },
+      {
+        "do": "music",
+        "id": "nursery"
+      },
+      {
+        "do": "letterbox",
+        "on": false
+      }
+    ]
+  },
+  {
+    "id": "chest_look",
+    "steps": [
+      {
+        "do": "letterbox"
+      },
+      {
+        "do": "narrate",
+        "lines": [
+          "The inside of the chest is very deep, and the walls are very smooth.",
+          "At the bottom, something soft is glowing."
+        ]
+      },
+      {
+        "do": "letterbox",
+        "on": false
+      }
+    ]
+  },
+  {
+    "id": "get_claws",
+    "steps": [
+      {
+        "do": "letterbox"
+      },
+      {
+        "do": "narrate",
+        "lines": [
+          "A pair of velvet mittens, very small, with the pins still in them.",
+          "Somebody was making them for a doll. Or a cat."
+        ]
+      },
+      {
+        "do": "item",
+        "title": "Velvet Claws",
+        "icon": "relic_claws",
+        "text": "Soft on the outside. Not on the inside.",
+        "hint": "Hold toward a wall to cling to it. Jump to leap off. Clinging refreshes your double jump and dash."
+      },
+      {
+        "do": "give",
+        "ability": "claws",
+        "achievement": "velvet_claws"
+      },
+      {
+        "do": "letterbox",
+        "on": false
+      },
+      {
+        "do": "hint",
+        "text": "Climb out: jump between the walls.",
+        "ms": 4000
+      }
+    ]
+  },
+  {
+    "id": "tide_hint",
+    "steps": [
+      {
+        "do": "hint",
+        "text": "The water rises and falls with the music. Ride it up.",
+        "ms": 4500
+      }
+    ]
+  },
+  {
+    "id": "shade_fireworks",
+    "steps": [
+      {
+        "do": "memory",
+        "title": "The Third Life — The Fireworks Night",
+        "image": "sb_fireworks",
+        "lines": [
+          "Bang. Bang. The sky coming apart in colours.",
+          "You ran and ran and went up the only place that was dark and small: the chimney.",
+          "It was very warm in there, and it smelled of old toast.",
+          "Then it was very warm, and then it was very quiet.",
+          "In the morning Mira drew you a picture with forty-one stars on it, so you would never be scared of the sky again."
+        ]
+      },
+      {
+        "do": "shade",
+        "id": "fireworks"
+      },
+      {
+        "do": "achieve",
+        "id": "three_lives"
+      },
+      {
+        "do": "item",
+        "title": "A Life Remembered",
+        "icon": "shade",
+        "text": "One of your lost lives has come home.",
+        "hint": "Maximum health +1"
+      }
+    ]
+  },
+  {
+    "id": "pins_hint",
+    "steps": [
+      {
+        "do": "hint",
+        "text": "Too far to jump. Jump, jump again, then dash.",
+        "ms": 4000
+      }
+    ]
+  },
+  {
+    "id": "doll_echo",
+    "steps": [
+      {
+        "do": "letterbox"
+      },
+      {
+        "do": "music",
+        "stop": true
+      },
+      {
+        "do": "wait",
+        "ms": 700
+      },
+      {
+        "do": "narrate",
+        "text": "Every doll on every shelf is looking at you."
+      },
+      {
+        "do": "wait",
+        "ms": 500
+      },
+      {
+        "do": "say",
+        "who": "mira",
+        "lines": [
+          "Hush now, hush, and hold on tight...",
+          "There. Now you're all tucked in. You look scared. You don't have to be scared.",
+          "I'll come back and wind you all up. I promise. Pinky promise."
+        ]
+      },
+      {
+        "do": "wait",
+        "ms": 800
+      },
+      {
+        "do": "narrate",
+        "text": "One of the dolls, very slowly, closes its eyes."
+      },
+      {
+        "do": "music",
+        "id": "nursery"
+      },
+      {
+        "do": "letterbox",
+        "on": false
+      }
+    ]
+  },
+  {
+    "id": "read_sings",
+    "steps": [
+      {
+        "do": "narrate",
+        "lines": [
+          "SHE SINGS TO THEM",
+          "Not Mira's writing. Much older. The chalk is almost gone."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "find_drawing",
+    "steps": [
+      {
+        "do": "flag",
+        "set": "has_drawing"
+      },
+      {
+        "do": "achieve",
+        "id": "cupboard"
+      },
+      {
+        "do": "letterbox"
+      },
+      {
+        "do": "item",
+        "title": "Mira's Drawing",
+        "icon": "drawing",
+        "text": "A black cat wearing a crown, and a red scarf, and a very serious expression. Underneath: KING NIGHTPAW."
+      },
+      {
+        "do": "emote",
+        "who": "player",
+        "kind": "♥"
+      },
+      {
+        "do": "letterbox",
+        "on": false
+      }
+    ]
+  },
+  {
+    "id": "mothmother_pass",
+    "steps": [
+      {
+        "do": "flag",
+        "set": "mothmother_seen"
+      },
+      {
+        "do": "letterbox"
+      },
+      {
+        "do": "music",
+        "stop": true
+      },
+      {
+        "do": "sfx",
+        "id": "whoosh"
+      },
+      {
+        "do": "shake",
+        "amount": 3
+      },
+      {
+        "do": "flyover",
+        "art": "nur_mothshadow",
+        "ms": 3200,
+        "scale": 1.1,
+        "y": 0.3
+      },
+      {
+        "do": "wait",
+        "ms": 400
+      },
+      {
+        "do": "say",
+        "who": "mothmother",
+        "lines": [
+          "Not yet, little light.",
+          "Not yet."
+        ]
+      },
+      {
+        "do": "wait",
+        "ms": 900
+      },
+      {
+        "do": "emote",
+        "who": "player",
+        "kind": "!"
+      },
+      {
+        "do": "music",
+        "id": "nursery"
+      },
+      {
+        "do": "letterbox",
+        "on": false
+      }
+    ]
+  },
+  {
+    "id": "queen_intro",
+    "steps": [
+      {
+        "do": "if",
+        "cond": "queen_met",
+        "then": [
+          {
+            "do": "letterbox"
+          },
+          {
+            "do": "camera",
+            "to": "queen",
+            "ms": 600
+          },
+          {
+            "do": "say",
+            "who": "queen",
+            "text": "Again? Yes. Again. Always again."
+          },
+          {
+            "do": "boss",
+            "action": "wake",
+            "id": "queen"
+          },
+          {
+            "do": "sfx",
+            "id": "twirl"
+          },
+          {
+            "do": "camera",
+            "release": true,
+            "ms": 500
+          },
+          {
+            "do": "letterbox",
+            "on": false
+          }
+        ],
+        "else": [
+          {
+            "do": "flag",
+            "set": "queen_met"
+          },
+          {
+            "do": "letterbox"
+          },
+          {
+            "do": "wait",
+            "ms": 500
+          },
+          {
+            "do": "camera",
+            "to": "queen",
+            "ms": 1400
+          },
+          {
+            "do": "wait",
+            "ms": 700
+          },
+          {
+            "do": "sfx",
+            "id": "windup"
+          },
+          {
+            "do": "wait",
+            "ms": 600
+          },
+          {
+            "do": "say",
+            "who": "queen",
+            "lines": [
+              "Oh. Someone came.",
+              "Sixty years I have danced in this box. Sixty years, and nobody came back to wind me.",
+              "The little girl came. She hummed along. She said she would come back.",
+              "They all say that."
+            ]
+          },
+          {
+            "do": "say",
+            "who": "queen",
+            "lines": [
+              "Well. You are here now, little cat. So you shall watch me dance.",
+              "You shall watch me dance forever."
+            ]
+          },
+          {
+            "do": "boss",
+            "action": "wake",
+            "id": "queen"
+          },
+          {
+            "do": "sfx",
+            "id": "twirl"
+          },
+          {
+            "do": "shake",
+            "amount": 6
+          },
+          {
+            "do": "title",
+            "name": "The Music Box Queen",
+            "sub": "Who Dances Alone",
+            "boss": true
+          },
+          {
+            "do": "wait",
+            "ms": 1200
+          },
+          {
+            "do": "camera",
+            "release": true,
+            "ms": 700
+          },
+          {
+            "do": "letterbox",
+            "on": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "queen_defeat",
+    "steps": [
+      {
+        "do": "letterbox"
+      },
+      {
+        "do": "camera",
+        "to": "self",
+        "ms": 900
+      },
+      {
+        "do": "wait",
+        "ms": 900
+      },
+      {
+        "do": "say",
+        "who": "queen",
+        "lines": [
+          "Slower... the music is going slower...",
+          "The little girl. She hummed. She didn't know the tune, so she hummed her own.",
+          "Lose a penny, lose a key..."
+        ]
+      },
+      {
+        "do": "wait",
+        "ms": 700
+      },
+      {
+        "do": "say",
+        "who": "queen",
+        "lines": [
+          "She went up the chain, with the moth. To the market, and the lamp beyond it.",
+          "Tell her... tell her the Queen said thank you. For the humming.",
+          "I think I can stop now."
+        ]
+      },
+      {
+        "do": "wait",
+        "ms": 600
+      },
+      {
+        "do": "sfx",
+        "id": "drain"
+      },
+      {
+        "do": "shake",
+        "amount": 3
+      },
+      {
+        "do": "narrate",
+        "text": "Somewhere far below, a plug is pulled. The whole nursery begins, very slowly, to drain."
+      },
+      {
+        "do": "camera",
+        "release": true,
+        "ms": 800
+      },
+      {
+        "do": "music",
+        "id": "nursery"
+      },
+      {
+        "do": "letterbox",
+        "on": false
+      },
+      {
+        "do": "save"
+      }
+    ]
+  },
+  {
+    "id": "nib_market",
+    "steps": [
+      {
+        "do": "flag",
+        "set": "nib_market"
+      },
+      {
+        "do": "letterbox"
+      },
+      {
+        "do": "camera",
+        "to": "nib",
+        "dx": -1,
+        "ms": 700
+      },
+      {
+        "do": "face",
+        "who": "nib",
+        "at": "player"
+      },
+      {
+        "do": "say",
+        "who": "nib",
+        "lines": [
+          "You again! The cat with no pockets!",
+          "I'm packing. You heard that music stop? That's the Nursery going quiet. Quiet's bad for business.",
+          "Market's up through the plughole. Mousewick. Loudest place in the whole Underneath."
+        ]
+      },
+      {
+        "do": "if",
+        "cond": "has_ribbon",
+        "then": [
+          {
+            "do": "say",
+            "who": "nib",
+            "lines": [
+              "Is that a ribbon? Red? Real silk? I'll give you three buttons for it.",
+              "No? Four. No? Fine. Keep your sentimental ribbon."
+            ]
+          }
+        ]
+      },
+      {
+        "do": "say",
+        "who": "nib",
+        "lines": [
+          "Your girl came through here an hour ago, holding a moth's hand. Or a moth's leg. Whatever moths have.",
+          "Come up to the market. I'll have my shop open. There will be hats."
+        ]
+      },
+      {
+        "do": "camera",
+        "release": true
+      },
+      {
+        "do": "letterbox",
+        "on": false
+      }
+    ]
+  },
+  {
+    "id": "nib_market_idle",
+    "steps": [
+      {
+        "do": "say",
+        "who": "nib",
+        "lines": [
+          "Up through the plughole. Mind the drop. Mind the mice. Mind your manners."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "nursery_end",
+    "steps": [
+      {
+        "do": "flag",
+        "set": "nursery_done"
+      },
+      {
+        "do": "achieve",
+        "id": "nursery_done"
+      },
+      {
+        "do": "letterbox"
+      },
+      {
+        "do": "camera",
+        "to": {
+          "x": 16,
+          "y": 2
+        },
+        "ms": 900
+      },
+      {
+        "do": "narrate",
+        "lines": [
+          "Through the plughole: a roar of voices, bells, wheels, and a thousand small feet.",
+          "It smells of cheese and brass polish."
+        ]
+      },
+      {
+        "do": "say",
+        "who": "mira",
+        "lines": [
+          "Nightpaw, there's a whole town of mice! They're selling buttons!",
+          "The moth says we can't stop. She keeps looking at me like I'm a candle.",
+          "...Nightpaw? Hurry up."
+        ]
+      },
+      {
+        "do": "narrate",
+        "text": "The plughole's grate is rusted shut. Something up there will have to open it."
+      },
+      {
+        "do": "camera",
+        "release": true
+      },
+      {
+        "do": "letterbox",
+        "on": false
+      },
+      {
+        "do": "hint",
+        "text": "Mousewick Market opens in a future update. Everything below is still yours to explore.",
+        "ms": 6000
+      }
+    ]
+  }
 ]

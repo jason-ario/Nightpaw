@@ -18,6 +18,13 @@ export class BootScene extends Phaser.Scene {
     });
   }
   async create() {
+    // strips painted as several frames side by side (e.g. the claw slash) get numbered frames 0..n-1
+    const art = this.cache.json.get('art') as Record<string, { w: number; h: number; frames?: number }>;
+    for (const [key, a] of Object.entries(art)) {
+      if (!a.frames || !this.textures.exists(key)) continue;
+      const tex = this.textures.get(key), fw = a.w / a.frames;
+      for (let i = 0; i < a.frames; i++) tex.add(String(i), 0, i * fw, 0, fw, a.h);
+    }
     // procedural rain streaks (tileable) for storybook pages
     const cv = document.createElement('canvas'); cv.width = 256; cv.height = 256;
     const c = cv.getContext('2d')!;

@@ -297,12 +297,23 @@ export class UIScene extends Phaser.Scene {
 
   /** Full-screen painted pages with narration. `pages: {image, lines[], title?, rain?, moth?, pan?}` */
   async storybook(pages: any[], opts: any = {}) {
+    const run = this.game_?.cutsceneRun;
+    // A storybook belongs to the cutscene that opened it. If that cutscene is skipped (or has
+    // already ended because it was skipped), the book closes at once instead of carrying on
+    // over the game, waiting for input, or leaving the screen black.
+    const owned = !!this.game_?.inCutscene;
+    const stale = () => this.skipping || (owned && (!this.game_.inCutscene || this.game_.cutsceneRun !== run));
+    // every wait below also ends the moment the book goes stale, so a skip never strands it
+    let wake: () => void = () => {};
+    const staleNow = new Promise<void>((r) => { wake = r; });
+    const watch = this.time.addEvent({ delay: 50, loop: true, callback: () => { if (stale()) wake(); } });
+    const w = <T>(p: Promise<T>) => Promise.race([p, staleNow as unknown as Promise<T>]);
     const c = this.add.container(0, 0).setDepth(1100);
     const black = this.add.rectangle(0, 0, W, H, 0x000000, 1).setOrigin(0);
     c.add(black);
     let skip = false;
     for (const pg of pages) {
-      if (skip) break;
+      if (skip || stale()) break;
       const img = this.add.image(W / 2, H / 2, pg.image).setAlpha(0);
       const pan = pg.pan ?? [1.08, 1.0, 0, 0];
       img.setScale(pan[0]);
@@ -319,31 +330,39 @@ export class UIScene extends Phaser.Scene {
       const txt = this.add.text(W / 2, opts.card ? H / 2 - 30 : H - 110, '', { fontFamily: FONT, fontSize: '28px', color: '#f0ecff', fontStyle: 'italic', align: 'center', stroke: '#000000', strokeThickness: 6, wordWrap: { width: W - 260 }, lineSpacing: 8 }).setOrigin(0.5, opts.card ? 0 : 0.5);
       if (title) c.add(title);
       c.add(txt);
-      await this.tw({ targets: [img, ...(title ? [title] : [])], alpha: 1, duration: 1200 });
+      await w(this.tw({ targets: [img, ...(title ? [title] : [])], alpha: 1, duration: 1200 }));
+      if (stale()) break;
       this.tweens.add({ targets: img, scale: pan[1], x: W / 2 + (pan[2] ?? 0), y: H / 2 + (pan[3] ?? 0), duration: 9000, ease: 'Sine.easeInOut' });
       const t0 = this.time.now;
       const lines: string[] = pg.lines ?? [];
       if (opts.card) { txt.setText(lines.join('\n')); txt.setAlpha(0); this.tweens.add({ targets: txt, alpha: 1, duration: 1400 }); }
       for (let i = 0; !opts.card && i < lines.length; i++) {
         txt.setAlpha(0).setText(lines[i]);
-        await this.tw({ targets: txt, alpha: 1, duration: 700 });
-        const res = await this.waitStory(rain, moth, t0);
-        if (res === 'skip') { skip = true; break; }
-        if (i < lines.length - 1) await this.tw({ targets: txt, alpha: 0, duration: 350 });
+        await w(this.tw({ targets: txt, alpha: 1, duration: 700 }));
+        if (stale()) { skip = true; break; }
+        const res = await w(this.waitStory(rain, moth, t0));
+        if (res === 'skip' || stale()) { skip = true; break; }
+        if (i < lines.length - 1) await w(this.tw({ targets: txt, alpha: 0, duration: 350 }));
       }
-      if (opts.card || !lines.length) { const res = await this.waitStory(rain, moth, t0); if (res === 'skip') skip = true; }
-      await this.tw({ targets: c.list.filter((o: any) => o !== black), alpha: 0, duration: 700 });
+      if (opts.card || !lines.length) { const res = await w(this.waitStory(rain, moth, t0)); if (res === 'skip') skip = true; }
+      if (stale()) break;
+      await w(this.tw({ targets: c.list.filter((o: any) => o !== black), alpha: 0, duration: 700 }));
       c.list.filter((o: any) => o !== black).forEach((o: any) => o.destroy());
     }
-    // hand over to the game underneath on black (the cutscene fades in); skipped runs fade themselves
-    if (!this.skipping) this.fadeRect.setAlpha(1);
+    // hand over to the game underneath on black (the cutscene fades in). Only if this cutscene is
+    // still running unskipped: the page fade can finish after a skip has already ended the cutscene.
+    if (!stale()) this.fadeRect.setAlpha(1);
+    watch.remove();
+    if (this.modal && this.modal === this.storyModal) this.modal = null; // a page still waiting for a key press
+    this.tweens.killTweensOf(c.list);
     c.destroy();
   }
+  private storyModal: any = null;
   private waitStory(rain: any, moth: any, t0: number) {
     if (this.skipping) return Promise.resolve('skip' as const);
     return new Promise<'next' | 'skip'>((res) => {
       let t = 0;
-      this.modal = {
+      this.modal = this.storyModal = {
         cancel: () => { this.modal = null; res('skip'); },
         update: (dt) => {
           t += dt;

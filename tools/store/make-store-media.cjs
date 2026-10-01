@@ -22,8 +22,9 @@ async function capsules(browser) {
   page.on('pageerror', (e) => console.error('[page]', e.message));
   await page.setContent('<html><body></body></html>');
   await page.addScriptTag({ path: path.join(root, 'tools/art/painter.js') });
+  await page.addScriptTag({ path: path.join(root, 'tools/art/pass2.js') });
   await page.addScriptTag({ path: bundle });
-  const chars = ['np_head', 'np_ear', 'np_eye', 'np_mask', 'np_cloak', 'np_hem', 'np_lining', 'np_leg', 'np_arm', 'np_claws', 'np_tail',
+  const chars = ['np_head', 'np_ear', 'np_eye', 'np_whiskers', 'np_mask', 'np_cloak', 'np_hem', 'np_lining', 'np_leg', 'np_arm', 'np_claws', 'np_tail',
     'moth_body', 'moth_wing', 'moth_antenna', 'candle', 'flame', 'sock_cuff', 'sock_mid', 'sock_foot', 'sock_eyes', 'warden_head', 'button_coin', 'hol_top'];
   const res = await page.evaluate(async ([chars]) => {
     const pick = (list, scale) => Object.fromEntries(window.renderAll(list, scale).map((a) => [a.key, a]));

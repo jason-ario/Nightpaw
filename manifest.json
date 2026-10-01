@@ -1,7 +1,7 @@
 {
   "id": "nightpaw",
   "name": "Nightpaw",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "entry": "index.html",
   "sdk": "1",
   "runtime": {

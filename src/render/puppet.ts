@@ -77,8 +77,17 @@ export class Puppet {
     this.root.setScale(INV_ART * this.scale * face, INV_ART * this.scale);
   }
   /** Squash & stretch around the feet. */
-  squash(sx: number, sy: number) { this.inner.setScale(sx, sy); }
-  lean(rot: number) { this.inner.setRotation(rot); }
+  squash(sx: number, sy: number) { this.sx = sx; this.sy = sy; this.applyPose(); }
+  lean(rot: number) { this.rot = rot; this.pivotY = 0; this.applyPose(); }
+  /** Rotate the whole figure about a point `cy` art px above the feet (a flip or a roll). */
+  spin(rot: number, cy: number) { this.rot = rot; this.pivotY = cy; this.applyPose(); }
+  private sx = 1; private sy = 1; private rot = 0; private pivotY = 0;
+  private applyPose() {
+    const i = this.inner, v = this.sy * this.pivotY;
+    i.setScale(this.sx, this.sy).setRotation(this.rot);
+    // keep the pivot point fixed: t = p - R·S·p, with p = (0, pivotY)
+    i.setPosition(v * Math.sin(this.rot), this.pivotY - v * Math.cos(this.rot));
+  }
 
   flash(on: boolean, color = 0xffffff) {
     for (const i of this.images) { if (on) i.setTintFill(color); else i.clearTint(); }

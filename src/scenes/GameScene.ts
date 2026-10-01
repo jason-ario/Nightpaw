@@ -229,7 +229,7 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
   // ------------------------------------------------------------------ cutscenes
   async runCutscene(id: string, opts: { entity?: Entity } = {}) {
     if (this.inCutscene) { this.time.delayedCall(100, () => this.runCutscene(id, opts)); return; }
-    this.inCutscene = true;
+    this.inCutscene = true; this.cutsceneRun++;
     this.skipping = false; this.skipHold = 0;
     this.skipSignal = new Promise<void>((r) => { this.resolveSkip = r; });
     const P = this.player;
@@ -238,7 +238,9 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
     try { await runCutscene(this, id, opts); }
     catch (e) { console.error('cutscene failed', id, e); }
     P.locked = false; P.scripted = null; P.hidden = false;
-    if (this.skipping) { this.snapCamera(); this.ui.fade(0, 250); }
+    if (this.skipping) this.snapCamera();
+    // never leave the screen black: a cutscene always hands back a visible game
+    if (this.skipping || this.ui.fadeRect.alpha > 0.01) this.ui.fade(0, this.skipping ? 250 : 400);
     this.skipping = false; this.ui.skipUI(0, false);
     this.ui.letterbox(false);
     this.camFocus = null;
@@ -247,6 +249,7 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
     this.saveNow();
   }
   skipping = false;
+  cutsceneRun = 0;
   skipHold = 0;
   skipSignal: Promise<void> = Promise.resolve();
   resolveSkip: () => void = () => {};
@@ -305,7 +308,7 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
     await this.ui.fade(1, 1200);
     Music.stop(); Audio.ambience('none');
     this.saveNow();
-    const card = this.room.area.endCard ?? { title: 'End of the Hollows', lines: ['Nightpaw climbs toward the sound of water,', 'and a music box playing somewhere above.'] };
+    const card = this.room.area.endCard ?? { title: 'To be continued', lines: [] };
     await this.ui.storybook([{ image: 'sb_card_bg', title: card.title, lines: card.lines }], { card: true });
     this.goTitle();
   }

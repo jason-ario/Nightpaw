@@ -89,6 +89,19 @@ const scenarios = {
     check('skipping the Warden aftermath still gives wings', !s.cut && s.abilities.includes('wings') && s.flags.includes('got_wings'), JSON.stringify(s));
     await T.page.close();
 
+    // skipping right as a storybook page is fading must not leave the screen black (2.1.1 fix)
+    T = await open(browser, '?room=ashen_gate&x=12&y=14&flags=met_tallow,intro_done');
+    await T.adv(0.5);
+    for (const at of [0.05, 0.7, 3.5]) {
+      await T.page.evaluate(() => { window.__NP.runCutscene('intro'); });
+      await T.adv(at);
+      await T.page.keyboard.down('Escape'); await T.adv(0.75); await T.page.keyboard.up('Escape');
+      await T.adv(4);
+      const st = await T.page.evaluate(() => { const g = window.__NP; return { cut: g.inCutscene, fade: +g.ui.fadeRect.alpha.toFixed(2), modal: !!g.ui.modal, book: g.ui.children.list.filter((o) => o.depth === 1100).length, hidden: g.player.hidden }; });
+      check(`skip at ${at}s leaves the game visible`, !st.cut && st.fade < 0.05 && !st.modal && !st.book && !st.hidden, JSON.stringify(st));
+    }
+    await T.page.close();
+
     // the prologue storybook from a new game
     const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
     await page.goto(BASE);
@@ -257,8 +270,8 @@ const scenarios = {
     check('chapter end plays', s.cut && s.flags.includes('nursery_done'), JSON.stringify(s));
     await T.finishCutscene(60);
     await T.adv(5);
-    const scene = await T.page.evaluate(() => window.__NP.sys.game.scene.getScenes(true).map((x) => x.sys.settings.key));
-    check('returns to the title after the chapter', scene.includes('title'), JSON.stringify(scene));
+    const scene = await T.page.evaluate(() => ({ scenes: window.__NP.sys.game.scene.getScenes(true).map((x) => x.sys.settings.key), cut: window.__NP.inCutscene, fade: window.__NP.ui.fadeRect.alpha }));
+    check('keeps playing after the plughole (no end screen)', !scene.scenes.includes('title') && !scene.cut && scene.fade < 0.05, JSON.stringify(scene));
     check('no errors in the nursery', T.errors.length === 0, T.errors.join(' | '));
     await T.page.close();
   },

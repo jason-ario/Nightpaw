@@ -53,15 +53,18 @@ export function miteRig(): PartDef {
 }
 
 export function sockRig(): PartDef {
+  // the cuff sits in front; the leg and foot hang behind it so the seams tuck under
   return {
     name: 'root', x: 0, y: 0,
     front: [{
-      name: 'cuff', key: 'sock_cuff', x: 0, y: -40, rot: 0,
-      front: [
-        { name: 'eyes', key: 'sock_eyes', x: 0, y: 2 },
-        { name: 'mid', key: 'sock_mid', x: 0, y: 18, ox: 0.5, oy: 0.1, behind: [], front: [
-          { name: 'foot', key: 'sock_foot', x: 6, y: 18, ox: 0.2, oy: 0.2 },
+      name: 'cuff', key: 'sock_cuff', x: 0, y: -42, rot: 0,
+      behind: [
+        { name: 'mid', key: 'sock_mid', x: 0, y: 6, ox: 0.5, oy: 0, behind: [
+          { name: 'foot', key: 'sock_foot', x: -6, y: 26, ox: 0.2, oy: 0.2 },
         ] },
+      ],
+      front: [
+        { name: 'eyes', key: 'sock_eyes', x: 0, y: -4.5, sx: 0.85, sy: 0.85 },
       ],
     }],
   };
@@ -86,7 +89,7 @@ export function toadRig(): PartDef {
     front: [
       { name: 'legB', key: 'toad_leg', x: -18, y: -8, ox: 0.2, oy: 0.3 },
       { name: 'body', key: 'toad_body', x: 0, y: -22, oy: 0.55, front: [
-        { name: 'eye', key: 'toad_eye', x: 14, y: -12 },
+        { name: 'eye', key: 'toad_eye', x: 15, y: -8, sx: 0.85, sy: 0.85 },
       ] },
       { name: 'legF', key: 'toad_leg', x: 14, y: -8, ox: 0.2, oy: 0.3, sx: 0.8, sy: 0.8 },
     ],
@@ -175,6 +178,7 @@ export function nightpawRig(): PartDef {
               { name: 'earF', key: 'np_ear', x: 13, y: -29, ox: 0.5, oy: 0.95, rot: 0.26 },
               { name: 'eyeB', key: 'np_eye', x: -6, y: -13, sx: 0.88, sy: 0.9 },
               { name: 'eyeF', key: 'np_eye', x: 11, y: -13 },
+              { name: 'whiskers', key: 'np_whiskers', x: 3, y: -8, sx: 0.9, sy: 0.9 },
               { name: 'mask', key: 'np_mask', x: 4, y: 3, sy: 0.72, sx: 0.95 },
             ],
           },
@@ -197,7 +201,7 @@ export function windupRig(): PartDef {
       { name: 'tail', key: 'wm_tail', x: -24, y: -12, ox: 0.95, oy: 0.5 },
       { name: 'key', key: 'wm_key', x: -6, y: -30, ox: 0.5, oy: 0.95 },
       { name: 'body', key: 'wm_body', x: 0, y: -21, front: [
-        { name: 'ear', key: 'wm_ear', x: 12, y: -14, ox: 0.5, oy: 0.9 },
+        { name: 'ear', key: 'wm_ear', x: 11, y: -8, ox: 0.5, oy: 0.9 },
       ] },
       { name: 'wheelF', key: 'wm_wheel', x: 13, y: -7 },
     ],

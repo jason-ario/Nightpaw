@@ -9,6 +9,9 @@ import { Puppet } from '../render/puppet';
 import { nightpawRig } from '../render/rigs';
 import type { Ctx } from './entity';
 
+const FLIP_T = 0.34; // the forward roll on a double jump
+const SLASH_FPS = 28; // claw strip: 6 frames
+
 export class Player {
   x = 0; y = 0; w = 10; h = 14; vx = 0; vy = 0; face = 1;
   onGround = false; hitX = false; hitCeil = false; landed = false;
@@ -34,7 +37,7 @@ export class Player {
     const s = g.scene;
     this.shadow = s.add.image(0, 0, 'fx_shadow').setScale(INV_ART * 0.8).setDepth(DEPTH.player - 1).setAlpha(0.6);
     this.puppet = new Puppet(s, nightpawRig(), 0.78, DEPTH.player);
-    this.slash = s.add.image(0, 0, 'fx_claw').setScale(INV_ART * 0.62).setDepth(DEPTH.fx).setVisible(false).setBlendMode(Phaser.BlendModes.ADD);
+    this.slash = s.add.image(0, 0, 'fx_claw', '0').setScale(INV_ART * 0.74).setDepth(DEPTH.fx).setVisible(false).setBlendMode(Phaser.BlendModes.ADD);
     this.hp = Game.save.maxHp;
   }
 
@@ -130,11 +133,11 @@ export class Player {
     } else if (this.buffer > 0 && !this.onGround && (this.clingDir || this.wallCoyote > 0) && Game.has('claws') && this.dashT <= 0) {
       const away = -(this.clingDir || this.wallDir);
       this.vy = -PH.JUMP * 0.95; this.buffer = 0; this.clingDir = 0; this.wallCoyote = 0;
-      this.wallJumpT = 0.15; this.wallJumpDir = away; this.face = away; sfx.jump();
+      this.wallJumpT = 0.15; this.wallJumpDir = away; this.face = away; sfx.jump(); this.kickT = 0.22;
       this.g.burst(away > 0 ? this.x : this.x + this.w, this.y + this.h - 4, 6, 0x3a3448, { spd: 70, life: 0.35, size: 2, grav: 120, key: 'fx_dust' });
       this.puppet.squash(0.82, 1.2); this.stretchT = 0.12;
     } else if (this.buffer > 0 && !this.onGround && Game.has('wings') && this.airJumps > 0 && this.dashT <= 0) {
-      this.vy = -PH.JUMP2; this.airJumps--; this.buffer = 0; sfx.wing(); this.wingT = 0.35;
+      this.vy = -PH.JUMP2; this.airJumps--; this.buffer = 0; sfx.wing(); this.wingT = 0.35; this.flipT = FLIP_T;
       this.g.burst(this.cx, this.y + 10, 12, 0xe9e2ff, { spd: 70, life: 0.6, size: 1.6, grav: 60, glow: true });
     }
     if ((I.jumpR || (this.locked && !I.jumpH && this.vy < -60 && false)) && this.vy < -60) this.vy *= 0.45;
@@ -167,7 +170,7 @@ export class Player {
     const vyBefore = this.vy;
     moveBody(this, dt);
     if (this.landed && vyBefore > 200) {
-      sfx.land(); this.landT = 0.12; this.g.burst(this.cx, this.y + this.h, 6, 0x2c2838, { spd: 60, life: 0.4, size: 2, grav: 80, key: 'fx_dust' });
+      sfx.land(); this.landT = 0.12; this.landFlare = Math.min(1, vyBefore / 400); this.g.burst(this.cx, this.y + this.h, 6, 0x2c2838, { spd: 60, life: 0.4, size: 2, grav: 80, key: 'fx_dust' });
       this.puppet.squash(1.25, 0.72); this.stretchT = 0.14;
     }
     if (this.onGround) {
@@ -182,6 +185,8 @@ export class Player {
     if (boxHasTile(this.x + 3, this.y + 4, this.w - 6, this.h - 4, (ch, _tx, ty) => ch === '^' && this.y + this.h > ty * T + 7)) this.g.hurtPlayer(1, this.cx, true);
   }
   stretchT = 0; wingT = 0; afterT = 0;
+  // animation state: claw strip, double-jump flip, wall kick, landing flare, smoothed air pose
+  slashT = 0; slashFlip = false; flipT = 0; kickT = 0; landFlare = 0; airK = 0;
   splash(k = 1) {
     sfx.splash?.(k);
     const surf = waterAt(this.cx, this.y + this.h + 8) ?? this.y + this.h;
@@ -229,13 +234,12 @@ export class Player {
 
   showSlash() {
     const s = this.slash;
-    s.setVisible(true).setAlpha(1);
+    s.setVisible(true).setAlpha(1).setFrame('0');
+    this.slashT = 0; this.slashFlip = !this.slashFlip;
     const k = this.atkDir;
-    s.setFlipX(false);
-    if (k === 'side') { s.setRotation(0); s.setScale(INV_ART * 0.62 * this.face, INV_ART * 0.62); }
-    else { s.setScale(INV_ART * 0.62, INV_ART * 0.62); s.setRotation(k === 'up' ? -Math.PI / 2 : Math.PI / 2); }
+    if (k === 'side') { s.setRotation(0); s.setScale(INV_ART * 0.74 * this.face, INV_ART * 0.74 * (this.slashFlip ? -1 : 1)); }
+    else { s.setScale(INV_ART * 0.74, INV_ART * 0.74 * (this.slashFlip ? -1 : 1) * (k === 'up' ? -this.face : this.face)); s.setRotation(k === 'up' ? -Math.PI / 2 : Math.PI / 2); }
     this.g.scene.tweens.killTweensOf(s);
-    this.g.scene.tweens.add({ targets: s, alpha: 0, duration: 200, ease: 'Quad.easeIn', onComplete: () => s.setVisible(false) });
   }
 
   // ---------------------------------------------------------------- rendering
@@ -247,21 +251,17 @@ export class Player {
     p.setVisible(visible);
     this.shadow.setVisible(!this.hidden && this.onGround).setPosition(feetX, feetY + 0.5);
 
-    // slash follows the cat
+    // slash follows the cat and plays its strip
     if (this.slash.visible) {
       const k = this.atkDir;
-      if (k === 'side') this.slash.setPosition(this.cx + this.face * 6, this.y + 5);
-      else if (k === 'up') this.slash.setPosition(this.cx, this.y - 6);
-      else this.slash.setPosition(this.cx, this.y + this.h + 4);
-      this.slash.setOrigin(k === 'side' ? 0.1 : 0.1, 0.5);
+      if (k === 'side') this.slash.setPosition(this.cx + this.face * 4, this.y + 5);
+      else if (k === 'up') this.slash.setPosition(this.cx, this.y - 4);
+      else this.slash.setPosition(this.cx, this.y + this.h + 2);
+      this.slash.setOrigin(0.08, 0.5);
+      this.slashT += dt;
+      const f = Math.floor(this.slashT * SLASH_FPS);
+      if (f >= 6) this.slash.setVisible(false); else this.slash.setFrame(String(f));
     }
-
-    // squash & stretch recovery
-    this.stretchT = Math.max(0, this.stretchT - dt);
-    const inner = p.inner;
-    let sx = damp(inner.scaleX, 1, 14, dt), sy = damp(inner.scaleY, 1, 14, dt);
-    if (this.dashT > 0) { sx = 1.3; sy = 0.82; }
-    p.squash(sx, sy);
 
     const t = this.t;
     const air = !this.onGround && !this.resting && !this.inWater && !this.clingDir;
@@ -271,6 +271,26 @@ export class Player {
     this.sleepy = damp(this.sleepy, this.resting || this.dead ? 1 : 0, 6, dt);
     const Z = this.sleepy;
     const speed = Math.min(1, Math.abs(this.vx) / PH.RUN);
+    // air pose blend: -1 rising fast … 0 apex … +1 falling fast (smoothed so poses flow into each other)
+    const airTarget = air ? clamp(this.vy / (this.vy < 0 ? PH.JUMP : PH.MAXFALL * 0.8), -1, 1) : 0;
+    this.airK = damp(this.airK, airTarget, 12, dt);
+    const rise = Math.max(0, -this.airK), fall = Math.max(0, this.airK), apex = air ? 1 - Math.min(1, Math.abs(this.vy) / 110) : 0;
+    this.flipT = Math.max(0, this.flipT - dt); this.kickT = Math.max(0, this.kickT - dt);
+    this.landFlare = damp(this.landFlare, 0, 7, dt);
+
+    // squash & stretch: a stretch on the way up, a little tuck at the apex, recovers on its own
+    this.stretchT = Math.max(0, this.stretchT - dt);
+    const inner = p.inner;
+    let tsx = 1, tsy = 1;
+    if (air && this.flipT <= 0) { tsx = 1 - rise * 0.1 + apex * 0.05 - fall * 0.04; tsy = 1 + rise * 0.14 - apex * 0.05 + fall * 0.06; }
+    let sx = damp(inner.scaleX, tsx, 14, dt), sy = damp(inner.scaleY, tsy, 14, dt);
+    if (this.dashT > 0) { sx = 1.3; sy = 0.82; }
+    p.squash(sx, sy);
+    // double jump: a quick forward roll about the middle of the cat
+    if (this.flipT > 0 && !this.dead) {
+      const k = 1 - this.flipT / FLIP_T, e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      p.spin(e * Math.PI * 2, -34);
+    } else if (!this.dead) p.spin(0, 0);
 
     // ---- little legs under the cloak, a bob, a lean
     let lean = 0, bodyY = 0, headRot = 0, headY = 0, legN = 0, legF = 0, legLift = 0;
@@ -278,12 +298,17 @@ export class Player {
       legN = Math.sin(ph) * 0.75; legF = Math.sin(ph + Math.PI) * 0.75;
       bodyY = -Math.abs(Math.cos(ph)) * 2.5; lean = 0.1; headRot = Math.sin(ph * 2) * 0.03;
     } else if (air) {
-      const up = this.vy < 0;
-      legN = up ? -0.5 : 0.25; legF = up ? 0.4 : -0.2; legLift = up ? 6 : 0;
-      lean = up ? -0.04 : 0.05; headRot = up ? -0.06 : 0.06;
+      // rising: knees tucked, chin up · apex: curled · falling: legs reach down, chin tucked, watching the ground
+      legN = -0.75 * rise - 0.5 * apex + 0.35 * fall + Math.sin(t * 22) * 0.12 * fall;
+      legF = 0.55 * rise + 0.4 * apex - 0.3 * fall + Math.sin(t * 22 + 2) * 0.12 * fall;
+      legLift = 7 * rise + 5 * apex - 1.5 * fall;
+      lean = -0.06 * rise + 0.06 * fall + (this.vx ? Math.sign(this.vx) * this.face * 0.05 : 0);
+      headRot = -0.12 * rise + 0.04 * apex + 0.14 * fall; headY = -1.5 * rise + 1 * fall;
+      bodyY = -2 * apex;
     } else {
       bodyY = Math.sin(t * 2) * 0.8; headY = Math.sin(t * 2 + 0.6) * 0.7; headRot = Math.sin(t * 0.55) * 0.05;
     }
+    if (this.kickT > 0) { const k = this.kickT / 0.22; legN = -1.1 * k + legN * (1 - k); legF = -0.6 * k + legF * (1 - k); lean -= 0.2 * k; }
     if (this.dashT > 0) { lean = 0.45; legN = -0.9; legF = -1.1; legLift = 4; }
     if (this.inWater) { // paddling: little legs kick under the cloak, body bobs
       legN = Math.sin(t * 9) * 0.6; legF = Math.sin(t * 9 + Math.PI) * 0.6; bodyY = Math.sin(t * 3) * 0.8; headRot = -0.08 + Math.sin(t * 2) * 0.04; lean = this.vx ? 0.08 : 0;
@@ -291,7 +316,7 @@ export class Player {
     if (this.clingDir) { // back to the wall, claws dug in, legs braced
       lean = -0.16; legN = -0.7; legF = -0.4; legLift = 3; headRot = 0.05; bodyY = 1;
     }
-    if (this.landT > 0) bodyY += 3;
+    if (this.landT > 0) { bodyY += 3; headY += 1.5; }
     // resting: sits down, the cloak pools, eyes close
     bodyY = bodyY * (1 - Z) + 10 * Z; lean *= 1 - Z; headRot = headRot * (1 - Z) + 0.12 * Z; headY *= 1 - Z;
 
@@ -303,6 +328,8 @@ export class Player {
       if (this.atkDir === 'side') { armRot = -2.4 + k * 1.9; armX = 3; lean += 0.12 * a; headRot -= 0.06 * a; }
       else if (this.atkDir === 'up') { armRot = -3.0 + k * 0.9; armY = -4; lean -= 0.1 * a; headRot -= 0.18 * a; }
       else { armRot = -0.6 + k * 0.9; armY = 2; lean += 0.12 * a; headRot += 0.15 * a; }
+    } else if (air && fall > 0.35 && this.flipT <= 0) { // falling: a paw pokes out for balance
+      armA = Math.min(1, (fall - 0.35) * 3); armRot = -0.9 - Math.sin(t * 14) * 0.15; armX = 2; armY = -2;
     }
 
     p.set('body', { y: bodyY, rot: lean });
@@ -311,28 +338,32 @@ export class Player {
     if (this.clingDir && this.atkAnim <= 0) { armA = 1; armRot = 1.5; armX = -6; armY = 2; }
     p.set('arm', { alpha: armA, rot: armRot, x: armX, y: armY });
 
-    // ---- cloak: sways, flares when jumping, streams back when running or dashing
+    // ---- cloak: sways, trails down on the way up, billows like a parachute on the way down
     const flow = Math.min(1.3, speed * 0.6 + (this.dashT > 0 ? 0.9 : 0));
-    const flare = air ? (this.vy > 0 ? 1 : 0.4) : this.clingDir ? 0.6 : this.inWater ? 0.35 : 0;
+    const flare = air ? Math.max(0, fall * 1.1 + apex * 0.5 - rise * 0.2) : this.clingDir ? 0.6 : this.inWater ? 0.35 : 0;
+    const flutter = air ? Math.sin(t * 26) * 0.04 * (fall + rise * 0.5) : 0;
+    const lf = this.landFlare;
     const sway = Math.sin(t * (2 + flow * 6)) * (0.03 + flow * 0.05);
-    p.set('cloak', { rot: flow * 0.22 + sway - lean * 0.5, sx: 1 + flare * 0.1 + Z * 0.12 });
-    p.set('hem', { rot: flow * 0.35 + Math.sin(t * (2.6 + flow * 7) - 1) * (0.05 + flow * 0.08), sx: 1 + flare * 0.22 + Z * 0.18, sy: 1 - flare * 0.25 - Z * 0.2 });
-    p.set('lining', { alpha: Math.min(1, flare * 0.9 + flow * 0.5), rot: flow * 0.3 });
+    p.set('cloak', { rot: flow * 0.22 + sway - lean * 0.5 + flutter, sx: 1 + flare * 0.1 + Z * 0.12 + lf * 0.12 - rise * 0.06, sy: 1 + rise * 0.06 - lf * 0.05 });
+    p.set('hem', { rot: flow * 0.35 + Math.sin(t * (2.6 + flow * 7) - 1) * (0.05 + flow * 0.08) + flutter * 2, sx: 1 + flare * 0.3 + Z * 0.18 + lf * 0.35 - rise * 0.12, sy: 1 - flare * 0.35 - Z * 0.2 - lf * 0.3 + rise * 0.2 });
+    p.set('lining', { alpha: Math.min(1, flare * 0.9 + flow * 0.5 + lf), rot: flow * 0.3 });
 
-    // ---- tail: stands up behind, sways, flicks when moving
+    // ---- tail: stands up behind, sways, flicks when moving; streams down rising, up falling
     for (let i = 0; i < 10; i++) {
-      const wave = Math.sin(t * (1.6 + speed * 3.5) - i * 0.55) * (0.07 + speed * 0.04);
+      const wave = Math.sin(t * (1.6 + speed * 3.5 + (air ? 6 : 0)) - i * 0.55) * (0.07 + speed * 0.04 + (air ? 0.05 : 0));
+      const airBend = i === 0 ? rise * 0.9 - fall * 0.5 : i < 6 ? rise * 0.06 - fall * 0.05 : 0;
       const base = i === 0 ? -0.45 - speed * 0.4 - (this.dashT > 0 ? 0.9 : 0) + Z * 1.2 : i > 6 ? 0.2 : 0.01; // tip hooks forward
-      p.set(`tail${i}`, { rot: base + wave });
+      p.set(`tail${i}`, { rot: base + wave + airBend });
     }
 
-    // ---- ears & blinks
+    // ---- ears, whiskers & blinks
     this.earT -= dt; if (this.earT < -0.15) this.earT = rand(2, 6);
     const twitch = this.earT < 0 ? -0.3 : 0;
-    const earsBack = this.dashT > 0 ? -0.55 : air && this.vy > 0 ? -0.3 : 0;
+    const earsBack = this.dashT > 0 ? -0.55 : air ? -0.35 * rise + 0.25 * fall : this.landT > 0 ? 0.2 : 0;
     p.set('earF', { rot: -earsBack * 0.9 + twitch }); p.set('earB', { rot: earsBack * 0.9 });
+    p.set('whiskers', { rot: Math.sin(t * 1.3) * 0.03 + (this.earT < 0 ? 0.05 : 0), sy: 1 + (air ? -0.15 * rise + 0.12 * fall : 0) });
     this.blinkT -= dt; if (this.blinkT < -0.1) this.blinkT = rand(2.5, 6);
-    const eyeS = this.blinkT < 0 || Z > 0.6 || this.dead ? 0.1 : 1;
+    const eyeS = this.blinkT < 0 || Z > 0.6 || this.dead ? 0.1 : this.landT > 0 ? 0.6 : 1;
     p.set('eyeF', { sy: eyeS }); p.set('eyeB', { sy: eyeS * 0.9 });
 
     // dash afterimages
@@ -341,7 +372,7 @@ export class Player {
       if (this.afterT <= 0) { this.afterT = 0.04; (this.g as any).afterimage?.(this); }
     }
     if (this.dead) { p.setAlpha(Math.max(0, 1 - this.deadT * 0.8)); p.lean(Math.min(1.4, this.deadT * 3) * -this.face * 0.4); }
-    else { p.setAlpha(1); p.lean(0); }
+    else p.setAlpha(1);
   }
 
   destroy() { this.puppet.destroy(); this.slash.destroy(); this.shadow.destroy(); }

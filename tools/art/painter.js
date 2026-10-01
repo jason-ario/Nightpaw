@@ -915,7 +915,7 @@
       }
       a.draw(c);
       // opaque full-screen paintings (storybook pages) ship as JPEG: the paint grain makes PNGs huge
-      out.push({ key: a.key, w: a.w, h: a.h, ext: a.jpeg ? 'jpg' : 'png', data: a.jpeg ? cv.toDataURL('image/jpeg', 0.9) : cv.toDataURL('image/png') });
+      out.push({ key: a.key, w: a.w, h: a.h, frames: a.frames, ext: a.jpeg ? 'jpg' : 'png', data: a.jpeg ? cv.toDataURL('image/jpeg', 0.9) : cv.toDataURL('image/png') });
     }
     return out;
   };

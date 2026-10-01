@@ -1,4 +1,4 @@
-// Renders every asset in painter.js, story.js and nursery.js to assets/art/<key>.png and writes assets/art/art.json.
+// Renders every asset in painter.js, story.js, nursery.js and pass2.js (which repaints some in place) to assets/art/<key>.png and writes assets/art/art.json.
 // Usage: node tools/art/build-art.cjs [key1,key2,...]
 // Needs Playwright + Chromium (npm i -D playwright && npx playwright install chromium).
 const fs = require('fs');
@@ -19,13 +19,14 @@ try { ({ chromium } = require('playwright')); } catch { ({ chromium } = require(
   await page.addScriptTag({ path: path.join(__dirname, 'painter.js') });
   await page.addScriptTag({ path: path.join(__dirname, 'story.js') });
   await page.addScriptTag({ path: path.join(__dirname, 'nursery.js') });
+  await page.addScriptTag({ path: path.join(__dirname, 'pass2.js') });
   const assets = await page.evaluate((o) => window.renderAll(o), only);
   const manifestPath = path.join(outDir, 'art.json');
   const manifest = fs.existsSync(manifestPath) ? JSON.parse(fs.readFileSync(manifestPath, 'utf8')) : {};
   for (const a of assets) {
     for (const ext of ['png', 'jpg']) if (ext !== a.ext) fs.rmSync(path.join(outDir, `${a.key}.${ext}`), { force: true });
     fs.writeFileSync(path.join(outDir, `${a.key}.${a.ext}`), Buffer.from(a.data.split(',')[1], 'base64'));
-    manifest[a.key] = a.ext === 'png' ? { w: a.w, h: a.h } : { w: a.w, h: a.h, file: `${a.key}.${a.ext}` };
+    manifest[a.key] = { w: a.w, h: a.h, ...(a.ext === 'png' ? {} : { file: `${a.key}.${a.ext}` }), ...(a.frames ? { frames: a.frames } : {}) };
   }
   fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 1));
   console.log(`painted ${assets.length} assets → ${path.relative(root, outDir)}`);

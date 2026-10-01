@@ -146,6 +146,7 @@ const PRESENTATION = new Set(['flyover', 'say', 'narrate', 'wait', 'emote', 'sha
 export async function runSteps(h: CutsceneHost, steps: Step[], ctx: RunCtx) {
   for (const s of steps) {
     const fn = STEPS[s.do];
+    (h as any).curStep = s.do; // debugging aid (read by tools/playtest.cjs)
     if (!fn) { console.warn('Unknown cutscene step', s.do); continue; }
     if (h.skipping) {
       if (PRESENTATION.has(s.do)) continue;

@@ -75,7 +75,7 @@ class SockWisp extends Enemy {
   hx: number; hy: number;
   constructor(g: Ctx, d: EntityDef, x: number, y: number) {
     super(g, d, x, y); this.w = 12; this.h = 12; this.hp = this.maxHp = 2; this.hx = x; this.hy = y; this.name = 'Sock Wisp';
-    this.puppet = new Puppet(g.scene, sockRig(), 0.6, DEPTH.enemy);
+    this.puppet = new Puppet(g.scene, sockRig(), 0.72, DEPTH.enemy);
     this.deathColor = 0xe0d0c8; this.coins = 3;
   }
   onHit(dmg: number, dir: number, kind: string) {
