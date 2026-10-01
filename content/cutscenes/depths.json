@@ -1,0 +1,569 @@
+[
+ {
+  "id": "bars_hint",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "Iron bars, sunk deep into the rock. Beyond them the dark goes on toward the Warden's hall.",
+     "Under Nib's floor, through the old grate, a cold draught hums. Like something very large, very far down, waiting to be struck."
+    ]
+   },
+   {
+    "do": "hint",
+    "text": "Drop through the grate in Nib's floor: hold ↓ and jump."
+   }
+  ]
+ },
+ {
+  "id": "long_dark_enter",
+  "steps": [
+   {
+    "do": "flag",
+    "set": "long_dark_seen"
+   },
+   {
+    "do": "narrate",
+    "lines": [
+     "It is very dark here.",
+     "Even the dark seems to have been lost."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "belfry_enter",
+  "steps": [
+   {
+    "do": "flag",
+    "set": "belfry_seen"
+   },
+   {
+    "do": "camera",
+    "to": {
+     "x": 15,
+     "y": 10
+    },
+    "ms": 1400
+   },
+   {
+    "do": "narrate",
+    "lines": [
+     "A bell, hung in the dark. Bigger than a house. Green with age.",
+     "It used to ring at dusk, so that lost things would know it was time to come home."
+    ]
+   },
+   {
+    "do": "camera",
+    "release": true
+   }
+  ]
+ },
+ {
+  "id": "ring_bell",
+  "steps": [
+   {
+    "do": "if",
+    "cond": "bell_rung",
+    "then": [
+     {
+      "do": "narrate",
+      "lines": [
+       "The bell hangs still. It has said what it had to say."
+      ]
+     }
+    ],
+    "else": [
+     {
+      "do": "narrate",
+      "lines": [
+       "You take the rope in your teeth and pull with your whole weight."
+      ]
+     },
+     {
+      "do": "sfx",
+      "id": "bell"
+     },
+     {
+      "do": "shake",
+      "amount": 14
+     },
+     {
+      "do": "flag",
+      "set": "bell_rung"
+     },
+     {
+      "do": "achieve",
+      "id": "bell"
+     },
+     {
+      "do": "wait",
+      "ms": 900
+     },
+     {
+      "do": "narrate",
+      "lines": [
+       "The note goes on for a long time. Up through the rock. Into the walls. Into you.",
+       "Far above, iron grinds against stone. Something that was shut is open."
+      ]
+     },
+     {
+      "do": "say",
+      "who": "mira",
+      "lines": [
+       "...Was that a bell? Nightpaw, I heard a bell.",
+       "The moth says it's nothing. She says not to turn round."
+      ]
+     },
+     {
+      "do": "hint",
+      "text": "The bars in the Long Dark have lifted. Climb the Old Sluice."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "graves_enter",
+  "steps": [
+   {
+    "do": "flag",
+    "set": "graves_seen"
+   },
+   {
+    "do": "achieve",
+    "id": "secret_wall"
+   },
+   {
+    "do": "narrate",
+    "lines": [
+     "Little graves, in rows. A domino, a matchbox, half a spoon, each pushed upright into the dirt.",
+     "Somebody buried every lost thing that ended here, for as long as they could."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "epitaph_mitten",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "HERE LIES A LEFT MITTEN",
+     "It waited for a hand."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "epitaph_key",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "HERE LIES A SMALL BRASS KEY",
+     "It never found out what it opened."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "epitaph_keeper",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "HERE LIES THE GRAVEKEEPER",
+     "The rest of the stone is blank. There was nobody left to finish it."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "well_top",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "The top of the well. An old bucket. A rope gone soft with rot. A grate, rusted into the stone.",
+     "Through the bars: rain, and a strip of night sky.",
+     "Somewhere up there is a window with the curtains still open, and a bed with nobody in it."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "read_mira_scratch",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "MIRA",
+     "Scratched into the stone with something small and sharp. A hairpin, maybe.",
+     "Under it, much older, in a hand you don't know: and ELSIE, and TOM, and a name too worn to read."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "get_whet_hollows",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "A grey whetstone, worn hollow in the middle by somebody's patient knife."
+    ]
+   },
+   {
+    "do": "give",
+    "ability": "whet_hollows",
+    "achievement": "whetstone"
+   },
+   {
+    "do": "item",
+    "title": "Whetstone",
+    "text": "Your claws are sharper. Every scratch bites deeper.",
+    "icon": "whetstone"
+   }
+  ]
+ },
+ {
+  "id": "hoard_enter",
+  "steps": [
+   {
+    "do": "flag",
+    "set": "hoard_seen"
+   },
+   {
+    "do": "narrate",
+    "lines": [
+     "Everything the Warden ever caught. He couldn't bear to put any of it down.",
+     "Keys. Shoes. A pram wheel. A small collar with a bell on it, and nothing inside the collar."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "read_tally",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "Tally marks. Thousands of them, scratched in neat rows, one for every thing he caught.",
+     "The last row stops halfway."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "name_scouts",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "4TH WICKMOOR SCOUTS",
+    "text": "A label from a tent peg. Somewhere a tent leaned a little to the left for the rest of its life, and nobody ever knew why."
+   }
+  ]
+ },
+ {
+  "id": "name_scissors",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "THE GOOD SCISSORS",
+    "text": "Kept in the second drawer. Lost in a move. Everyone in the house blamed everyone else, quietly, for thirty years."
+   }
+  ]
+ },
+ {
+  "id": "name_ada",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "IF FOUND RETURN TO ADA, 12 FENN ROW",
+    "text": "A luggage label. The handwriting gets shakier toward the end of the address, as if the writer already knew."
+   }
+  ]
+ },
+ {
+  "id": "name_buttons",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "MR. BUTTONS",
+    "text": "Stitched inside a bear's ear. He went up to the attic 'just for now'. Now lasted a very long time."
+   }
+  ]
+ },
+ {
+  "id": "name_biscuit",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "BISCUIT",
+    "text": "A dog's collar tag, bitten at the edge. He waited by the gate every evening. One evening he went looking instead."
+   }
+  ]
+ },
+ {
+  "id": "name_pip",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "PIP",
+    "text": "A tag too small for any collar. Whoever Pip was, they sang. The cage door was left open, just the once."
+   }
+  ]
+ },
+ {
+  "id": "name_henry",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "HENRY'S",
+    "text": "Written on the sole of a tin soldier's boot in careful pen. Henry grew up. The soldier did not."
+   }
+  ]
+ },
+ {
+  "id": "name_chair",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "GRANDAD'S CHAIR. DO NOT SIT.",
+    "text": "Nobody sat in it for years. Then it was carried out to the kerb, still empty, in the rain."
+   }
+  ]
+ },
+ {
+  "id": "door_hint",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "The nursery door. Locked from this side.",
+     "On the other side, very faintly, a music box is playing, and somebody is humming along to it, out of tune."
+    ]
+   },
+   {
+    "do": "hint",
+    "text": "The keyhole is shaped like a little lamb. Somebody must have kept the key."
+   }
+  ]
+ },
+ {
+  "id": "hall_enter",
+  "steps": [
+   {
+    "do": "flag",
+    "set": "hall_seen"
+   },
+   {
+    "do": "narrate",
+    "lines": [
+     "The old upstairs hall, flooded to the knee.",
+     "Portraits of the family line the walls. Somebody has rubbed all of their faces away, very carefully, with a thumb."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "read_portrait",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "A child in a sailor collar, holding a nightlight shaped like a moth.",
+     "The face has been rubbed out like the others. The moth has not."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "nanny_enter",
+  "steps": [
+   {
+    "do": "flag",
+    "set": "nanny_seen"
+   },
+   {
+    "do": "narrate",
+    "lines": [
+     "A small room off the hall. A rocking chair, a basket of knitting, a cold cup of tea.",
+     "The chair is rocking. Nobody is in it."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "read_nanny_portrait",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "NANNY BRIGGS, 1911",
+     "Stern, kind, very tired. She held the children on her lap and sang them the rhyme, the way every nanny in Wickmoor did.",
+     "Lose a penny, lose a key..."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "get_nursery_key",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "A little iron key with a lamb for its bow, hung on a hook by somebody who meant to come back for it."
+    ]
+   },
+   {
+    "do": "flag",
+    "set": "nursery_key"
+   },
+   {
+    "do": "achieve",
+    "id": "lamb_key"
+   },
+   {
+    "do": "item",
+    "title": "The Lamb Key",
+    "text": "It opens the nursery door at the far end of the Bathtub.",
+    "icon": "nur_key"
+   },
+   {
+    "do": "narrate",
+    "lines": [
+     "Behind you, the chair stops rocking."
+    ]
+   },
+   {
+    "do": "wait",
+    "ms": 700
+   },
+   {
+    "do": "say",
+    "who": "mira",
+    "lines": [
+     "...hush now, hush, and hold on tight...",
+     "Nightpaw? There's an old lady in the dark up here. She's singing my song. She says she used to sing it to a girl who had a moth for a nightlight."
+    ]
+   },
+   {
+    "do": "hint",
+    "text": "Back to the Bathtub's far door. Climb the Drain."
+   }
+  ]
+ },
+ {
+  "id": "attic_enter",
+  "steps": [
+   {
+    "do": "flag",
+    "set": "attic_seen"
+   },
+   {
+    "do": "narrate",
+    "lines": [
+     "Everything that was put away \"just for now\", under sheets, in the dust.",
+     "Some of the sheets are breathing."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "read_mirror",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "A tall mirror, its silver gone to grey.",
+     "In it: the attic, the sheets, the dust, the little rocking horse.",
+     "No cat."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "get_whet_nursery",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "Another whetstone, hidden behind the chimney where nobody would find it. Somebody wanted something kept sharp up here."
+    ]
+   },
+   {
+    "do": "give",
+    "ability": "whet_nursery",
+    "achievement": "whetstone"
+   },
+   {
+    "do": "item",
+    "title": "Whetstone",
+    "text": "Your claws are sharper still.",
+    "icon": "whetstone"
+   }
+  ]
+ },
+ {
+  "id": "name_baby",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "BABY'S FIRST",
+    "text": "A ribbon that once held a lock of hair, folded in tissue. The hair is gone. The ribbon has kept its shape."
+   }
+  ]
+ },
+ {
+  "id": "name_dolly",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "DOLLY (THE NICE ONE)",
+    "text": "There must have been a not-nice one. Nobody remembers which one that was, or what it did."
+   }
+  ]
+ },
+ {
+  "id": "name_nanny",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "NANNY BRIGGS",
+    "text": "A brass badge, rubbed bright on one side by a thumb. She was in this house for forty years. Nobody came for her things."
+   }
+  ]
+ },
+ {
+  "id": "name_rosalind",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "ROSALIND, AGED 5",
+    "text": "Name tape from a nightgown, sewn in crooked by someone in a hurry who loved her anyway."
+   }
+  ]
+ },
+ {
+  "id": "name_lamb",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "LAMB",
+    "text": "From a nightlight shaped like a lamb. It was switched off one night, and nobody ever switched it back on."
+   }
+  ]
+ },
+ {
+  "id": "name_m",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "M.",
+    "text": "Just a letter, scratched into the base of a tin soldier. It could have been anyone's. It could have been the child who loved a moth."
+   }
+  ]
+ }
+]

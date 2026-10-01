@@ -11,9 +11,11 @@
 
 ## Tone
 
-Dark, creepy and cute at the same time. The world is full of lost things that have started to forget themselves, and that is sad and a bit frightening, but the characters are small, polite and funny. The creepiness comes from what is implied (empty slippers, a rhyme that knows too much, creatures that used to be someone's favorite toy), never from gore. Every scary thing has something tender underneath it.
+Melancholy and eerie (revised for 2.4: darker, less childish). Think of a house after a funeral, or an attic nobody has opened in forty years. The Underneath is full of lost things that are slowly forgetting themselves, and the game lets that be sad and unsettling rather than cute. The creepiness comes from what is implied (an empty chair that keeps rocking, portraits with their faces rubbed away, a grave the gravekeeper never finished), never from gore.
 
-**Rules of thumb:** no blood; enemies burst into dust, buttons and moth-light. Characters speak in short, odd, sincere sentences. Every area has one thing that is funny and one thing that is sad.
+**Rules of thumb:** no blood; enemies burst into dust, buttons and moth-light. Characters speak in short, odd, sincere sentences; humour, when it comes, is dry and tired rather than silly. Colours are muted and worn (the whole game is colour-graded down); toys look old, chipped and waterlogged, not bright. Mira's marks on the walls are scratched with a hairpin, not drawn in chalk. Every area has one thing that is tender and one thing that is wrong.
+
+**Lost Names.** Scattered through every area are tags, labels and name-tapes from lost things: a dog's collar tag, a luggage label, the name sewn into a nightgown. Each one is a two-line story about something nobody came back for. They are the game's lore collectible (14 in the Hollows and the Nursery).
 
 ## The premise
 
@@ -67,11 +69,11 @@ At the Hearthlamp, Nightpaw finds Mira asleep inside the great glass lantern, gl
 
 **Nightpaw.** The player. In the storybook pages he's an ordinary black cat with a red scarf. Underneath, he walks upright, with his scarf pulled up over his muzzle and hanging down into a bell-shaped cloak that hides everything but his thin legs and his tail. Wide yellow eyes, whiskers poking out past the scarf. The scarf was Mira's; she wrapped it round him the first winter. Fights with his claws: a paw slips out from under the cloak and scratches. Never speaks; he reacts with ear twitches, tail flicks and slow blinks.
 
-**Mira Hale.** Seven. Yellow boots, brave in the way small children are brave, which is to say by accident. Mostly seen in memories, and as echoes in the Underneath: her voice from far away, a slipper, drawings in chalk on the walls ("NIGHTPAW THIS WAY →").
+**Mira Hale.** Seven. Yellow boots, brave in the way small children are brave, which is to say by accident. Mostly seen in memories, and as echoes in the Underneath: her voice from far away, a slipper, her name and his scratched into the walls with a hairpin ("NIGHTPAW →").
 
 **Tallow.** A moth. The Candlekeeper of the Hollows. She lights the candle shrines where Nightpaw rests (the save points). Nervous, formal and kind: "Good evening. I'm so sorry about everything." Was one of Mothmother's moths; left because she didn't agree with the plan, but is too polite to say so for a long time. After the Warden falls, she gives Nightpaw her late sister's wings (**Moth Wings**, the double jump).
 
-**Nib.** A traveling mouse with a backpack full of buttons, which are money down here. A merchant and a cheerful liar. "Everything I sell is found, not lost. Totally different." Opens a shop in later areas; in the Hollows he's stuck behind a rockfall and just chats.
+**Nib.** A traveling mouse with a backpack full of buttons, which are money down here. A merchant who keeps up a brave face and is frightened most of the time. "Somebody has to keep pretending things are normal." Opens a shop in later areas; in the Hollows he's stuck behind a rockfall and just chats.
 
 **The Hollow Warden.** Keeper of the Deep. Once the gentle gatekeeper of the well-mouth: a great antlered coat-stand in a moth-eaten coat, whose job was to catch falling lost things so they didn't break. Hollowed now, and attacks anything that falls. When defeated he remembers, briefly, and catches one last falling thing: Nightpaw.
 
@@ -93,7 +95,7 @@ The Underneath is a vertical world: deeper means more forgotten.
 
 | Room | What happens |
 |------|--------------|
-| **Well Bottom** | Landing cutscene. Nightpaw falls and lands in pale grass. First scratches. Mira's chalk arrow on the wall. |
+| **Well Bottom** | Landing cutscene. Nightpaw falls and lands in pale grass. First scratches. Mira's name and an arrow, scratched into the wall with a hairpin. |
 | **Ashen Gate** | First candle shrine. **Meet Tallow**, who explains the Underneath and the Hush and is very sorry about all of it. |
 | **Weeping Tunnels** | First real enemies. Find **Mira's slipper** in a puddle (cutscene: an echo of Mira's voice singing the rhyme, far below). |
 | **The Crossroads** | A tall shaft. A Shade glows on a ledge far up, out of reach (come back with wings). |
@@ -102,8 +104,15 @@ The Underneath is a vertical world: deeper means more forgotten.
 | **Thorn Gap** | A pit of thorns you can only cross with the dash. |
 | **Sock Drift** | A cavern where lost socks drift like jellyfish. |
 | **Nib's Nook** | **Meet Nib**, stuck behind a rockfall. Second shrine. |
-| **Warden's Approach** | Old coats and umbrellas hung like trophies. Chalk: "NIGHTPAW DONT" (the rest is scratched out). |
+| **Warden's Approach** | Old coats and umbrellas hung like trophies. Scratched: "NIGHTPAW DONT" (the rest is gouged out by much bigger claws). The bars across the way on only lift when the Sunken Belfry's bell rings. |
 | **The Warden's Hall** | **Boss: the Hollow Warden.** Afterwards he remembers, and Tallow gives you the Moth Wings. |
+| **The Hanging Way** (2.4) | The Warden's hall is barred. A grate in Nib's floor drops into a long dark shaft. |
+| **The Long Dark** (2.4) | A black corridor of thorn pits (dash or pogo across). Barred stairs up into the Old Sluice. A cracked wall hides a Lost Name. |
+| **The Sunken Belfry** (2.4) | A green bronze bell bigger than a house, which once rang at dusk to call lost things home. Pull the rope: the bars lift, in the Long Dark and at the Warden's Approach. Shrine. |
+| **The Old Sluice** (2.4) | The climb back up, behind the Warden's bars. |
+| **The Quiet Graves** (2.4, secret) | Behind the Frozen Hollow's cracked wall: little graves for lost things (a domino, a matchbox), epitaphs, a crypt, a grave the gravekeeper never finished. |
+| **The Well Shaft** (2.4, needs claws) | Straight up from where you landed: the bucket, the grate, the sky. MIRA scratched in the stone over older names. The **Whetstone**. |
+| **The Warden's Hoard** (2.4, needs wings) | Everything the Warden ever caught, in a heap. Tally marks that stop halfway. |
 | **The Updraft** | A vertical climb with the new double jump, up into the Drowned Nursery. Mira's voice calls down from above. Coming back to the Crossroads with wings gets **Shade 1: The Rain Box**. |
 
 ## Area 2 in detail: The Drowned Nursery
@@ -115,8 +124,8 @@ mobile of tin moons, a whole shelf of dolls, and a bathtub that never stopped ru
 The water is waist-deep on a cat and warm as tea. Somewhere a music box keeps playing a
 waltz by itself, and the water rises and falls in time with it.
 
-*The funny thing:* **Dunk**, a rubber duck who is delighted by everything and floats
-wherever he likes. *The sad thing:* **the Music Box Queen**, a wind-up ballerina who has
+*The tender thing:* **Dunk**, a waterlogged rubber duck who used to float and now mostly
+leans, and doesn't complain, because things that complain get thrown away. *The sad thing:* **the Music Box Queen**, a wind-up ballerina who has
 danced for sixty years for a child who never came back to wind her.
 
 **New ability: Velvet Claws.** A pair of velvet mittens with pins still stuck in them, left
@@ -136,19 +145,24 @@ carrying him up to ledges that are out of reach when it is low.
 
 | Room | What happens |
 |------|--------------|
-| **The Block Stair** | Entry from the Updraft. Toy blocks stacked into a stair. A music box, far off. Chalk: "NIGHTPAW ↑ (it's WET)". Shrine. |
+| **The Block Stair** | Entry from the Updraft. Toy blocks stacked into a stair. A music box, far off. Scratched in the plaster: "NIGHTPAW ↑ its so cold". Shrine. |
 | **The Shallows** | First water. Paper boats, Tin Fish, a sunken rattle. |
 | **The Cot** (hub) | A drowned nursery under a mobile of tin moons. **Meet Dunk.** Tallow has flown up to light the shrine; she tells you this was once Mothmother's room. Mira's hair ribbon floats in the cot. |
 | **The Toy Chest** | Jack-in-the-Boxes. The **Velvet Claws** sit on the lid of an enormous chest; climb out between its walls. |
 | **The Tidewheel** | A music box turns a paddle-wheel; the water rises and falls with the waltz. Ride the high tide to the upper door. |
 | **The Cold Hearth** | A dead fireplace. Wall-jump up the chimney to **Shade 3: The Fireworks Night**. |
 | **The Bathtub Sea** | A clawfoot bath the size of a lake. Tin Fish, floating ducks, a long crossing that needs claws, wings and dash together. |
-| **The Doll Shelf** | Dolls on shelves whose heads turn to watch you. Chalk: "SHE SINGS TO THEM". An echo of Mira singing the rhyme to them. |
+| **The Doll Shelf** | Dolls on shelves whose heads turn to watch you. Scratched, very old: "SHE SINGS TO THEM". An echo of Mira singing the rhyme to them. |
 | **The Pincushion** | A vertical wall-jump climb between walls bristling with pins. |
 | **The Winding Stair** | The outside of a giant music box. A huge wing-shadow passes: Mothmother's tiny voice, "Not yet, little light." Second shrine. |
 | **The Music Box** | **Boss: the Music Box Queen.** |
 | **The Stopper Chain** | After the fight the water drains and the bath chain leads up. Nib is here, packing: the market is above. End of the chapter. |
 | *Button Cupboard* (secret) | Behind a cracked wall in the Doll Shelf: buttons, and Mira's drawing of a cat with a crown. |
+| **The Drain** (2.4) | Down the plughole in the Bathtub's pit. Climb back up with claws. |
+| **The Drowned Hall** (2.4) | The house's upstairs hall, flooded to the knee. Family portraits with their faces rubbed away; one child holds a moth nightlight. Joins the Toy Chest. |
+| **Nanny's Room** (2.4) | A rocking chair that rocks with nobody in it. Nanny Briggs's portrait. **The Lamb Key**, which opens the locked nursery door at the far end of the Bathtub (the way on to the Doll Shelf). Shrine. |
+| **The Sump** (2.4, secret) | Under a cracked floor by the Shallows' door: pipes and black water. |
+| **The Attic** (2.4, needs claws) | Up the Cold Hearth's chimney. Furniture under dust sheets, some of them breathing; a mirror with no cat in it. The second **Whetstone** behind the chimney stack. |
 
 **Shade 3, The Fireworks Night.** Hiding up the chimney from the noise. It was very warm,
 and then it was very quiet.

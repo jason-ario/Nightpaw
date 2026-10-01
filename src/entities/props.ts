@@ -82,6 +82,9 @@ export const PICKUP_ART: Record<string, { key: string; scale: number; glow: numb
   claws: { key: 'relic_claws', scale: 0.8, glow: 0xff9ab0, color: 0xffc0d0 },
   ribbon: { key: 'ribbon', scale: 0.8, glow: 0xff8a9a, color: 0xffc0d0 },
   drawing: { key: 'drawing', scale: 0.8, glow: 0xfff0c0, color: 0xfff0c0 },
+  nametag: { key: 'nametag', scale: 0.55, glow: 0xd8c8a0, color: 0xe8dcc0 },
+  whetstone: { key: 'whetstone', scale: 0.6, glow: 0xb8c8ff, color: 0xd0dcff },
+  key: { key: 'nur_key', scale: 0.5, glow: 0xe8d8b0, color: 0xe8dcc0 },
 };
 class Pickup extends Entity {
   img: any; art: typeof PICKUP_ART[string]; baseY: number;
@@ -159,7 +162,7 @@ export class Npc extends Entity {
   update(dt: number) {
     if (!this.g.inCutscene && Math.abs(this.g.player.cx - this.cx) < 60 && this.def.watch !== false) this.face = this.g.player.cx > this.cx ? 1 : -1;
     this.hover = damp(this.hover, this.kind === 'moth' ? 1 : 0, 3, dt);
-    if (this.def.float === 'water') { const s = waterSurface(this.cx); if (s !== null) this.y = damp(this.y, s - this.h + 6, 4, dt); }
+    if (this.def.float === 'water') { const s = waterSurface(this.cx); if (s !== null) this.y = damp(this.y, s - this.h + 2.5, 4, dt); } // rubber floats high
   }
   render(dt: number) {
     this.t += dt;
@@ -197,7 +200,8 @@ class Gate extends Entity {
     const n = d.h ?? 3; this.w = T; this.h = n * T;
     const r = g.room;
     for (let i = 0; i < n; i++) this.tiles.push([d.x!, d.y! + i]);
-    this.img = g.scene.add.image(x + T / 2, y, d.art ?? 'gate_bars').setOrigin(0.5, 0).setScale(INV_ART * 0.5, (n * T) / 96).setDepth(DEPTH.props + 5);
+    this.img = g.scene.add.image(x + T / 2, y, d.art ?? 'gate_bars').setOrigin(0.5, 0).setDepth(DEPTH.props + 5);
+    this.img.setScale(INV_ART * 0.5, (n * T) / this.img.height);
     if (d.art === 'deco_rockfall') this.img.setScale(INV_ART * 0.75).setOrigin(0.5, 0.15);
     this.open = this.shouldBeOpen() ? 1 : 0;
     this.apply(); void r;

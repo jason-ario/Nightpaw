@@ -2,11 +2,12 @@
 // erased at every light, plus an additive colour glow. Foreground silhouettes sit on top.
 import { SCREEN_W, SCREEN_H, ZOOM } from '../core/config';
 import { damp } from '../core/util';
+import { Foreground } from '../render/foreground';
 
 const RES = 2;
 
 export class LightScene extends Phaser.Scene {
-  rt: any; glow: any; brush: any; fg: any; vig: any;
+  rt: any; glow: any; brush: any; fg: any; vig: any; grain: any; grainT = 0; fgLayer: any; fore!: Foreground;
   dark = 0.55; darkTarget = 0.55;
   constructor() { super('light'); }
   create() {
@@ -14,6 +15,8 @@ export class LightScene extends Phaser.Scene {
     this.rt = this.add.renderTexture(0, 0, SCREEN_W / RES, SCREEN_H / RES).setOrigin(0).setScale(RES);
     this.glow = this.add.renderTexture(0, 0, SCREEN_W / RES, SCREEN_H / RES).setOrigin(0).setScale(RES).setBlendMode(Phaser.BlendModes.ADD);
     this.brush = this.make.image({ key: 'fx_light', add: false });
+    this.fgLayer = this.add.container(0, 0);
+    this.fore = new Foreground(this, this.fgLayer);
     this.fg = this.add.tileSprite(0, -20, SCREEN_W, 256, 'hol_fg').setOrigin(0).setTileScale(1.4).setAlpha(0.95);
     // vignette
     const key = 'vignette_gen';
@@ -21,11 +24,20 @@ export class LightScene extends Phaser.Scene {
       const cv = document.createElement('canvas'); cv.width = 640; cv.height = 360;
       const c = cv.getContext('2d')!;
       const g = c.createRadialGradient(320, 180, 120, 320, 180, 380);
-      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.75)');
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.6, 'rgba(0,0,0,0.28)'); g.addColorStop(1, 'rgba(0,0,0,0.88)');
       c.fillStyle = g; c.fillRect(0, 0, 640, 360);
       this.textures.addCanvas(key, cv);
     }
     this.vig = this.add.image(0, 0, key).setOrigin(0).setDisplaySize(SCREEN_W, SCREEN_H);
+    // film grain: a small noise tile, jittered a few times a second
+    if (!this.textures.exists('grain_gen')) {
+      const cv = document.createElement('canvas'); cv.width = 256; cv.height = 256;
+      const c = cv.getContext('2d')!, img = c.createImageData(256, 256);
+      for (let i = 0; i < img.data.length; i += 4) { const v = Math.random() * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
+      c.putImageData(img, 0, 0);
+      this.textures.addCanvas('grain_gen', cv);
+    }
+    this.grain = this.add.tileSprite(0, 0, SCREEN_W, SCREEN_H, 'grain_gen').setOrigin(0).setAlpha(0.05).setBlendMode(Phaser.BlendModes.OVERLAY);
   }
   setDark(d: number) { this.darkTarget = d; }
   pool: any[][] = [];
@@ -37,6 +49,8 @@ export class LightScene extends Phaser.Scene {
     const game: any = this.scene.get('game');
     if (!game || !game.lightList) return;
     const dt = deltaMs / 1000;
+    this.grainT -= dt;
+    if (this.grain && this.grainT <= 0) { this.grainT = 0.08; this.grain.tilePositionX = Math.random() * 256; this.grain.tilePositionY = Math.random() * 256; }
     this.dark = damp(this.dark, this.darkTarget, 2, dt);
     const cam = game.cameras.main;
     const mx = cam.midPoint.x, my = cam.midPoint.y;
@@ -59,7 +73,9 @@ export class LightScene extends Phaser.Scene {
     }
     if (holes.length) { this.rt.erase(holes); this.glow.draw(glows); }
     const room = game.room;
-    const showFg = room && room.area && room.area.backdrop.fg;
+    this.fore.update(room, mx, my, game.player, dt);
+    // The old hanging strip is only used by areas without a foreground set.
+    const showFg = room && room.area && !room.area.decor?.foreground && room.area.backdrop.fg;
     if (showFg && this.fg.texture.key !== showFg) this.fg.setTexture(showFg);
     this.fg.setVisible(!!showFg);
     if (showFg) {

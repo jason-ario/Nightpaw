@@ -245,8 +245,8 @@ export function duckRig(): PartDef {
       name: 'body', key: 'duck_body', x: 0, y: -22, oy: 0.6,
       front: [
         { name: 'wing', key: 'duck_wing', x: -6, y: -4, ox: 0.2, oy: 0.3 },
-        { name: 'head', key: 'duck_head', x: 20, y: -18, ox: 0.5, oy: 0.85, front: [
-          { name: 'beak', key: 'duck_beak', x: 17, y: -16, ox: 0.1, oy: 0.5 },
+        { name: 'head', key: 'duck_head', x: 13, y: -13, ox: 0.5, oy: 0.85, front: [
+          { name: 'beak', key: 'duck_beak', x: 11, y: -13, ox: 0.1, oy: 0.5 },
         ] },
       ],
     }],

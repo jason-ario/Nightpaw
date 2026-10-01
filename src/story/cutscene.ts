@@ -93,6 +93,14 @@ const STEPS: Record<string, StepFn> = {
   },
   achieve(_h, s) { Game.achieve(s.id); },
   async item(h, s) { sfx.ability(); await h.ui.itemCard(s.title, s.text, s.icon, s.hint); },
+  /** A Lost Name: a tag from something that was lost and forgotten. Counted across the world. */
+  async nametag(h, s) {
+    const n = Number(Game.flag('nametags') ?? 0) + 1, total = World.nametagTotal();
+    Game.setFlag('nametags', n);
+    if (!h.skipping) { sfx.memory(); await h.ui.itemCard(s.title, s.text, 'nametag', `Lost names remembered: ${n} of ${total}`); }
+    Game.achieve('first_name');
+    if (n >= total) Game.achieve('all_names');
+  },
   title(h, s) { h.ui.titleCard(s.name, s.sub, s.boss); },
   async memory(h, s) {
     const prev = Music.current;

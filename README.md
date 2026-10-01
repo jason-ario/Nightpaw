@@ -1,4 +1,4 @@
-# Nightpaw 2.2 — source
+# Nightpaw 2.4 — source
 
 A story-driven metroidvania for Vibe-Games, built with Phaser 3 + TypeScript.
 The story bible is in [STORY.md](STORY.md).
@@ -110,8 +110,36 @@ are in `tools/art/nursery.js`. `tools/art/pass2.js` loads last and repaints keys
 the 2.2 art pass (ink contours, three-tone form shading): Hollows enemies and props, Nightpaw's
 whiskers and scarf, and the animated claw strip. An asset can be a strip of frames
 (`R(key, w, h, draw, { frames: n })`); `art.json` records `frames` and the game numbers them 0..n-1.
+`tools/art/pass3.js` loads after it and repaints the Nursery's set pieces (water-wheel, the
+music-box movement and the giant music box, the little music boxes) and Dunk, Nib, the shelf
+dolls, the wind-up mouse and the slipper.
 Areas with `"decor": { "organic": true }` get procedural grass, stalactites and stones set in the
 rock instead of stamped edge tiles (see `src/render/roomArt.ts`).
+
+**Levels.** `tools/levels/nursery.py` writes `content/areas/nursery.json`;
+`tools/levels/hollows_expansion.py` adds the 2.4 rooms to the hand-made `hollows.json` (and
+opens the original rooms into them). Both use `tools/levels/carve.py`. Re-run them after editing,
+then `node tools/validate-world.cjs`.
+
+**Lost Names, whetstones, story gates (2.4).** A pickup of `kind: 'nametag'` runs a cutscene whose
+`nametag` step counts it (`flags.nametags`) against every nametag in the world. `kind: 'whetstone'`
+gives `whet_hollows` / `whet_nursery`; each adds half a point of claw damage (`Player.damage()`).
+A `gate` with `mode: 'flag'` stays shut until its flag is set (the Belfry bell sets `bell_rung`,
+the Lamb Key sets `nursery_key`); any art can be a gate (`art: 'nur_door'`). New props are painted in
+`tools/art/depths.js`.
+
+**Look.** `src/render/grade.ts` colour-grades the game, backdrop and title cameras (less
+saturation, a little more contrast); `LightScene` adds film grain and a heavy vignette.
+
+**Foreground layer.** Each area can list big silhouettes that are drawn in front of
+everything, moving faster than the world when the camera pans (parallax 1.35 to 1.7,
+gentler vertically), like the foreground in Hollow Knight:
+`"decor": { "foreground": { "floor": [...], "ceil": [...], "density": 1 } }`.
+Pieces are placed along each room from a seed and are pinned to the screen's edges: floor
+pieces rise from below the bottom of the frame, ceiling pieces hang in from the top, and they only
+sink a little further out of frame as the camera climbs or drops, never into the middle. They thin out when Nightpaw passes behind one, and boss arenas get half as
+many, only hanging ones. The art (`fg_hol_*`, `fg_nur_*`) is in `tools/art/foreground.js`,
+which loads after `pass3.js`; the code is `src/render/foreground.ts`, drawn by `LightScene`.
 
 ## Checking your work
 

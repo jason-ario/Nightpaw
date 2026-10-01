@@ -1,4 +1,4 @@
-// Renders every asset in painter.js, story.js, nursery.js and pass2.js (which repaints some in place) to assets/art/<key>.png and writes assets/art/art.json.
+// Renders every asset in painter.js, story.js, nursery.js, pass2.js, pass3.js, depths.js and foreground.js (the pass files repaint some in place) to assets/art/<key>.png and writes assets/art/art.json.
 // Usage: node tools/art/build-art.cjs [key1,key2,...]
 // Needs Playwright + Chromium (npm i -D playwright && npx playwright install chromium).
 const fs = require('fs');
@@ -20,6 +20,9 @@ try { ({ chromium } = require('playwright')); } catch { ({ chromium } = require(
   await page.addScriptTag({ path: path.join(__dirname, 'story.js') });
   await page.addScriptTag({ path: path.join(__dirname, 'nursery.js') });
   await page.addScriptTag({ path: path.join(__dirname, 'pass2.js') });
+  await page.addScriptTag({ path: path.join(__dirname, 'pass3.js') });
+  await page.addScriptTag({ path: path.join(__dirname, 'depths.js') });
+  await page.addScriptTag({ path: path.join(__dirname, 'foreground.js') });
   const assets = await page.evaluate((o) => window.renderAll(o), only);
   const manifestPath = path.join(outDir, 'art.json');
   const manifest = fs.existsSync(manifestPath) ? JSON.parse(fs.readFileSync(manifestPath, 'utf8')) : {};

@@ -92,6 +92,8 @@ export const sfx: Record<string, (...a: any[]) => void> = {
   windDown: () => { for (let i = 0; i < 8; i++) chime(784 / (1 + i * 0.08), i * (0.18 + i * 0.05), 0.05, sfxBus); },
   drain: () => { noise(3.5, 300, 0.5, 0.25, -200); tone(60, 3, 'sine', 0.08, -20); },
   squeak: () => { tone(1500, 0.09, 'sine', 0.06, 900); tone(1900, 0.07, 'sine', 0.05, 700, 0.1); },
+  // a huge old bell: a low fundamental, the off-pitch partials that make a bell a bell, a long hum
+  bell: () => { [[98, 7, 0.22], [196, 5, 0.12], [233, 4, 0.08], [294, 3.5, 0.07], [392, 2.5, 0.05], [523, 1.6, 0.03]].forEach(([f, d, v]) => tone(f, d, 'sine', v, -f * 0.01, 0, sfxBus)); noise(0.3, 600, 0.6, 0.25, -300); },
   tinkle: () => { const r = [0, 4, 7, 12]; r.forEach((n, i) => chime(1318 * Math.pow(2, n / 12), i * 0.12, 0.018, sfxBus)); },
 };
 

@@ -17,6 +17,7 @@ import '../entities/enemies';
 import '../entities/props';
 import '../entities/nursery';
 import '../entities/queen';
+import { grade } from '../render/grade';
 
 const GROUNDED = new Set(['shrine', 'jar', 'npc', 'pickup', 'warden', 'jackbox', 'musicbox', 'queen']);
 
@@ -60,6 +61,7 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
 
   create() {
     const cam = this.cameras.main;
+    grade(cam);
     cam.setZoom(ZOOM); cam.setRoundPixels(false); cam.transparent = true;
     this.fx = new Fx(this);
     this.waterGfx = this.add.graphics().setDepth(DEPTH.player + 3);

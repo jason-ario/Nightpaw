@@ -10,52 +10,9 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
-class R:
-    def __init__(self, id, name, x, y, w, h, **kw):
-        self.d = dict(id=id, name=name, x=x, y=y, **kw)
-        self.w, self.h = w, h
-        self.g = [['#'] * w for _ in range(h)]
-        self.legend, self.ents, self.water = {}, [], []
-
-    def carve(self, x0, y0, x1, y1, ch='.'):
-        for y in range(y0, y1 + 1):
-            for x in range(x0, x1 + 1):
-                self.g[y][x] = ch
-        return self
-
-    def fill(self, x0, y0, x1, y1):
-        return self.carve(x0, y0, x1, y1, '#')
-
-    def plat(self, x0, x1, y):
-        return self.carve(x0, y, x1, y, '=')
-
-    def pins(self, x0, x1, y):
-        return self.carve(x0, y, x1, y, '^')
-
-    def put(self, x, y, ch, ent=None):
-        self.g[y][x] = ch
-        if ent is not None:
-            self.legend[ch] = ent
-        return self
-
-    def ent(self, type, x, y, **kw):
-        self.ents.append(dict(type=type, x=x, y=y, **kw))
-        return self
-
-    def decal(self, art, x, y, scale=0.5, **kw):
-        return self.ent('decal', x, y, art=art, scale=scale, **kw)
-
-    def pool(self, **kw):
-        self.water.append(kw)
-        return self
-
-    def json(self):
-        out = dict(self.d)
-        out['rows'] = [''.join(r) for r in self.g]
-        if self.legend: out['legend'] = self.legend
-        if self.ents: out['entities'] = self.ents
-        if self.water: out['water'] = self.water
-        return out
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from carve import R  # noqa: E402
 
 
 rooms = []
@@ -94,6 +51,8 @@ r.carve(8, 9, 35, 14)              # the basin
 r.fill(17, 9, 19, 14)              # islands
 r.fill(26, 10, 28, 14)
 r.carve(36, 5, 43, 8)              # exit → Cot
+r.carve(3, 9, 6, 9, 'X')           # cracked floor by the door → the Sump (2.4)
+r.carve(3, 10, 6, 17)
 r.pool(x=8, w=28, level=10)
 r.plat(11, 14, 5)
 r.put(12, 4, 'o'); r.put(13, 4, 'o')
@@ -143,6 +102,7 @@ r = R('toy_chest', 'The Toy Chest', 432, -62, 34, 20)
 r.carve(0, 7, 11, 10)              # entry (floor row 11)
 r.carve(1, 2, 32, 10)
 r.carve(12, 11, 21, 17)            # the chest: 7 deep, needs claws to leave
+r.carve(33, 7, 33, 10)             # → the Drowned Hall (2.4)
 r.plat(26, 30, 6)
 r.put(8, 10, 'J'); r.put(25, 10, 'J', dict(type='jackbox', face=-1))
 r.put(28, 5, 'g')
@@ -181,6 +141,8 @@ r.carve(23, 16, 23, 19)            # exit → Tidewheel
 r.carve(3, 2, 6, 11)               # the chimney
 r.carve(3, 1, 14, 4)               # the chimney-top nook
 r.plat(2, 7, 16)                   # the mantel: a step up into the chimney
+r.carve(5, 0, 8, 0)                # ↑ the Attic (2.4)
+r.plat(5, 8, 2)
 r.put(12, 4, '3', dict(type='pickup', kind='shade', id='shade_fireworks', cutscene='shade_fireworks'))
 r.put(17, 19, 'g'); r.put(14, 14, 'w')
 r.put(20, 19, 'm')
@@ -197,6 +159,7 @@ r.carve(5, 18, 38, 20)             # the tub (floor row 21)
 r.fill(39, 5, 42, 21)              # the tall tub end / faucet
 r.carve(43, 18, 50, 20)
 r.pins(43, 50, 20)
+r.carve(46, 20, 49, 21)            # the drain → the Drain (2.4)
 r.fill(51, 9, 55, 21)              # exit ledge
 r.carve(55, 5, 55, 8)              # exit → Doll Shelf
 r.carve(51, 2, 54, 8)
@@ -209,6 +172,8 @@ r.put(17, 18, 'q', dict(type='npc', rig='duck', face=-1, float='water', watch=Fa
 r.put(30, 18, 'u', dict(type='npc', rig='duck', face=1, float='water', watch=False))
 r.decal('nur_faucet', 41, 4, 0.6)
 r.put(40, 4, 'Y', dict(type='trigger', w=2, h=2, cutscene='pins_hint'))
+r.ent('gate', 55, 5, id='nursery_door', mode='flag', flag='nursery_key', h=4, art='nur_door')
+r.ent('trigger', 53, 8, id='door_hint', w=1, h=4, cutscene='door_hint', once=False, **{'if': '!nursery_key'})
 rooms.append(r)
 
 # --------------------------------------------------------------------------- 8. The Doll Shelf
@@ -311,13 +276,114 @@ r.decal('nur_chain', 9, 29, 2.0, layer='bg', originY=1)
 r.decal('nur_plughole', 16, 1, 0.55, originY=0, oy=-1, glow=60, glowColor='0xffd9a0')
 rooms.append(r)
 
+# =========================================================================== 2.4: the expansion
+def tag(id):
+    return dict(type='pickup', kind='nametag', id=id, cutscene=id)
+
+# --------------------------------------------------------------------------- The Drain
+# Down the plughole in the Bathtub's pit; climb back with claws.
+r = R('the_drain', 'The Drain', 464, -78, 12, 14, dark=0.6)
+r.carve(2, 0, 5, 12)
+r.carve(3, 13, 5, 13)
+r.carve(6, 5, 9, 7)                # a niche off the pipe
+r.put(8, 7, '1', tag('name_baby'))
+r.decal('deco_roots', 4, 0, 0.4, layer='bg', originY=0, oy=-1, alpha=0.5)
+rooms.append(r)
+
+# --------------------------------------------------------------------------- The Drowned Hall
+# The house's old upstairs hall, flooded to the knee. Portraits with their faces rubbed out.
+r = R('drowned_hall', 'The Drowned Hall', 466, -64, 50, 22, dark=0.5, onEnter='hall_enter', onEnterIf='!hall_seen')
+r.carve(1, 0, 3, 2)                # ↑ the Drain
+r.carve(1, 3, 48, 18)
+r.carve(0, 9, 0, 12)               # ← the Toy Chest
+r.carve(49, 9, 49, 14)             # → Nanny's Room
+r.fill(1, 13, 4, 18)               # landing under the Toy Chest door
+r.fill(45, 15, 48, 18)             # landing at the far door
+r.pool(x=5, w=40, level=15)
+r.plat(9, 12, 12); r.plat(18, 21, 11); r.plat(27, 30, 12); r.plat(36, 39, 11)
+r.plat(22, 25, 7)
+r.put(23, 6, '1', tag('name_dolly'))
+r.put(12, 16, 'f'); r.put(24, 16, 'f'); r.put(34, 16, 'f')
+r.put(20, 10, 'w'); r.put(40, 10, 'J', dict(type='jackbox', face=-1))
+for x in (8, 17, 31, 42):
+    r.decal('nur_portrait', x, 8, 0.5, layer='bg', flip=(x % 2 == 0))
+r.decal('nur_portrait', 26, 4, 0.4, layer='bg', read='read_portrait', label='Look', w=2, h=2)
+rooms.append(r)
+
+# --------------------------------------------------------------------------- Nanny's Room
+# An empty rocking chair that still rocks. The lamb key hangs high on its hook.
+r = R('nanny_room', "Nanny's Room", 516, -76, 36, 34, dark=0.55, onEnter='nanny_enter', onEnterIf='!nanny_seen')
+r.carve(0, 21, 1, 26)              # ← the Drowned Hall
+r.carve(2, 3, 33, 28)
+r.fill(2, 27, 33, 28)              # floor (row 27 top)
+r.carve(0, 27, 1, 28)
+r.fill(0, 27, 1, 28)
+r.plat(22, 26, 23); r.plat(27, 31, 19); r.plat(21, 25, 15); r.plat(27, 31, 11); r.plat(22, 26, 7)
+r.fill(29, 5, 33, 6)               # the hook's ledge
+r.put(31, 4, 'K', dict(type='pickup', kind='key', id='nursery_key', cutscene='get_nursery_key'))
+r.put(13, 26, '1', tag('name_nanny'))
+r.put(4, 26, 'S')
+r.put(17, 26, 'm'); r.put(28, 18, 'J', dict(type='jackbox', face=-1)); r.put(24, 10, 'w')
+r.decal('nur_rocker', 10, 26, 0.7, layer='bg', sway=0.09, swaySpeed=1.1)
+r.decal('nur_basket', 14, 26, 0.45, layer='bg')
+r.decal('nur_portrait', 8, 18, 0.7, layer='bg', read='read_nanny_portrait', label='Look', w=2, h=3)
+rooms.append(r)
+
+# --------------------------------------------------------------------------- The Sump
+# Under the Shallows' cracked floor: pipes, black water, things that sank.
+r = R('sump', 'The Sump', 340, -42, 44, 16, dark=0.7)
+r.carve(3, 0, 6, 1)                # ↑ the Shallows
+r.carve(1, 2, 42, 12)
+r.pool(x=1, w=42, level=9)
+r.plat(19, 26, 5); r.plat(4, 6, 2)
+r.plat(5, 9, 7); r.plat(34, 38, 7)
+r.fill(1, 5, 3, 12)
+r.put(2, 4, '1', tag('name_rosalind'))
+r.decal('chalk_up', 5, 4, 0.3, layer='bg', alpha=0.5)
+r.put(37, 6, 'g')
+r.put(12, 11, 'f'); r.put(30, 11, 'f')
+r.decal('nur_boat', 15, 9, 0.3, rot=2.6, alpha=0.5)
+r.decal('nur_bear', 28, 12, 0.35, rot=1.4, alpha=0.4)
+rooms.append(r)
+
+# --------------------------------------------------------------------------- The Attic
+# Up the Cold Hearth's chimney: everything that was put away "for now", under sheets.
+r = R('attic', 'The Attic', 356, -120, 64, 22, dark=0.58, onEnter='attic_enter', onEnterIf='!attic_seen')
+r.carve(1, 2, 62, 19)
+r.carve(5, 20, 8, 21)              # ↓ the Cold Hearth's chimney
+r.plat(5, 8, 20)
+r.fill(14, 15, 18, 19)             # boxes
+r.fill(30, 14, 34, 19)
+r.plat(20, 24, 12); r.plat(26, 29, 9); r.plat(36, 40, 11); r.plat(44, 48, 14)
+r.fill(1, 2, 62, 3)                # rafters
+r.plat(10, 13, 7)
+r.fill(55, 2, 62, 11)              # the chimney stack
+r.carve(57, 12, 62, 19)            # behind the stack: a hidden corner
+r.carve(56, 12, 56, 19, 'X')
+r.put(60, 19, 'W', dict(type='pickup', kind='whetstone', id='whet_nursery', cutscene='get_whet_nursery'))
+r.put(27, 8, '1', tag('name_lamb'))
+r.put(32, 13, '2', tag('name_m'))
+r.put(16, 14, 'g')
+r.put(24, 19, 'm'); r.put(42, 19, 'm'); r.put(38, 8, 'w'); r.put(50, 19, 'J')
+for x, s in [(11, 0.8), (23, 0.7), (40, 0.9), (48, 0.75)]:
+    r.decal('nur_sheet', x, 19, s, layer='bg', flip=(x % 2 == 0))
+r.decal('nur_mirror', 52, 19, 0.7, layer='bg', read='read_mirror', label='Look', w=2, h=3)
+r.decal('nur_horse', 26, 19, 0.45, layer='bg', alpha=0.7)
+r.decal('nur_mobile', 34, 4, 0.4, originY=0, oy=-1, sway=0.03, swaySpeed=0.3, alpha=0.6)
+rooms.append(r)
+
+# A few more hollow toys on the original path (2.4).
+byid = {x.d['id']: x for x in rooms}
+for rid, x, y, ch in [('bathtub', 53, 8, 'J'), ('doll_shelf', 16, 21, 'm'), ('tidewheel', 28, 4, 'w'), ('cot', 22, 14, 'm')]:
+    byid[rid].g[y][x] = ch
+
 area = {
     'id': 'nursery',
     'name': 'The Drowned Nursery',
     'subtitle': 'Where the music box plays by itself',
     'tileset': 'nur',
-    'backdrop': {'far': 'nur_bg_far', 'mid': 'nur_bg_mid', 'fg': 'nur_fg', 'tint': 0x8a86b8, 'midTint': 0x5e6a8a, 'fog': True, 'fogTint': 0xcfe6ff},
-    'dark': 0.38,
+    'backdrop': {'far': 'nur_bg_far', 'mid': 'nur_bg_mid', 'fg': 'nur_fg', 'tint': 0x6a6890, 'midTint': 0x48506c, 'fog': True, 'fogTint': 0xcfe6ff},
+    'dark': 0.5,
     'music': 'nursery',
     'ambience': 'nursery',
     'legend': {
@@ -328,7 +394,8 @@ area = {
         'M': {'type': 'musicbox'},
     },
     'decor': {'floor': ['nur_block_small', 'nur_marble', 'nur_thimble', 'nur_bead'], 'ceil': ['nur_bunting'],
-              'glow': {'nur_marble': [0xbfe6ff, 20]}},
+              'glow': {'nur_marble': [0xbfe6ff, 20]},
+              'foreground': {'floor': ['fg_nur_blocks', 'fg_nur_yarn', 'fg_nur_cot'], 'ceil': ['fg_nur_mobile', 'fg_nur_bunting'], 'density': 1}},
     'water': {'tint': 0x2a6a88, 'surface': 0xcfeeff, 'alpha': 0.45},
     'endCard': {'title': 'End of Chapter Two', 'lines': [
         'Up through the plughole, the lights of Mousewick Market.',

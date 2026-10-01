@@ -9,6 +9,7 @@ import { World } from '../world/world';
 import { FONT } from './UIScene';
 import { Puppet } from '../render/puppet';
 import { nightpawRig } from '../render/rigs';
+import { grade } from '../render/grade';
 
 const RIM = { x: 968, y: 494 }; // where the cat stands on title_near (screen px)
 
@@ -27,6 +28,7 @@ export class TitleScene extends Phaser.Scene {
   look = 0; lookT = 3; blinkT = 2; earT = 4;
   constructor() { super('title'); }
   create() {
+    grade(this.cameras.main, 0.7);
     this.cameras.main.fadeIn(1200, 0, 0, 0);
     // parallax: sky barely moves, the garden moves most; everything overscanned a little
     this.layers = [];

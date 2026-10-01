@@ -201,6 +201,9 @@ export class Player {
     return this.face > 0 ? { x: this.x + this.w - 2, y: this.y - 5, w: 28, h: 22 } : { x: this.x - 26, y: this.y - 5, w: 28, h: 22 };
   }
 
+  /** Claw damage: 1, plus half for each whetstone found (they are optional upgrades). */
+  damage() { return 1 + 0.5 * ((Game.has('whet_hollows') ? 1 : 0) + (Game.has('whet_nursery') ? 1 : 0)); }
+
   resolveAttack() {
     const box = this.attackBox();
     let pogo = false;
@@ -208,7 +211,7 @@ export class Player {
       if (!e.hittable || e.dead || this.hitSet.has(e) || !overlap(box, e)) continue;
       this.hitSet.add(e);
       const dir = this.atkDir === 'side' ? this.face : Math.sign(e.cx - this.cx) || 1;
-      if (!e.onHit(1, dir, this.atkDir)) continue;
+      if (!e.onHit(this.damage(), dir, this.atkDir)) continue;
       sfx.hit(); this.g.hitstop(0.05); this.g.shake(3);
       const hx = clamp(this.cx + this.face * 14, e.x, e.x + e.w), hy = clamp(this.y + 6, e.y, e.y + e.h);
       this.g.burst(hx, hy, 8, 0xffffff, { spd: 160, life: 0.3, size: 1.6, grav: 0, glow: true });

@@ -529,17 +529,32 @@
     paint(c, (q) => { q.beginPath(); q.rect(500, 470, 560, 60); }, { base: '#e6e0ec', light: '#ffffff', dark: '#7a7090', bbox: [500, 470, 1060, 530], seed: 'sheet', tex: 0.03 });
     paint(c, (q) => blobPath(q, [[470, 470], [520, 424], [600, 418], [640, 440], [630, 480], [520, 490]]), { base: '#d8d0e4', light: '#fffaf0', dark: '#6a6080', rim: '#ffffff', rimW: 1.4, lx: -0.9, ly: -0.5, bbox: [470, 418, 640, 490], seed: 'pillow', tex: 0.03 });
     miraAsleep(c, 560, 440, 1.3);
-    const quilt = (q) => blobPath(q, [[560, 486], [640, 466], [760, 470], [880, 462], [1040, 472], [1072, 520], [1056, 548], [520, 548], [540, 510]]);
-    paint(c, quilt, { base: '#3e3052', light: '#a890c8', dark: '#120a1e', rim: '#e8d0c8', rimW: 1.8, lx: -0.9, ly: -0.6, bbox: [520, 462, 1072, 548], seed: 'quilt', tex: 0.06 });
+    // Mira's body under the quilt: shoulder, waist, the hill of a hip, knees drawn up a little, feet
+    const quilt = (q) => blobPath(q, [[572, 484], [600, 462], [640, 446], [690, 444], [732, 454], [780, 428], [830, 430], [880, 444], [920, 438], [980, 452], [1028, 442], [1062, 462], [1072, 520], [1056, 548], [500, 548], [496, 506], [530, 492]]);
+    paint(c, quilt, { base: '#3e3052', light: '#a890c8', dark: '#120a1e', rim: '#e8d0c8', rimW: 1.8, lx: -0.9, ly: -0.6, bbox: [496, 428, 1072, 548], seed: 'quilt', tex: 0.06 });
     c.save(); quilt(c); c.clip();
     const pr = rng('patch');
-    for (let i = 0; i < 20; i++) { const px = 530 + (i % 10) * 56, py = 468 + Math.floor(i / 10) * 40; c.fillStyle = [hexA('#c8283a', 0.2), hexA('#ffcf7a', 0.1), hexA('#5aa0d0', 0.12), hexA('#1a0e2a', 0.3)][Math.floor(pr() * 4)]; c.fillRect(px, py, 54, 38); }
+    for (let i = 0; i < 30; i++) { const px = 530 + (i % 10) * 56, py = 424 + Math.floor(i / 10) * 42; c.fillStyle = [hexA('#c8283a', 0.2), hexA('#ffcf7a', 0.1), hexA('#5aa0d0', 0.12), hexA('#1a0e2a', 0.3)][Math.floor(pr() * 4)]; c.fillRect(px, py, 54, 38); }
     c.strokeStyle = 'rgba(255,240,220,0.14)'; c.setLineDash([4, 5]); c.lineWidth = 1.2;
-    for (let i = 0; i <= 10; i++) { c.beginPath(); c.moveTo(530 + i * 56, 460); c.lineTo(530 + i * 56, 552); c.stroke(); }
-    c.beginPath(); c.moveTo(520, 508); c.lineTo(1072, 508); c.stroke(); c.setLineDash([]);
+    for (let i = 0; i <= 10; i++) { c.beginPath(); c.moveTo(530 + i * 56, 420); c.lineTo(530 + i * 56, 552); c.stroke(); }
+    for (const yy of [466, 508]) { c.beginPath(); c.moveTo(520, yy); c.lineTo(1072, yy); c.stroke(); } c.setLineDash([]);
+    // soft folds where the quilt drapes over her
+    c.strokeStyle = 'rgba(10,4,18,0.35)'; c.lineWidth = 6; c.filter = 'blur(3px)';
+    for (const [x0, y0, x1, y1] of [[732, 456, 760, 540], [880, 446, 900, 540], [640, 452, 620, 540]]) { c.beginPath(); c.moveTo(x0, y0); c.quadraticCurveTo((x0 + x1) / 2 + 10, (y0 + y1) / 2, x1, y1); c.stroke(); }
+    c.filter = 'none';
     c.restore();
+    // the sheet turned down over the quilt's top edge, under her chin
+    const fold = (q) => blobPath(q, [[526, 494], [566, 486], [596, 458], [640, 442], [692, 440], [720, 448], [716, 462], [690, 458], [642, 462], [602, 478], [570, 496], [530, 504]]);
+    paint(c, fold, { base: '#dcd6e6', light: '#ffffff', dark: '#6a6488', rim: '#ffffff', rimW: 1.2, lx: -0.8, ly: -0.7, bbox: [526, 440, 720, 504], seed: 'sfold', tex: 0.03 });
+    // her arm out over the covers: nightgown sleeve, a small hand holding the edge
+    const sleeve = (q) => blobPath(q, [[606, 452], [632, 440], [664, 446], [690, 458], [688, 474], [660, 468], [630, 466], [610, 470]]);
+    paint(c, sleeve, { base: '#a8b4d8', light: '#f0f4ff', dark: '#3a4268', rim: '#ffffff', rimW: 1.2, lx: -0.8, ly: -0.8, bbox: [606, 440, 690, 474], seed: 'sleeve', tex: 0.03 });
+    c.strokeStyle = 'rgba(60,66,110,0.5)'; c.lineWidth = 1.2; for (const x of [640, 656, 672]) { c.beginPath(); c.moveTo(x, 446); c.quadraticCurveTo(x + 3, 456, x - 1, 466); c.stroke(); }
+    const hand = (q) => blobPath(q, [[684, 460], [698, 456], [710, 462], [712, 472], [700, 478], [686, 474]]);
+    paint(c, hand, { base: '#e2bda6', light: '#fff0de', dark: '#8a5a60', rim: '#ffe0b8', rimW: 1, lx: -0.8, ly: -0.6, bbox: [684, 456, 712, 478], seed: 'hand', tex: 0.02 });
+    c.strokeStyle = 'rgba(120,70,70,0.6)'; c.lineWidth = 1; for (const x of [698, 704]) { c.beginPath(); c.moveTo(x, 466); c.lineTo(x + 2, 476); c.stroke(); }
     // Nightpaw at the foot of the bed, facing Mira, ears half back
-    storyCat(c, 950, 482, 1.3, { pose: 'sit', flip: true, ears: 0.35, eyes: 'open', seed: 'bc' });
+    storyCat(c, 952, 462, 1.3, { pose: 'sit', flip: true, ears: 0.35, eyes: 'open', seed: 'bc' });
     // rug
     const rug = (q) => ell(q, 720, 660, 300, 36);
     paint(c, rug, { base: '#2a1420', light: '#6a3448', dark: '#08030a', bbox: [420, 624, 1020, 696], seed: 'rug', tex: 0.07 });

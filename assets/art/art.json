@@ -742,5 +742,121 @@
  "deco_pebbles": {
   "w": 40,
   "h": 14
+ },
+ "fg_hol_ferns": {
+  "w": 440,
+  "h": 280
+ },
+ "fg_hol_mush": {
+  "w": 320,
+  "h": 300
+ },
+ "fg_hol_rock": {
+  "w": 480,
+  "h": 240
+ },
+ "fg_hol_roots": {
+  "w": 320,
+  "h": 440
+ },
+ "fg_hol_vine": {
+  "w": 180,
+  "h": 480
+ },
+ "fg_nur_blocks": {
+  "w": 380,
+  "h": 320
+ },
+ "fg_nur_yarn": {
+  "w": 400,
+  "h": 240
+ },
+ "fg_nur_cot": {
+  "w": 420,
+  "h": 440
+ },
+ "fg_nur_mobile": {
+  "w": 240,
+  "h": 500
+ },
+ "fg_nur_bunting": {
+  "w": 540,
+  "h": 220
+ },
+ "nametag": {
+  "w": 72,
+  "h": 48
+ },
+ "whetstone": {
+  "w": 80,
+  "h": 48
+ },
+ "bell_big": {
+  "w": 256,
+  "h": 300
+ },
+ "bell_rope": {
+  "w": 24,
+  "h": 512
+ },
+ "gr_stone1": {
+  "w": 64,
+  "h": 80
+ },
+ "gr_stone2": {
+  "w": 64,
+  "h": 80
+ },
+ "gr_stone3": {
+  "w": 64,
+  "h": 80
+ },
+ "hoard_pile": {
+  "w": 512,
+  "h": 256
+ },
+ "well_grate": {
+  "w": 256,
+  "h": 96
+ },
+ "well_bucket": {
+  "w": 96,
+  "h": 96
+ },
+ "scratch_mira": {
+  "w": 128,
+  "h": 96
+ },
+ "scratch_tally": {
+  "w": 160,
+  "h": 128
+ },
+ "nur_door": {
+  "w": 96,
+  "h": 192
+ },
+ "nur_key": {
+  "w": 72,
+  "h": 40
+ },
+ "nur_rocker": {
+  "w": 160,
+  "h": 180
+ },
+ "nur_basket": {
+  "w": 96,
+  "h": 64
+ },
+ "nur_sheet": {
+  "w": 200,
+  "h": 160
+ },
+ "nur_mirror": {
+  "w": 120,
+  "h": 220
+ },
+ "nur_portrait": {
+  "w": 96,
+  "h": 120
  }
 }

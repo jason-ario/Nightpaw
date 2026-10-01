@@ -2,6 +2,7 @@
 import { SCREEN_W, SCREEN_H, ZOOM } from '../core/config';
 import type { AreaDef } from '../content/types';
 import type { Room } from '../world/world';
+import { grade } from '../render/grade';
 
 export class BackdropScene extends Phaser.Scene {
   far: any; mid: any; fog: any; fog2: any; tint: any;
@@ -11,6 +12,7 @@ export class BackdropScene extends Phaser.Scene {
   constructor() { super('backdrop'); }
   create() {
     this.cameras.main.setBackgroundColor('#07060a');
+    grade(this.cameras.main);
     this.far = this.add.tileSprite(0, 0, SCREEN_W, SCREEN_H, '__DEFAULT').setOrigin(0);
     this.mid = this.add.tileSprite(0, 0, SCREEN_W, SCREEN_H, '__DEFAULT').setOrigin(0).setAlpha(0.95);
     this.fog = this.add.tileSprite(0, SCREEN_H - 300, SCREEN_W, 300, 'fog').setOrigin(0).setAlpha(0.45).setTileScale(2.5, 2.4);

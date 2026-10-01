@@ -56,6 +56,9 @@ export const World = {
     this.byId = new Map(this.rooms.map((r) => [r.id, r]));
   },
 
+  /** How many Lost Names exist in the whole world (pickups of kind 'nametag'). */
+  nametagTotal(): number { return this.rooms.reduce((n, r) => n + r.spawns.filter((e) => e.type === 'pickup' && e.kind === 'nametag').length, 0); },
+
   roomAt(px: number, py: number): Room | null {
     for (const r of this.rooms) if (px >= r.px && px < r.px + r.pw && py >= r.py && py < r.py + r.ph) return r;
     return null;

@@ -213,8 +213,10 @@ class MusicBox extends Entity {
     super(g, d, x, y); this.w = 14; this.h = 12;
     const s = g.scene, sc = d.scale ?? 0.4;
     this.img = s.add.image(x + T / 2, y + T, 'musicbox').setOrigin(0.5, 1).setScale(INV_ART * sc).setDepth(DEPTH.props);
-    this.crank = s.add.image(x + T / 2 + 10 * sc * 2.2, y + T - 16 * sc * 2.2, 'mb_crank').setScale(INV_ART * sc).setDepth(DEPTH.props + 1).setOrigin(0.2, 0.5);
-    if (d.flip) { this.img.setFlipX(true); this.crank.setX(x + T / 2 - 10 * sc * 2.2).setFlipX(true).setOrigin(0.8, 0.5); }
+    // the crank turns in the bushing on the box's side (art px 145,106 of the 160x140 box)
+    const cx = (145 - 80) * INV_ART * sc, cy = (140 - 106) * INV_ART * sc;
+    this.crank = s.add.image(x + T / 2 + cx, y + T - cy, 'mb_crank').setScale(INV_ART * sc).setDepth(DEPTH.props + 1).setOrigin(0.2, 0.5);
+    if (d.flip) { this.img.setFlipX(true); this.crank.setX(x + T / 2 - cx).setFlipX(true).setOrigin(0.8, 0.5); }
   }
   update(dt: number) {
     this.cool -= dt;

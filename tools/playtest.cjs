@@ -18,7 +18,10 @@ async function open(browser, query) {
   await page.waitForFunction(() => window.__NP && window.__NP.started, null, { timeout: 30000 });
   const T = {
     page, errors,
-    adv: (sec) => page.evaluate((s) => { const g = window.__NP.sys.game; let t = Math.max(window.__simT || 0, performance.now()); for (let i = 0; i < s * 60; i++) { t += 1000 / 60; g.headlessStep(t, 1000 / 60); } window.__simT = t; }, sec),
+    adv: (sec) => page.evaluate((s) => { const g = window.__NP.sys.game;
+      // Tweens time themselves with Date.now(); drive them off the simulated step instead, so tests don't depend on how fast this machine is.
+      for (const sc of g.scene.scenes) { const tw = sc.sys.tweens; if (tw && !tw.__fixed) { tw.getDelta = () => 1000 / 60; tw.__fixed = true; } }
+      let t = Math.max(window.__simT || 0, performance.now()); for (let i = 0; i < s * 60; i++) { t += 1000 / 60; g.headlessStep(t, 1000 / 60); } window.__simT = t; }, sec),
     state: () => page.evaluate(() => { const g = window.__NP, P = g.player; return { room: g.room.id, x: +(P.x / 16 - g.room.x).toFixed(2), y: +(P.y / 16 - g.room.y).toFixed(2), hp: P.hp, ground: P.onGround, cut: g.inCutscene, modal: !!g.ui.modal, dead: P.dead, buttons: window.__NP_GAME.save.buttons, abilities: Object.keys(window.__NP_GAME.save.abilities), flags: Object.keys(window.__NP_GAME.save.flags), ents: g.ents.length }; }),
     async hold(keys, sec) { for (const k of [].concat(keys)) await page.keyboard.down(k); await T.adv(sec); for (const k of [].concat(keys)) await page.keyboard.up(k); await T.adv(1 / 30); },
     async press(k, after = 0.1) { await page.keyboard.down(k); await T.adv(1 / 30); await page.keyboard.up(k); await T.adv(after); },
@@ -273,6 +276,60 @@ const scenarios = {
     const scene = await T.page.evaluate(() => ({ scenes: window.__NP.sys.game.scene.getScenes(true).map((x) => x.sys.settings.key), cut: window.__NP.inCutscene, fade: window.__NP.ui.fadeRect.alpha }));
     check('keeps playing after the plughole (no end screen)', !scene.scenes.includes('title') && !scene.cut && scene.fade < 0.05, JSON.stringify(scene));
     check('no errors in the nursery', T.errors.length === 0, T.errors.join(' | '));
+    await T.page.close();
+  },
+
+  // 2.4: the bell loop in the Hollows, Lost Names, whetstones and the nursery door.
+  async depths(browser) {
+    const flag = (T, f) => T.page.evaluate((f) => !!window.__NP_GAME.save.flags[f], f);
+    // the Warden's bars hold until the bell rings
+    let T = await open(browser, '?room=warden_approach&x=30&y=15&abilities=needle,dash&flags=intro_done');
+    await T.adv(0.3); await T.finishCutscene(10);
+    await T.hold('ArrowRight', 1.6); await T.finishCutscene(10); await T.hold('ArrowRight', 1.0);
+    let s = await T.state();
+    check('bars block the Warden\'s hall before the bell', s.room === 'warden_approach' && s.x < 37, JSON.stringify(s));
+    await T.page.close();
+    // drop through Nib's floor into the Hanging Way
+    T = await open(browser, '?room=nib_nook&x=19&y=15&abilities=needle,dash&flags=intro_done,met_nib');
+    await T.adv(0.4);
+    await T.page.keyboard.down('ArrowDown'); await T.press('KeyZ', 0.1); await T.page.keyboard.up('ArrowDown'); await T.adv(2.5);
+    s = await T.state();
+    check('drops through Nib\'s grate', s.room === 'hanging_way', JSON.stringify(s));
+    await T.page.close();
+    // ring the bell
+    T = await open(browser, '?room=sunken_belfry&x=14&y=25&abilities=needle,dash&flags=intro_done,belfry_seen');
+    await T.adv(0.5); await T.finishCutscene(10);
+    await T.press('ArrowUp', 0.5); await T.finishCutscene(40);
+    check('the bell rings', await flag(T, 'bell_rung'));
+    await T.teleport('warden_approach', 33, 15); await T.adv(1.0);
+    await T.hold('ArrowRight', 2.0); await T.adv(0.5);
+    s = await T.state();
+    check('bars lift after the bell', s.room === 'warden_hall' || s.x > 38, JSON.stringify(s));
+    await T.page.close();
+    // a Lost Name in the Hanging Way
+    T = await open(browser, '?room=hanging_way&x=15&y=20&abilities=needle,dash&flags=intro_done');
+    await T.adv(0.3); await T.hold('ArrowRight', 0.5); await T.finishCutscene(20);
+    const names = await T.page.evaluate(() => [window.__NP_GAME.save.flags.nametags, window.__NP_WORLD.nametagTotal()]);
+    check('Lost Names count', names[0] === 1 && names[1] === 14, JSON.stringify(names));
+    check('no errors in the depths', T.errors.length === 0, T.errors.join(' | '));
+    await T.page.close();
+    // the whetstone at the top of the well sharpens the claws
+    T = await open(browser, '?room=well_shaft&x=10&y=7&abilities=needle,dash,wings,claws&flags=intro_done');
+    await T.adv(0.3); await T.finishCutscene(20); await T.hold('ArrowRight', 0.6); await T.finishCutscene(20);
+    const dmg = await T.page.evaluate(() => window.__NP.player.damage());
+    check('whetstone sharpens the claws', dmg === 1.5, String(dmg));
+    await T.page.close();
+    // the lamb key opens the nursery door
+    const NA = '&abilities=needle,dash,wings,claws&flags=nursery_arrived,met_dunk,nanny_seen';
+    T = await open(browser, '?room=bathtub&x=52&y=8' + NA);
+    await T.adv(0.4); await T.hold('ArrowRight', 1.2); await T.finishCutscene(10); await T.hold('ArrowRight', 0.8);
+    s = await T.state();
+    check('nursery door is locked', s.room === 'bathtub', JSON.stringify(s));
+    await T.teleport('nanny_room', 30, 4); await T.adv(0.3); await T.hold('ArrowRight', 0.4); await T.finishCutscene(40);
+    check('took the lamb key', await flag(T, 'nursery_key'));
+    await T.teleport('bathtub', 52, 8); await T.adv(1.0); await T.hold('ArrowRight', 2.0);
+    s = await T.state();
+    check('nursery door opens with the key', s.room === 'doll_shelf', JSON.stringify(s));
     await T.page.close();
   },
 

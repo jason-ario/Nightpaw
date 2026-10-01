@@ -1,103 +1,128 @@
 {
-  "id": "nightpaw",
-  "name": "Nightpaw",
-  "version": "2.2.0",
-  "entry": "index.html",
-  "sdk": "1",
-  "runtime": {
-    "min": "1.0",
-    "features": [
-      "webgl",
-      "canvas2d",
-      "webaudio"
-    ]
-  },
-  "input": [
-    "keyboard",
-    "gamepad",
-    "touch"
-  ],
-  "orientation": "landscape",
-  "achievements": [
-    {
-      "id": "first_blood",
-      "name": "Claws Out",
-      "description": "Defeat your first hollow thing."
-    },
-    {
-      "id": "rested",
-      "name": "A Warm Light",
-      "description": "Rest at a candle shrine."
-    },
-    {
-      "id": "slipper",
-      "name": "Her Footsteps",
-      "description": "Find Mira's lost slipper."
-    },
-    {
-      "id": "shadow_dash",
-      "name": "Shadow Dash",
-      "description": "Let a shadow join yours."
-    },
-    {
-      "id": "heart_vessel",
-      "name": "A Life Remembered",
-      "description": "Find one of Nightpaw's lost lives."
-    },
-    {
-      "id": "two_lives",
-      "name": "Twice Remembered",
-      "description": "Find both lost lives in the Hollows."
-    },
-    {
-      "id": "secret_wall",
-      "name": "Hollow Walls",
-      "description": "Break open a hidden passage."
-    },
-    {
-      "id": "warden",
-      "name": "The Warden Falls",
-      "description": "Defeat the Hollow Warden."
-    },
-    {
-      "id": "moth_wings",
-      "name": "Moth Wings",
-      "description": "Accept a gift of wings."
-    },
-    {
-      "id": "hollows_done",
-      "name": "Into the Deep",
-      "description": "Leave the Hollows."
-    },
-    {
-      "id": "velvet_claws",
-      "name": "Velvet Claws",
-      "description": "Find the mittens in the Toy Chest."
-    },
-    {
-      "id": "ribbon",
-      "name": "Something Red",
-      "description": "Find Mira's ribbon in the cot."
-    },
-    {
-      "id": "three_lives",
-      "name": "Thrice Remembered",
-      "description": "Remember the Fireworks Night."
-    },
-    {
-      "id": "cupboard",
-      "name": "King Nightpaw",
-      "description": "Find the secret Button Cupboard."
-    },
-    {
-      "id": "queen",
-      "name": "The Last Waltz",
-      "description": "Defeat the Music Box Queen."
-    },
-    {
-      "id": "nursery_done",
-      "name": "Up the Plughole",
-      "description": "Leave the Drowned Nursery."
-    }
+ "id": "nightpaw",
+ "name": "Nightpaw",
+ "version": "2.4.0",
+ "entry": "index.html",
+ "sdk": "1",
+ "runtime": {
+  "min": "1.0",
+  "features": [
+   "webgl",
+   "canvas2d",
+   "webaudio"
   ]
+ },
+ "input": [
+  "keyboard",
+  "gamepad",
+  "touch"
+ ],
+ "orientation": "landscape",
+ "achievements": [
+  {
+   "id": "first_blood",
+   "name": "Claws Out",
+   "description": "Defeat your first hollow thing."
+  },
+  {
+   "id": "rested",
+   "name": "A Warm Light",
+   "description": "Rest at a candle shrine."
+  },
+  {
+   "id": "slipper",
+   "name": "Her Footsteps",
+   "description": "Find Mira's lost slipper."
+  },
+  {
+   "id": "shadow_dash",
+   "name": "Shadow Dash",
+   "description": "Let a shadow join yours."
+  },
+  {
+   "id": "heart_vessel",
+   "name": "A Life Remembered",
+   "description": "Find one of Nightpaw's lost lives."
+  },
+  {
+   "id": "two_lives",
+   "name": "Twice Remembered",
+   "description": "Find both lost lives in the Hollows."
+  },
+  {
+   "id": "secret_wall",
+   "name": "Hollow Walls",
+   "description": "Break open a hidden passage."
+  },
+  {
+   "id": "warden",
+   "name": "The Warden Falls",
+   "description": "Defeat the Hollow Warden."
+  },
+  {
+   "id": "moth_wings",
+   "name": "Moth Wings",
+   "description": "Accept a gift of wings."
+  },
+  {
+   "id": "hollows_done",
+   "name": "Into the Deep",
+   "description": "Leave the Hollows."
+  },
+  {
+   "id": "velvet_claws",
+   "name": "Velvet Claws",
+   "description": "Find the mittens in the Toy Chest."
+  },
+  {
+   "id": "ribbon",
+   "name": "Something Red",
+   "description": "Find Mira's ribbon in the cot."
+  },
+  {
+   "id": "three_lives",
+   "name": "Thrice Remembered",
+   "description": "Remember the Fireworks Night."
+  },
+  {
+   "id": "cupboard",
+   "name": "King Nightpaw",
+   "description": "Find the secret Button Cupboard."
+  },
+  {
+   "id": "queen",
+   "name": "The Last Waltz",
+   "description": "Defeat the Music Box Queen."
+  },
+  {
+   "id": "nursery_done",
+   "name": "Up the Plughole",
+   "description": "Leave the Drowned Nursery."
+  },
+  {
+   "id": "bell",
+   "name": "Dusk Bell",
+   "description": "Ring the bell in the Sunken Belfry."
+  },
+  {
+   "id": "whetstone",
+   "name": "Sharper",
+   "description": "Find a whetstone."
+  },
+  {
+   "id": "lamb_key",
+   "name": "The Lamb Key",
+   "description": "Take the key from Nanny's Room."
+  },
+  {
+   "id": "first_name",
+   "name": "Somebody's Something",
+   "description": "Find a Lost Name."
+  },
+  {
+   "id": "all_names",
+   "name": "Nobody Forgotten",
+   "description": "Find every Lost Name in the Hollows and the Drowned Nursery."
+  }
+ ]
 }
