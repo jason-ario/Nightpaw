@@ -1,7 +1,7 @@
 {
  "id": "nightpaw",
  "name": "Nightpaw",
- "version": "2.4.0",
+ "version": "2.5.0",
  "entry": "index.html",
  "sdk": "1",
  "runtime": {
@@ -123,6 +123,31 @@
    "id": "all_names",
    "name": "Nobody Forgotten",
    "description": "Find every Lost Name in the Hollows and the Drowned Nursery."
+  },
+  {
+   "id": "candlewick",
+   "name": "A Light in the Window",
+   "description": "Find Candlewick."
+  },
+  {
+   "id": "first_purchase",
+   "name": "Fair's Fair",
+   "description": "Buy something in Candlewick."
+  },
+  {
+   "id": "first_keepsake",
+   "name": "Something to Keep",
+   "description": "Get your first keepsake."
+  },
+  {
+   "id": "full_scarf",
+   "name": "Every Stitch",
+   "description": "Wear keepsakes on every stitch of a scarf with room for three or more."
+  },
+  {
+   "id": "all_keepsakes",
+   "name": "Collector of Lost Things",
+   "description": "Own every keepsake."
   }
  ]
 }

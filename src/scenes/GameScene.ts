@@ -18,6 +18,7 @@ import '../entities/props';
 import '../entities/nursery';
 import '../entities/queen';
 import { grade } from '../render/grade';
+import { Keep } from '../core/keepsakes';
 
 const GROUNDED = new Set(['shrine', 'jar', 'npc', 'pickup', 'warden', 'jackbox', 'musicbox', 'queen']);
 
@@ -30,6 +31,7 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
   roomImg: any = null;
   waterGfx: any = null;
   cracks: { img: any; key: string; tx: number; ty: number }[] = [];
+  promptLabel: string | null = null;
   staticLights: Light[] = [];
   lightList: Light[] = [];
   time_ = 0;
@@ -166,7 +168,7 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
 
   // ------------------------------------------------------------------ Ctx services
   burst(x: number, y: number, n: number, color: number, o?: any) { this.fx.burst(x, y, n, color, o); }
-  dropCoins(x: number, y: number, n: number) { this.fx.coins(x, y, n); }
+  dropCoins(x: number, y: number, n: number) { this.fx.coins(x, y, Keep.on('magnet') ? Math.round(n * 1.5) : n); }
   shake(a: number) { this.shakeAmt = Math.max(this.shakeAmt, a); }
   hitstop(s: number) { this.hitstopT = Math.max(this.hitstopT, s); }
   prompt(text: string | null, x?: number, y?: number) { this.ui?.prompt(text, x, y); }
@@ -182,6 +184,11 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
     this.burst(P.cx, P.cy, 14, 0x0b0a10, { spd: 140, life: 0.5, size: 2.5 });
     if (P.hp <= 0) this.killPlayer();
     else if (hazard) { P.hazardT = 0.35; }
+    // Pincushion Lining: pins burst out of the cloak
+    if (Keep.on('pins') && P.hp > 0) {
+      this.burst(P.cx, P.cy, 22, 0xd8dce8, { spd: 260, life: 0.35, size: 1.4, grav: 0, glow: true });
+      for (const e of this.ents) if (e.hittable && !e.dead && Math.hypot(e.cx - P.cx, e.cy - P.cy) < 46) e.onHit(1.5, Math.sign(e.cx - P.cx) || 1, 'side');
+    }
   }
   afterHazard() { this.ui?.flashFade(0.8); }
 
@@ -367,11 +374,12 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
     // interaction prompts
     if (!this.inCutscene && !P.dead) {
       const near = this.ents.find((e) => !e.dead && e.interactLabel() && overlap({ x: P.x - 6, y: P.y - 4, w: P.w + 12, h: P.h + 8 }, e));
-      if (near !== this.promptTarget) {
-        this.promptTarget = near ?? null;
-        this.prompt(near ? near.interactLabel() : null, near ? near.cx : 0, near ? near.y - 4 : 0);
+      const label = near ? near.interactLabel() : null;
+      if (near !== this.promptTarget || label !== this.promptLabel) {
+        this.promptTarget = near ?? null; this.promptLabel = label;
+        this.prompt(label, near ? near.cx : 0, near ? near.y - 4 : 0);
       }
-      if (near && Input.pressed('up') && P.onGround && !P.resting) { if (near.interact()) { this.promptTarget = null; this.prompt(null); } }
+      if (near && Input.pressed('up') && P.onGround && (!P.resting || (near as any).restMenu)) { if (near.interact()) { this.promptTarget = null; this.prompt(null); } }
     } else if (this.promptTarget) { this.promptTarget = null; this.prompt(null); }
 
     // room transitions
@@ -458,7 +466,7 @@ export class GameScene extends Phaser.Scene implements Ctx, CutsceneHost {
     this.applyCam();
     // lights for the light scene
     const L: Light[] = [...this.staticLights];
-    if (!P.dead) L.push({ x: P.cx, y: P.cy - 2, r: 56, color: 0xb8b0ff, a: 0.28 });
+    if (!P.dead) L.push(Keep.on('owl') ? { x: P.cx, y: P.cy - 2, r: 104, color: 0xd8e0ff, a: 0.42 } : { x: P.cx, y: P.cy - 2, r: 56, color: 0xb8b0ff, a: 0.28 });
     for (const e of this.ents) { const l = e.light(); if (l) L.push(l); }
     L.push(...this.fx.lights());
     this.drawWater(L);

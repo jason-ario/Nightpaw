@@ -69,6 +69,19 @@ for rid, x, y, ch in [('ashen_gate', 33, 15, 'c'), ('weeping_tunnels', 20, 15, '
                       ('warden_approach', 14, 15, 'c'), ('nib_nook', 4, 8, 'w')]:
     set_tiles(rid, x, y, x, y, ch)
 
+# Nib's Nook (2.5): ledges up to the high alcove, whose roof opens on the Lantern Stair to
+# Candlewick. A rockfall chokes it until the bell shakes it loose. Nib waits in the nook until then.
+for x0, x1, y in [(9, 12, 13), (5, 8, 11), (9, 12, 9), (5, 8, 7), (9, 13, 5), (10, 12, 3), (10, 12, 1)]:
+    set_tiles('nib_nook', x0, y, x1, y, '=')
+set_tiles('nib_nook', 10, 0, 12, 0, '.')
+add_ent('nib_nook', dict(type='gate', id='town_rockfall', mode='flag', flag='bell_rung', x=10, y=0, w=3, h=1, art='deco_rockfall'))
+add_ent('nib_nook', dict(type='trigger', id='rockfall_hint', x=9, y=3, w=5, h=1, cutscene='rockfall_hint', once=False, **{'if': '!bell_rung'}))
+for v in rooms['nib_nook'].get('legend', {}).values():
+    if v.get('npcId') == 'nib':
+        v['if'] = '!bell_rung'   # he goes up to open his shop
+# The Warden's Hoard keeps an Ember Locket.
+add_ent('warden_hoard', dict(type='pickup', kind='keepsake', keepsake='ember', id='ks_ember', cutscene='get_ks_ember', x=12, y=17))
+
 new = []
 
 # ------------------------------------------------------------------ The Hanging Way (main path)

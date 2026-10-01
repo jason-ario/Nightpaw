@@ -8,6 +8,7 @@ import { moveBody, boxHasTile, tileAt, isSolid, waterAt } from '../world/world';
 import { Puppet } from '../render/puppet';
 import { nightpawRig } from '../render/rigs';
 import type { Ctx } from './entity';
+import { Keep } from '../core/keepsakes';
 
 const FLIP_T = 0.34; // the forward roll on a double jump
 const SLASH_FPS = 28; // claw strip: 6 frames
@@ -87,7 +88,7 @@ export class Player {
     } else if (this.knockT > 0) { this.knockT -= dt; this.vx = this.knockVx; }
     else if (this.recoilT > 0) { this.recoilT -= dt; this.vx = -this.face * 110 + dir * 30; }
     else if (this.wallJumpT > 0) { this.wallJumpT -= dt; this.vx = this.wallJumpDir * PH.RUN * 1.25; this.face = this.wallJumpDir; }
-    else { this.vx = dir * PH.RUN * (this.locked && this.scripted ? 0.75 : 1); if (dir) this.face = dir; }
+    else { this.vx = dir * PH.RUN * (this.locked && this.scripted ? 0.75 : Keep.on('felt') ? 1.15 : 1); if (dir) this.face = dir; }
 
     // water: float at the surface, move slowly, jump straight out
     this.waterJumpT = Math.max(0, this.waterJumpT - dt);
@@ -144,7 +145,7 @@ export class Player {
 
     // dash
     if (I.dashP && Game.has('dash') && this.dashCd <= 0 && this.dashT <= 0 && (this.onGround || this.airDash)) {
-      this.dashT = PH.DASHT; this.dashCd = 0.45; this.vy = 0; sfx.dash();
+      this.dashT = PH.DASHT; this.dashCd = Keep.on('shadow') ? 0.22 : 0.45; this.vy = 0; sfx.dash();
       if (dir) this.face = dir;
       if (!this.onGround) this.airDash = false;
       this.afterT = 0;
@@ -195,14 +196,14 @@ export class Player {
   }
 
   attackBox(): Box {
-    const cx = this.cx;
-    if (this.atkDir === 'up') return { x: cx - 13, y: this.y - 26, w: 26, h: 28 };
-    if (this.atkDir === 'down') return { x: cx - 13, y: this.y + this.h - 2, w: 26, h: 26 };
-    return this.face > 0 ? { x: this.x + this.w - 2, y: this.y - 5, w: 28, h: 22 } : { x: this.x - 26, y: this.y - 5, w: 28, h: 22 };
+    const cx = this.cx, L = Keep.on('needle') ? 10 : 0; // the Long Needle adds reach
+    if (this.atkDir === 'up') return { x: cx - 13, y: this.y - 26 - L, w: 26, h: 28 + L };
+    if (this.atkDir === 'down') return { x: cx - 13, y: this.y + this.h - 2, w: 26, h: 26 + L };
+    return this.face > 0 ? { x: this.x + this.w - 2, y: this.y - 5, w: 28 + L, h: 22 } : { x: this.x - 26 - L, y: this.y - 5, w: 28 + L, h: 22 };
   }
 
   /** Claw damage: 1, plus half for each whetstone found (they are optional upgrades). */
-  damage() { return 1 + 0.5 * ((Game.has('whet_hollows') ? 1 : 0) + (Game.has('whet_nursery') ? 1 : 0)); }
+  damage() { return 1 + 0.5 * ((Game.has('whet_hollows') ? 1 : 0) + (Game.has('whet_nursery') ? 1 : 0)) + (Keep.on('thimble') ? 0.5 : 0); }
 
   resolveAttack() {
     const box = this.attackBox();
@@ -239,9 +240,9 @@ export class Player {
     const s = this.slash;
     s.setVisible(true).setAlpha(1).setFrame('0');
     this.slashT = 0; this.slashFlip = !this.slashFlip;
-    const k = this.atkDir;
-    if (k === 'side') { s.setRotation(0); s.setScale(INV_ART * 0.74 * this.face, INV_ART * 0.74 * (this.slashFlip ? -1 : 1)); }
-    else { s.setScale(INV_ART * 0.74, INV_ART * 0.74 * (this.slashFlip ? -1 : 1) * (k === 'up' ? -this.face : this.face)); s.setRotation(k === 'up' ? -Math.PI / 2 : Math.PI / 2); }
+    const k = this.atkDir, S = INV_ART * 0.74 * (Keep.on('needle') ? 1.3 : 1);
+    if (k === 'side') { s.setRotation(0); s.setScale(S * this.face, S * (this.slashFlip ? -1 : 1)); }
+    else { s.setScale(S, S * (this.slashFlip ? -1 : 1) * (k === 'up' ? -this.face : this.face)); s.setRotation(k === 'up' ? -Math.PI / 2 : Math.PI / 2); }
     this.g.scene.tweens.killTweensOf(s);
   }
 

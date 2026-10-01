@@ -2,13 +2,15 @@
   "title": "Nightpaw",
   "areas": [
     "hollows",
-    "nursery"
+    "nursery",
+    "candlewick"
   ],
   "cutscenes": [
     "prologue",
     "hollows",
     "nursery",
-    "depths"
+    "depths",
+    "town"
   ],
   "start": {
     "room": "well_bottom",

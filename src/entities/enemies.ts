@@ -8,6 +8,7 @@ import { Puppet } from '../render/puppet';
 import { miteRig, sockRig, snailRig, toadRig } from '../render/rigs';
 import { Entity, register, Ctx } from './entity';
 import type { EntityDef } from '../content/types';
+import { Keep } from '../core/keepsakes';
 
 export abstract class Enemy extends Entity {
   puppet!: Puppet;
@@ -29,6 +30,13 @@ export abstract class Enemy extends Entity {
     this.g.dropCoins(this.cx, this.cy, this.coins);
     Game.achieve('first_blood');
     Game.save.flags.kills = ((Game.save.flags.kills as number) || 0) + 1;
+    // Ember Locket: every 10 hollow things put to rest, a paw comes back
+    if (Keep.on('ember')) {
+      const n = ((Game.save.flags.ember as number) || 0) + 1;
+      Game.save.flags.ember = n % 10;
+      const P = this.g.player;
+      if (n >= 10 && P.hp < Game.save.maxHp) { P.hp++; sfx.rest(); this.g.burst(P.cx, P.cy, 20, 0xffa060, { spd: 60, life: 1, size: 1.6, grav: -60, glow: true }); }
+    }
   }
   renderCommon(dt: number) {
     this.flashT = Math.max(0, this.flashT - dt);

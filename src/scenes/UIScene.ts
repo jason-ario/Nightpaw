@@ -7,6 +7,7 @@ import { Input } from '../core/input';
 import { sfx, voiceBlip, Audio } from '../core/audio';
 import { Game } from '../core/state';
 import { World } from '../world/world';
+import { KEEPSAKES, KS, Keep } from '../core/keepsakes';
 
 export const FONT = '"Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif';
 const W = SCREEN_W, H = SCREEN_H;
@@ -17,6 +18,7 @@ type Modal = { update(dt: number): void; close?(): void; cancel?(): void };
 export class UIScene extends Phaser.Scene {
   game_: any;
   modal: Modal | null = null;
+  menuOpen = false; // a shop or the keepsakes screen is up
   // hud
   orb: any; paws: any[] = []; coinIcon: any; coinText: any; hud: any; hudAlpha = 1;
   shownCoins = 0;
@@ -259,7 +261,7 @@ export class UIScene extends Phaser.Scene {
     const c = this.add.container(W / 2, H / 2).setAlpha(0).setDepth(900);
     const bg = this.add.rectangle(0, 0, W, H, 0x000000, 0.6);
     const glow = this.add.image(0, -90, 'fx_light').setScale(1.3).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.35).setTint(0xe9e2ff);
-    const ic = icon ? this.add.image(0, -90, icon).setScale(icon === 'needle' ? 1.8 : 2.2) : null;
+    const ic = icon ? this.add.image(0, -90, icon).setScale(icon === 'needle' ? 1.8 : icon.startsWith('ks_') ? 1.3 : 2.2) : null;
     if (icon === 'needle') ic!.setRotation(-0.8);
     const t1 = this.add.text(0, 10, title, { fontFamily: FONT, fontSize: '46px', color: '#f0ecff', letterSpacing: 4 } as any).setOrigin(0.5);
     const t2 = this.add.text(0, 70, text, { fontFamily: FONT, fontSize: '24px', color: '#c8c0e0', fontStyle: 'italic', align: 'center', wordWrap: { width: 800 } }).setOrigin(0.5, 0);
@@ -376,6 +378,130 @@ export class UIScene extends Phaser.Scene {
   }
 
   // ------------------------------------------------------------------ map & pause
+  // ------------------------------------------------------------------ shop & keepsakes (2.5)
+  /** A shop counter. Stock entries are keepsakes or extra stitches; resolves when closed. */
+  openShop(title: string, stock: { kind: 'keepsake' | 'stitch'; id: string; price: number }[]): Promise<void> {
+    return new Promise((done) => {
+      const c = this.add.container(0, 0).setDepth(800);
+      c.add(this.add.rectangle(0, 0, W, H, 0x05040a, 0.86).setOrigin(0));
+      const panel = this.add.graphics(); panel.fillStyle(0x0d0b14, 0.95); panel.fillRoundedRect(150, 80, W - 300, H - 160, 18); panel.lineStyle(2, 0xd8c8a0, 0.3); panel.strokeRoundedRect(150, 80, W - 300, H - 160, 18); c.add(panel);
+      c.add(this.add.text(W / 2, 118, title.toUpperCase(), { fontFamily: FONT, fontSize: '32px', color: '#e8dcc0', letterSpacing: 8 } as any).setOrigin(0.5));
+      const purse = this.add.text(W - 190, 118, '', { fontFamily: FONT, fontSize: '24px', color: '#f0ecff' }).setOrigin(1, 0.5); c.add(purse);
+      c.add(this.add.image(W - 175, 118, 'button_coin').setScale(1.2));
+      const sold = (it: (typeof stock)[number]) => (it.kind === 'keepsake' ? Keep.has(it.id) : Game.taken.has(`shop:${it.id}`));
+      const rows = stock.map((it, i) => {
+        const y = 182 + i * 50;
+        const icon = this.add.image(214, y, it.kind === 'keepsake' ? `ks_${it.id}` : 'ui_stitch').setScale(0.55);
+        const name = this.add.text(250, y, it.kind === 'keepsake' ? KS[it.id].name : 'A Stitch of Scarf', { fontFamily: FONT, fontSize: '24px', color: '#d8d0e8' }).setOrigin(0, 0.5);
+        const price = this.add.text(640, y, '', { fontFamily: FONT, fontSize: '22px', color: '#f0e0b0' }).setOrigin(1, 0.5);
+        c.add([icon, name, price]);
+        return { icon, name, price };
+      });
+      const descName = this.add.text(690, 180, '', { fontFamily: FONT, fontSize: '26px', color: '#ffcf7a', wordWrap: { width: 420 } });
+      const descCost = this.add.text(690, 220, '', { fontFamily: FONT, fontSize: '20px', color: '#c8b8e8' });
+      const descBody = this.add.text(690, 256, '', { fontFamily: FONT, fontSize: '22px', color: '#f0ecff', wordWrap: { width: 420 }, lineSpacing: 6 });
+      const descFlav = this.add.text(690, 400, '', { fontFamily: FONT, fontSize: '19px', color: '#9a92b8', fontStyle: 'italic', wordWrap: { width: 420 }, lineSpacing: 5 });
+      const msg = this.add.text(W / 2, H - 120, '', { fontFamily: FONT, fontSize: '20px', color: '#e8a0a0' }).setOrigin(0.5);
+      c.add([descName, descCost, descBody, descFlav, msg]);
+      c.add(this.add.text(W / 2, H - 92, '↑ ↓ choose      Z / Enter buy      Esc leave', { fontFamily: FONT, fontSize: '18px', color: '#8a84a8' }).setOrigin(0.5));
+      let sel = 0;
+      const draw = () => {
+        purse.setText(String(Game.save.buttons));
+        stock.forEach((it, i) => {
+          const r = rows[i], s = sold(it);
+          r.name.setColor(i === sel ? '#ffcf7a' : s ? '#6a6480' : '#d8d0e8').setText((i === sel ? '› ' : '') + (it.kind === 'keepsake' ? KS[it.id].name : 'A Stitch of Scarf'));
+          r.price.setText(s ? 'sold' : `${it.price}`).setColor(s ? '#6a6480' : Game.save.buttons >= it.price ? '#f0e0b0' : '#a87070');
+          r.icon.setAlpha(s ? 0.35 : 1);
+        });
+        const it = stock[sel];
+        if (it.kind === 'keepsake') { const k = KS[it.id]; descName.setText(k.name); descCost.setText(`Takes ${k.stitches} stitch${k.stitches > 1 ? 'es' : ''} on your scarf`); descBody.setText(k.desc); descFlav.setText(k.flavor); }
+        else { descName.setText('A Stitch of Scarf'); descCost.setText(`Your scarf: ${Keep.capacity()} stitches`); descBody.setText('Ma Spool darns another loop into the scarf, so it can hold one more keepsake.'); descFlav.setText('Red wool, nearly the same red. Nobody will notice. Everybody will notice.'); }
+      };
+      draw(); sfx.menu(); this.menuOpen = true;
+      let t = 0;
+      const close = () => { this.modal = null; this.menuOpen = false; c.destroy(); Input.swallow(); done(); };
+      this.modal = {
+        update: (dt) => {
+          t += dt; if (t < 0.2) return;
+          if (Input.pressed('down')) { sel = (sel + 1) % stock.length; msg.setText(''); sfx.menu(); draw(); }
+          if (Input.pressed('up')) { sel = (sel + stock.length - 1) % stock.length; msg.setText(''); sfx.menu(); draw(); }
+          if (Input.pressed('back') || Input.pressed('pause')) { close(); return; }
+          if (Input.pressed('confirm') || Input.pressed('jump') || Input.pressed('attack')) {
+            const it = stock[sel];
+            if (sold(it)) { msg.setText('Already yours.'); return; }
+            if (Game.save.buttons < it.price) { msg.setText('Not enough buttons.'); sfx.clink(); return; }
+            Game.save.buttons -= it.price; this.coinsChanged();
+            if (it.kind === 'keepsake') Keep.give(it.id);
+            else { Game.taken.add(`shop:${it.id}`); Game.save.stitches = Keep.capacity() + 1; }
+            Game.achieve('first_purchase');
+            sfx.pickup(); msg.setColor('#c8e8b0').setText(it.kind === 'keepsake' ? 'Rest at a candle shrine to pin it to your scarf.' : 'Your scarf can hold more now.');
+            this.game_?.saveNow?.();
+            draw(); msg.setColor('#c8e8b0');
+          }
+        },
+      };
+    });
+  }
+
+  /** The scarf: choose which keepsakes to wear. Opened while resting at a shrine. */
+  openKeepsakes(): Promise<void> {
+    return new Promise((done) => {
+      const c = this.add.container(0, 0).setDepth(800);
+      c.add(this.add.rectangle(0, 0, W, H, 0x05040a, 0.88).setOrigin(0));
+      c.add(this.add.text(W / 2, 92, 'KEEPSAKES', { fontFamily: FONT, fontSize: '36px', color: '#e8dcc0', letterSpacing: 10 } as any).setOrigin(0.5));
+      const stitchRow = this.add.container(W / 2, 148); c.add(stitchRow);
+      const list = KEEPSAKES.filter((k) => Keep.has(k.id));
+      const cols = 5, cell = 128, x0 = W / 2 - ((Math.min(cols, Math.max(1, list.length)) - 1) * cell) / 2, y0 = 250;
+      const tiles = list.map((k, i) => {
+        const x = x0 + (i % cols) * cell, y = y0 + Math.floor(i / cols) * 140;
+        const ring = this.add.circle(x, y, 46, 0x1a1626, 1).setStrokeStyle(2, 0x6a6080, 0.6);
+        const icon = this.add.image(x, y, `ks_${k.id}`).setScale(0.75);
+        const dots = this.add.text(x, y + 58, '●'.repeat(k.stitches), { fontFamily: FONT, fontSize: '16px', color: '#c84050' }).setOrigin(0.5);
+        c.add([ring, icon, dots]);
+        return { ring, icon, dots };
+      });
+      const name = this.add.text(W / 2, H - 200, '', { fontFamily: FONT, fontSize: '28px', color: '#ffcf7a' }).setOrigin(0.5);
+      const body = this.add.text(W / 2, H - 160, '', { fontFamily: FONT, fontSize: '22px', color: '#f0ecff', align: 'center', wordWrap: { width: 760 } }).setOrigin(0.5, 0);
+      const flav = this.add.text(W / 2, H - 120, '', { fontFamily: FONT, fontSize: '18px', color: '#9a92b8', fontStyle: 'italic', align: 'center', wordWrap: { width: 760 } }).setOrigin(0.5, 0);
+      c.add([name, body, flav]);
+      c.add(this.add.text(W / 2, H - 46, '← → ↑ ↓ choose      Z / Enter wear or take off      Esc done', { fontFamily: FONT, fontSize: '18px', color: '#8a84a8' }).setOrigin(0.5));
+      if (!list.length) body.setText('You have no keepsakes yet. Nib sells them in Candlewick, and lost ones turn up in the dark.');
+      let sel = 0;
+      const draw = () => {
+        stitchRow.removeAll(true);
+        const cap = Keep.capacity(), used = Keep.used();
+        for (let i = 0; i < cap; i++) stitchRow.add(this.add.text((i - (cap - 1) / 2) * 34, 0, i < used ? '●' : '○', { fontFamily: FONT, fontSize: '28px', color: i < used ? '#d84a5a' : '#8a7a90' }).setOrigin(0.5));
+        stitchRow.add(this.add.text(0, 30, `stitches used ${used} of ${cap}`, { fontFamily: FONT, fontSize: '16px', color: '#8a84a8' }).setOrigin(0.5));
+        list.forEach((k, i) => {
+          const on = Keep.on(k.id), t = tiles[i];
+          t.ring.setFillStyle(on ? 0x3a1822 : 0x1a1626, 1).setStrokeStyle(i === sel ? 3 : 2, i === sel ? 0xffcf7a : on ? 0xd84a5a : 0x6a6080, i === sel ? 1 : 0.6);
+          t.icon.setAlpha(on ? 1 : 0.6);
+        });
+        if (list.length) { const k = list[sel]; name.setText(k.name + (Keep.on(k.id) ? '  (worn)' : '')); body.setText(k.desc); flav.setText(k.flavor); }
+      };
+      draw(); sfx.menu(); this.menuOpen = true;
+      let t = 0;
+      const close = () => { this.modal = null; this.menuOpen = false; c.destroy(); Input.swallow(); this.game_?.saveNow?.(); done(); };
+      this.modal = {
+        update: (dt) => {
+          t += dt; if (t < 0.2) return;
+          if (Input.pressed('back') || Input.pressed('pause')) { close(); return; }
+          if (!list.length) { if (Input.pressed('confirm') || Input.pressed('jump')) close(); return; }
+          const mv = (d: number) => { sel = (sel + d + list.length) % list.length; sfx.menu(); draw(); };
+          if (Input.pressed('right')) mv(1); if (Input.pressed('left')) mv(-1);
+          if (Input.pressed('down') && sel + cols < list.length) mv(cols); if (Input.pressed('up') && sel - cols >= 0) mv(-cols);
+          if (Input.pressed('confirm') || Input.pressed('jump') || Input.pressed('attack')) {
+            const k = list[sel];
+            if (!Keep.toggle(k.id)) { sfx.clink(); body.setText('Not enough room on your scarf. Take something off first, or ask Ma Spool for another stitch.'); return; }
+            sfx.confirm();
+            const P = this.game_?.player; if (P) P.hp = Game.save.maxHp; // resting at the shrine heals
+            draw();
+          }
+        },
+      };
+    });
+  }
+
   openMap() {
     const g = this.game_;
     const c = this.add.container(0, 0).setDepth(800);
@@ -420,7 +546,7 @@ export class UIScene extends Phaser.Scene {
     const items = ['Resume', 'Map', 'Music volume', 'Quit to title'];
     let sel = 0; let musicVol = 0.55;
     const texts = items.map((s, i) => { const t = this.add.text(W / 2, 290 + i * 60, s, { fontFamily: FONT, fontSize: '30px', color: '#b8b0d0' }).setOrigin(0.5); c.add(t); return t; });
-    c.add(this.add.text(W / 2, H - 90, 'Move: ← →   Jump: Z / Space   Scratch: X   Dash: C / Shift   Rest & talk: ↑   Map: M', { fontFamily: FONT, fontSize: '19px', color: '#8a84a8' }).setOrigin(0.5));
+    c.add(this.add.text(W / 2, H - 90, 'Move: ← →   Jump: Z / Space   Scratch: X   Dash: C / Shift   Rest, talk, keepsakes: ↑   Map: M', { fontFamily: FONT, fontSize: '19px', color: '#8a84a8' }).setOrigin(0.5));
     const draw = () => texts.forEach((t, i) => {
       t.setColor(i === sel ? '#ffcf7a' : '#b8b0d0').setText((i === sel ? '›  ' : '') + items[i] + (i === 2 ? `  ${'●'.repeat(Math.round(musicVol * 10))}${'○'.repeat(10 - Math.round(musicVol * 10))}` : '') + (i === sel ? '  ‹' : ''));
     });

@@ -27,7 +27,7 @@ async function open(browser, query) {
     async press(k, after = 0.1) { await page.keyboard.down(k); await T.adv(1 / 30); await page.keyboard.up(k); await T.adv(after); },
     /** Mash confirm until the cutscene/modal ends (or timeout). */
     async finishCutscene(max = 90) {
-      for (let i = 0; i < max; i++) { const s = await T.state(); if (!s.cut && !s.modal) return true; await T.press('Enter', 0.6); }
+      for (let i = 0; i < max; i++) { const s = await T.state(); if (!s.cut && !s.modal) return true; const menu = await page.evaluate(() => window.__NP.ui.menuOpen); await T.press(menu ? 'Escape' : 'Enter', 0.6); }
       return false;
     },
     async shot(name) { if (!shotsDir) return; await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))); await page.screenshot({ path: path.join(shotsDir, name + '.png') }); },
@@ -310,7 +310,7 @@ const scenarios = {
     T = await open(browser, '?room=hanging_way&x=15&y=20&abilities=needle,dash&flags=intro_done');
     await T.adv(0.3); await T.hold('ArrowRight', 0.5); await T.finishCutscene(20);
     const names = await T.page.evaluate(() => [window.__NP_GAME.save.flags.nametags, window.__NP_WORLD.nametagTotal()]);
-    check('Lost Names count', names[0] === 1 && names[1] === 14, JSON.stringify(names));
+    check('Lost Names count', names[0] === 1 && names[1] === 16, JSON.stringify(names));
     check('no errors in the depths', T.errors.length === 0, T.errors.join(' | '));
     await T.page.close();
     // the whetstone at the top of the well sharpens the claws
@@ -331,6 +331,61 @@ const scenarios = {
     s = await T.state();
     check('nursery door opens with the key', s.room === 'doll_shelf', JSON.stringify(s));
     await T.page.close();
+  },
+
+  // 2.5: Candlewick, the shop and keepsakes.
+  async town(browser) {
+    const ev = (T, f, a) => T.page.evaluate(f, a);
+    // the rockfall holds until the bell rings
+    let T = await open(browser, '?room=nib_nook&x=11&y=2&abilities=needle,dash&flags=intro_done,met_nib');
+    await T.adv(0.3); await T.finishCutscene(10);
+    await T.hold('KeyZ', 0.45); await T.adv(0.4); await T.hold('KeyZ', 0.45); await T.adv(0.6); let s = await T.state();
+    check('rockfall blocks the way up', s.room === 'nib_nook', JSON.stringify(s));
+    await T.page.close();
+    T = await open(browser, '?room=nib_nook&x=11&y=2&abilities=needle,dash&flags=intro_done,met_nib,bell_rung');
+    await T.adv(0.3);
+    await T.hold('KeyZ', 0.45); await T.adv(0.4); await T.hold('KeyZ', 0.45); await T.adv(0.6);
+    s = await T.state();
+    check('the way up opens after the bell', s.room === 'lantern_stair', JSON.stringify(s));
+    await T.page.close();
+    // Ma Spool gives felt soles; Nib sells a keepsake
+    T = await open(browser, '?room=candlewick&x=49&y=18&abilities=needle,dash&flags=intro_done,town_seen,bell_rung');
+    await T.adv(0.5);
+    await ev(T, () => { window.__NP_GAME.save.buttons = 400; });
+    await T.hold('ArrowRight', 0.2); await T.press('ArrowUp', 0.4);
+    for (let i = 0; i < 30 && !(await ev(T, () => !!window.__NP.ui.modal && window.__NP.ui.modal.update.toString().includes('stock'))); i++) await T.press('Enter', 0.5);
+    let ks = await ev(T, () => window.__NP_GAME.save.keepsakes);
+    check('Ma Spool gives the Felt Soles', ks.includes('felt'), JSON.stringify(ks));
+    await T.press('Enter', 0.3); // buy a stitch (160)
+    let st = await ev(T, () => [window.__NP_GAME.save.stitches, window.__NP_GAME.save.buttons]);
+    check('buys a stitch', st[0] === 4 && st[1] === 240, JSON.stringify(st));
+    await T.press('Escape', 0.4); await T.finishCutscene(10);
+    await T.teleport('candlewick', 42, 20); await T.adv(0.4); await T.press('ArrowUp', 0.4);
+    for (let i = 0; i < 30 && !(await ev(T, () => !!window.__NP.ui.modal && window.__NP.ui.modal.update.toString().includes('stock'))); i++) await T.press('Enter', 0.5);
+    await T.press('Enter', 0.3); // first item: Magnet Button (90)
+    ks = await ev(T, () => [window.__NP_GAME.save.keepsakes, window.__NP_GAME.save.buttons]);
+    check('buys a keepsake from Nib', ks[0].includes('magnet') && ks[1] === 150, JSON.stringify(ks));
+    await T.press('ArrowDown', 0.1); await T.press('ArrowDown', 0.1); await T.press('ArrowDown', 0.1); await T.press('Enter', 0.3); // Sharpened Thimble: 180 > 150
+    ks = await ev(T, () => window.__NP_GAME.save.keepsakes);
+    check('cannot buy without enough buttons', !ks.includes('thimble'), JSON.stringify(ks));
+    await T.press('Escape', 0.4); await T.finishCutscene(10);
+    // wear keepsakes at the shrine
+    const speed0 = await ev(T, () => { const P = window.__NP.player; return 0; });
+    await T.teleport('candlewick', 27, 20); await T.adv(0.5);
+    await T.press('ArrowUp', 0.6); await T.finishCutscene(10); // rest
+    await T.press('ArrowUp', 0.5); // keepsakes
+    const open1 = await ev(T, () => !!window.__NP.ui.modal);
+    check('resting at a shrine opens the keepsakes', open1);
+    await T.press('Enter', 0.2); await T.press('ArrowRight', 0.1); await T.press('Enter', 0.2); await T.press('Escape', 0.4);
+    const worn = await ev(T, () => [window.__NP_GAME.save.equipped, window.__NP_GAME.save.stitches]);
+    check('wears Felt Soles and the Magnet Button', worn[0].includes('felt') && worn[0].includes('magnet'), JSON.stringify(worn));
+    await T.page.keyboard.down('ArrowLeft'); await T.adv(0.5);
+    const vx = await ev(T, () => Math.abs(window.__NP.player.vx));
+    await T.page.keyboard.up('ArrowLeft');
+    check('felt soles: faster run', vx > 108 * 1.1, String(vx));
+    check('no errors in Candlewick', T.errors.length === 0, T.errors.join(' | '));
+    await T.page.close();
+    void speed0;
   },
 
   // Every cutscene runs to completion without errors.

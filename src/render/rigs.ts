@@ -287,3 +287,23 @@ export function queenRig(): PartDef {
     ],
   };
 }
+
+/** Ma Spool, the stitcher of Candlewick: a wooden cotton reel with a darning needle. */
+export function spoolRig(): PartDef {
+  return {
+    name: 'root', x: 0, y: 0,
+    front: [{ name: 'body', key: 'spool_body', x: 0, y: -46, front: [
+      { name: 'needle', key: 'spool_needle', x: 22, y: 6, ox: 0.1, oy: 0.5, rot: -0.5 },
+    ] }],
+  };
+}
+
+/** Wick, the lamplighter: a stub of candle with a small, stubborn flame. */
+export function candleRig(): PartDef {
+  return {
+    name: 'root', x: 0, y: 0,
+    front: [{ name: 'body', key: 'wick_body', x: 0, y: -48, front: [
+      { name: 'flame', key: 'flame', x: 0, y: -50, sx: 0.9, sy: 0.9, oy: 0.85, add: true },
+    ] }],
+  };
+}

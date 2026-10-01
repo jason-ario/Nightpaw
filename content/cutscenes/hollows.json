@@ -376,9 +376,9 @@
     "do": "say",
     "who": "nib",
     "lines": [
-     "You're wondering about the rocks. My shop was on the other side. The ceiling came down in the night.",
+     "You're wondering about the rocks. My shop is up in Candlewick, above us. The only way up came down in the night.",
      "I heard something moving in the rubble for a long while. Then I didn't.",
-     "If it's ever cleared I'll open again. Somebody has to keep pretending things are normal."
+     "If it's ever cleared, come up and spend those buttons. Somebody has to keep pretending things are normal."
     ]
    },
    {
@@ -416,7 +416,7 @@
       "who": "nib",
       "lines": [
        "The Warden's bars only lift when the old bell rings. It's down in the dark, under this floor.",
-       "There's a grate by your feet. I don't go down there. Things go quiet down there, and stay quiet."
+       "Ring it hard enough and maybe it'll shake my rockfall loose too. Two birds. I'd settle for one."
       ]
      }
     ]

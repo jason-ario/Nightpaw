@@ -7,6 +7,7 @@ import { sleep } from '../core/util';
 import { sfx, Music, Audio } from '../core/audio';
 import { Game } from '../core/state';
 import { World } from '../world/world';
+import { Keep, KS } from '../core/keepsakes';
 import type { Step } from '../content/types';
 
 export interface CutsceneHost {
@@ -92,6 +93,13 @@ const STEPS: Record<string, StepFn> = {
     if (Game.save.shades.length >= 2) Game.achieve('two_lives');
   },
   achieve(_h, s) { Game.achieve(s.id); },
+  /** A shop counter: { do: 'shop', title, stock: [{ kind: 'keepsake'|'stitch', id, price }] } */
+  async shop(h, s) { if (!h.skipping) await h.ui.openShop(s.title ?? 'Shop', s.stock ?? []); },
+  /** Give a keepsake (found or gifted). */
+  async keepsake(h, s) {
+    Keep.give(s.id);
+    if (!h.skipping) { sfx.ability(); await h.ui.itemCard(KS[s.id].name, KS[s.id].flavor, `ks_${s.id}`, `${KS[s.id].desc}  Rest at a candle shrine to pin it to your scarf.`); }
+  },
   async item(h, s) { sfx.ability(); await h.ui.itemCard(s.title, s.text, s.icon, s.hint); },
   /** A Lost Name: a tag from something that was lost and forgotten. Counted across the world. */
   async nametag(h, s) {

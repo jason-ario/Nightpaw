@@ -1,0 +1,408 @@
+[
+ {
+  "id": "town_enter",
+  "steps": [
+   {
+    "do": "flag",
+    "set": "town_seen"
+   },
+   {
+    "do": "achieve",
+    "id": "candlewick"
+   },
+   {
+    "do": "narrate",
+    "lines": [
+     "A town. Small and crooked, built out of things nobody came back for.",
+     "A boot. A teapot. Tin cans with the labels peeling. In some of the windows, a light.",
+     "In the square, one old lantern, burning low."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "rockfall_hint",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "The roof of the alcove is choked with fallen stone. Through the cracks: a warm draught, and very faintly, a tune somebody is humming.",
+     "It would take something big to shake this loose."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "nib_town",
+  "steps": [
+   {
+    "do": "flag",
+    "set": "nib_town"
+   },
+   {
+    "do": "face",
+    "who": "nib",
+    "at": "player"
+   },
+   {
+    "do": "say",
+    "who": "nib",
+    "lines": [
+     "You found the way up. That bell, was it? It shook half the cave loose. I nearly lost my good ladder.",
+     "This is Candlewick. Everything that got lost and still remembers its own name lives up here. There were thirty of us, once."
+    ]
+   },
+   {
+    "do": "say",
+    "who": "nib",
+    "lines": [
+     "I sell keepsakes. Little lost things with a bit of the old light still in them.",
+     "Pin one to your scarf and it'll help you. Don't ask how. I don't know how. I just sell them."
+    ]
+   },
+   {
+    "do": "shop",
+    "title": "Nib · Found Things",
+    "stock": [
+     {
+      "kind": "keepsake",
+      "id": "magnet",
+      "price": 90
+     },
+     {
+      "kind": "keepsake",
+      "id": "shadow",
+      "price": 120
+     },
+     {
+      "kind": "keepsake",
+      "id": "needle",
+      "price": 150
+     },
+     {
+      "kind": "keepsake",
+      "id": "thimble",
+      "price": 180
+     },
+     {
+      "kind": "keepsake",
+      "id": "pins",
+      "price": 200
+     },
+     {
+      "kind": "keepsake",
+      "id": "heart",
+      "price": 260
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "nib_town_idle",
+  "steps": [
+   {
+    "do": "face",
+    "who": "nib",
+    "at": "player"
+   },
+   {
+    "do": "say",
+    "who": "nib",
+    "lines": [
+     "Buttons for keepsakes. Fair's fair."
+    ]
+   },
+   {
+    "do": "shop",
+    "title": "Nib · Found Things",
+    "stock": [
+     {
+      "kind": "keepsake",
+      "id": "magnet",
+      "price": 90
+     },
+     {
+      "kind": "keepsake",
+      "id": "shadow",
+      "price": 120
+     },
+     {
+      "kind": "keepsake",
+      "id": "needle",
+      "price": 150
+     },
+     {
+      "kind": "keepsake",
+      "id": "thimble",
+      "price": 180
+     },
+     {
+      "kind": "keepsake",
+      "id": "pins",
+      "price": 200
+     },
+     {
+      "kind": "keepsake",
+      "id": "heart",
+      "price": 260
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "honesty_box",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "A tin box with a slot in the lid, and a note in Nib's tiny writing:",
+     "GONE UP TO MOUSEWICK. TAKE WHAT YOU NEED. LEAVE WHAT'S FAIR. — N.",
+     "Under it, smaller: (I will know.)"
+    ]
+   },
+   {
+    "do": "shop",
+    "title": "Nib · Found Things",
+    "stock": [
+     {
+      "kind": "keepsake",
+      "id": "magnet",
+      "price": 90
+     },
+     {
+      "kind": "keepsake",
+      "id": "shadow",
+      "price": 120
+     },
+     {
+      "kind": "keepsake",
+      "id": "needle",
+      "price": 150
+     },
+     {
+      "kind": "keepsake",
+      "id": "thimble",
+      "price": 180
+     },
+     {
+      "kind": "keepsake",
+      "id": "pins",
+      "price": 200
+     },
+     {
+      "kind": "keepsake",
+      "id": "heart",
+      "price": 260
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "spool_first",
+  "steps": [
+   {
+    "do": "flag",
+    "set": "spool_met"
+   },
+   {
+    "do": "face",
+    "who": "spool",
+    "at": "player"
+   },
+   {
+    "do": "say",
+    "who": "spool",
+    "lines": [
+     "Come here. Let me see that scarf.",
+     "Red wool. Hand knitted, and badly. Somebody made that for you with their whole heart. You can tell by the mistakes."
+    ]
+   },
+   {
+    "do": "say",
+    "who": "spool",
+    "lines": [
+     "A scarf like that can carry keepsakes. One for every stitch. Yours has three.",
+     "Here. Felt soles. The last cat who wore them never came back for them, so they're yours now. Don't make it a habit."
+    ]
+   },
+   {
+    "do": "keepsake",
+    "id": "felt"
+   },
+   {
+    "do": "say",
+    "who": "spool",
+    "lines": [
+     "Rest by a candle and pin it on. Change them whenever you rest.",
+     "When you need more room, bring me buttons and I'll darn you another stitch. Wool's dear, down here."
+    ]
+   },
+   {
+    "do": "shop",
+    "title": "Ma Spool's Stitchery",
+    "stock": [
+     {
+      "kind": "stitch",
+      "id": "stitch1",
+      "price": 160
+     },
+     {
+      "kind": "stitch",
+      "id": "stitch2",
+      "price": 320
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "spool_idle",
+  "steps": [
+   {
+    "do": "face",
+    "who": "spool",
+    "at": "player"
+   },
+   {
+    "do": "say",
+    "who": "spool",
+    "lines": [
+     "Another stitch? Hold still."
+    ]
+   },
+   {
+    "do": "shop",
+    "title": "Ma Spool's Stitchery",
+    "stock": [
+     {
+      "kind": "stitch",
+      "id": "stitch1",
+      "price": 160
+     },
+     {
+      "kind": "stitch",
+      "id": "stitch2",
+      "price": 320
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "id": "wick_first",
+  "steps": [
+   {
+    "do": "flag",
+    "set": "wick_met"
+   },
+   {
+    "do": "face",
+    "who": "wick",
+    "at": "player"
+   },
+   {
+    "do": "say",
+    "who": "wick",
+    "lines": [
+     "Evening. I'm Wick. I light the lantern.",
+     "It doesn't need lighting. It hasn't gone out. But every night it's a little smaller, so every night I light it again."
+    ]
+   },
+   {
+    "do": "say",
+    "who": "wick",
+    "lines": [
+     "When the Hearthlamp went dark, the ones who could still remember their names came up here. We keep this light so we don't forget.",
+     "Some nights one of us goes quiet. In the morning there's an empty chair at the window.",
+     "We don't talk about it. We just move the chair."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "wick_idle",
+  "steps": [
+   {
+    "do": "say",
+    "who": "wick",
+    "lines": [
+     "Stay as long as you like. The light's not much, but it's ours."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "wick_mid",
+  "steps": [
+   {
+    "do": "say",
+    "who": "wick",
+    "lines": [
+     "You've got moth wings on your back. Careful with those up here. Some of us remember what moths are for.",
+     "...The girl. She's going to the Hearthlamp, isn't she? To be the light for everyone.",
+     "Nobody should have to be the light for everyone. Take her home, cat."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "wick_late",
+  "steps": [
+   {
+    "do": "say",
+    "who": "wick",
+    "lines": [
+     "Nib's gone up to Mousewick. The shop's on trust now. He trusts us more than he lets on.",
+     "The lantern was a bit bigger last night. I don't know why. I'm not going to ask."
+    ]
+   }
+  ]
+ },
+ {
+  "id": "get_ks_owl",
+  "steps": [
+   {
+    "do": "keepsake",
+    "id": "owl"
+   }
+  ]
+ },
+ {
+  "id": "get_ks_ember",
+  "steps": [
+   {
+    "do": "narrate",
+    "lines": [
+     "Tucked in the crook of the Warden's arm, where he held it longest: a locket, warm to the touch."
+    ]
+   },
+   {
+    "do": "keepsake",
+    "id": "ember"
+   }
+  ]
+ },
+ {
+  "id": "name_doorstop",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "FOR THE BACK DOOR",
+    "text": "A doorstop shaped like a dog, made of iron. It kept a door open for a cat for nine years. Then the house was sold."
+   }
+  ]
+ },
+ {
+  "id": "name_umbrella",
+  "steps": [
+   {
+    "do": "nametag",
+    "title": "MRS. ALDOUS (DO NOT BORROW)",
+    "text": "Inked on an umbrella handle. Somebody borrowed it anyway, one wet night, and never brought it back. She walked home in the rain and didn't mind as much as she thought she would."
+   }
+  ]
+ }
+]

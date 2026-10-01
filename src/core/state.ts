@@ -13,6 +13,9 @@ export interface SaveData {
   visited: string[]; // room ids
   taken: string[]; // collected pickup ids / broken walls / one-shot things
   shades: string[]; // lost lives recovered
+  keepsakes: string[]; // owned keepsakes (src/core/keepsakes.ts)
+  equipped: string[]; // worn keepsakes
+  stitches: number; // keepsake capacity
   shrine: { room: string; x: number; y: number } | null;
   pos: { room: string; x: number; y: number } | null;
   deaths: number;
@@ -23,7 +26,7 @@ export interface SaveData {
 export function newSave(): SaveData {
   return {
     v: SAVE_VERSION, flags: {}, abilities: {}, maxHp: 4, hp: 4, buttons: 0,
-    visited: [], taken: [], shades: [], shrine: null, pos: null, deaths: 0, playSeconds: 0, savedAt: 0,
+    visited: [], taken: [], shades: [], keepsakes: [], equipped: [], stitches: 3, shrine: null, pos: null, deaths: 0, playSeconds: 0, savedAt: 0,
   };
 }
 

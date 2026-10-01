@@ -104,7 +104,8 @@
       "do": "narrate",
       "lines": [
        "The note goes on for a long time. Up through the rock. Into the walls. Into you.",
-       "Far above, iron grinds against stone. Something that was shut is open."
+       "Far above, iron grinds against stone. Something that was shut is open.",
+       "And nearer, a long slide of stone, and then quiet. Something that was blocked is open."
       ]
      },
      {
@@ -117,7 +118,7 @@
      },
      {
       "do": "hint",
-      "text": "The bars in the Long Dark have lifted. Climb the Old Sluice."
+      "text": "The bars have lifted, and the rockfall over Nib's nook has come down. Climb the Old Sluice."
      }
     ]
    }

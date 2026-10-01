@@ -175,6 +175,8 @@ const THEMES: Record<string, { root: number; notes: (number | null)[]; beat: num
   memory: { root: 523.25, notes: [0, 4, 7, 12, 7, 4, 0, null, -1, 2, 7, 11, 7, 2, -1, null], beat: 0.55, detune: 0.003 },
   // The Drowned Nursery: a lopsided music-box waltz (3/4), a little flat and a little slow.
   nursery: { root: 392, notes: [0, 4, 7, 12, 11, 7, 9, null, 5, 4, null, 2, 0, 4, 7, 5, 4, 2, 0, null, null, -1, 2, 5, 4, null, 2, 0, null, null, null, null, null], beat: 0.4, detune: 0.012 },
+  // Candlewick: the rhyme, slowed right down and played in a low, warm register, like someone humming it to themselves.
+  town: { root: 220, notes: [7, null, 5, null, 3, null, 5, null, 7, null, 7, null, 7, null, null, null, 5, null, 5, null, 5, null, null, null, 7, null, 10, null, 10, null, null, null, null, null], beat: 0.52, detune: 0.006 },
   // The Music Box Queen: the same waltz wound too tight.
   queen: { root: 392, notes: [0, 7, 12, 11, 7, 9, 5, 4, 2, 0, 4, 7, 5, 4, 2, 0, -1, 2, -5, -1, 2, 5, 4, 2], beat: 0.2, detune: 0.018 },
 };
@@ -196,6 +198,7 @@ export const Music = {
         if (name === 'boss' && i % 4 === 1) tone(th.root / 2, 0.4, 'triangle', 0.06, 0, 0, musicBus);
         if (name === 'queen' && i % 3 === 1) tone(th.root / 4, 0.3, 'triangle', 0.05, 0, 0, musicBus);
         if (name === 'nursery' && i % 3 === 1) tone(th.root / 2, 0.5, 'sine', 0.025, 0, 0, musicBus);
+        if (name === 'town' && i % 8 === 1) tone(th.root / 2, 2.4, 'sine', 0.03, 0, 0, musicBus);
       }
       musicTimer = setTimeout(step, th.beat * 1000 * (name === 'hollows' ? rand(0.9, 1.25) : name === 'nursery' ? rand(0.95, 1.12) : 1) / Music.tempo);
     };

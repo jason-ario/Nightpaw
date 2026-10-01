@@ -1,4 +1,4 @@
-# Nightpaw 2.4 — source
+# Nightpaw 2.5 — source
 
 A story-driven metroidvania for Vibe-Games, built with Phaser 3 + TypeScript.
 The story bible is in [STORY.md](STORY.md).
@@ -127,6 +127,15 @@ gives `whet_hollows` / `whet_nursery`; each adds half a point of claw damage (`P
 A `gate` with `mode: 'flag'` stays shut until its flag is set (the Belfry bell sets `bell_rung`,
 the Lamb Key sets `nursery_key`); any art can be a gate (`art: 'nur_door'`). New props are painted in
 `tools/art/depths.js`.
+
+**Candlewick, the shop and keepsakes (2.5).** `tools/levels/candlewick.py` writes
+`content/areas/candlewick.json` (the Lantern Stair, Candlewick, the Leaning Houses); the town's
+dialogue is in `content/cutscenes/town.json`. A cutscene step `{ "do": "shop", "title", "stock" }`
+opens a shop counter (`UIScene.openShop`); stock entries are keepsakes or extra stitches.
+Keepsakes are defined in `src/core/keepsakes.ts` (name, stitch cost, price, description) and read by
+the code they affect through `Keep.on(id)`. They are worn on the scarf (`save.stitches`, 3 to start)
+and changed while resting at a shrine (press ↑ again: `UIScene.openKeepsakes`). Found keepsakes are
+pickups of `kind: 'keepsake'` with a `keepsake` id; art is `ks_<id>` in `tools/art/town.js`.
 
 **Look.** `src/render/grade.ts` colour-grades the game, backdrop and title cameras (less
 saturation, a little more contrast); `LightScene` adds film grain and a heavy vignette.

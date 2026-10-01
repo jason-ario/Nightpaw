@@ -5,9 +5,10 @@ import { sfx } from '../core/audio';
 import { Game } from '../core/state';
 import { World, waterSurface } from '../world/world';
 import { Puppet } from '../render/puppet';
-import { mothRig, mouseRig, duckRig } from '../render/rigs';
+import { mothRig, mouseRig, duckRig, spoolRig, candleRig } from '../render/rigs';
 import { Entity, register, Ctx } from './entity';
 import type { EntityDef } from '../content/types';
+import { Keep } from '../core/keepsakes';
 
 const visible = (d: EntityDef) => Game.test(d.if) && !(d.hideIf && Game.test(d.hideIf));
 
@@ -29,9 +30,11 @@ export class Shrine extends Entity {
       this.flames.push(s.add.image(x + 8 + dx, baseY - 34 * INV_ART * sc + 8 * INV_ART * sc, 'flame').setScale(INV_ART * sc).setOrigin(0.5, 0.85).setDepth(DEPTH.props + 2).setBlendMode(Phaser.BlendModes.ADD));
     }
   }
-  interactLabel() { return 'Rest'; }
+  restMenu = true; // while resting here, ↑ opens the keepsakes
+  interactLabel() { return this.g.player.resting && Keep.owned().length ? 'Keepsakes' : 'Rest'; }
   interact() {
     const P = this.g.player;
+    if (P.resting) { if (!Keep.owned().length) return false; (this.g as any).ui?.openKeepsakes(); return true; }
     if (!P.onGround) return false;
     P.resting = true; P.vx = 0;
     P.hp = Game.save.maxHp; Game.save.hp = P.hp;
@@ -90,7 +93,7 @@ class Pickup extends Entity {
   img: any; art: typeof PICKUP_ART[string]; baseY: number;
   constructor(g: Ctx, d: EntityDef, x: number, y: number) {
     super(g, d, x, y); this.w = 14; this.h = 16;
-    this.art = PICKUP_ART[d.kind] ?? PICKUP_ART.needle;
+    this.art = d.kind === 'keepsake' ? { key: `ks_${d.keepsake}`, scale: 0.5, glow: 0xffd9a0, color: 0xffe0b0 } : PICKUP_ART[d.kind] ?? PICKUP_ART.needle;
     this.baseY = y + 6;
     this.img = g.scene.add.image(x + 7, this.baseY, this.art.key).setScale(INV_ART * this.art.scale).setDepth(DEPTH.props + 3);
     if (d.kind === 'needle') this.img.setRotation(-1.2);
@@ -138,6 +141,8 @@ export const NPC_RIGS: Record<string, { rig: () => any; scale: number; w: number
   moth: { rig: mothRig, scale: 0.8, w: 22, h: 22, light: [0xffcf7a, 60] },
   mouse: { rig: mouseRig, scale: 0.75, w: 22, h: 16 },
   duck: { rig: duckRig, scale: 0.8, w: 20, h: 16, light: [0xffe07a, 36] },
+  spool: { rig: spoolRig, scale: 0.9, w: 18, h: 18 },
+  candle: { rig: candleRig, scale: 0.75, w: 14, h: 20, light: [0xffb060, 64] },
 };
 export class Npc extends Entity {
   puppet: Puppet; kind: string; talking = false; hover = 0;
@@ -180,6 +185,12 @@ export class Npc extends Entity {
       p.set('head', { rot: Math.sin(t * 1.1) * 0.08 + (this.talking ? Math.sin(t * 12) * 0.08 : 0) });
       p.set('beak', { rot: this.talking ? Math.abs(Math.sin(t * 16)) * 0.35 : 0 });
       p.set('wing', { rot: this.talking ? Math.sin(t * 10) * 0.3 : Math.sin(t * 2) * 0.05 });
+    } else if (this.kind === 'spool') {
+      p.set('body', { sy: 1 + Math.sin(t * 1.6) * 0.015, rot: this.talking ? Math.sin(t * 9) * 0.03 : 0 });
+      p.set('needle', { rot: Math.sin(t * (this.talking ? 8 : 2.2)) * 0.25 });
+    } else if (this.kind === 'candle') {
+      p.set('body', { sy: 1 + Math.sin(t * 1.3) * 0.012 });
+      p.set('flame', { sy: 1 + Math.sin(t * 11) * 0.12 + (this.talking ? Math.sin(t * 17) * 0.1 : 0), alpha: 0.8 + Math.sin(t * 17) * 0.15 });
     } else {
       p.set('head', { rot: Math.sin(t * 1.2) * 0.05 + (this.talking ? Math.sin(t * 14) * 0.06 : 0) });
       p.set('earF', { rot: Math.sin(t * 0.7) > 0.95 ? 0.3 : 0 });
@@ -197,10 +208,10 @@ class Gate extends Entity {
   img: any; open = 1; tiles: [number, number][] = []; closedGrid = false;
   constructor(g: Ctx, d: EntityDef, x: number, y: number) {
     super(g, d, x, y);
-    const n = d.h ?? 3; this.w = T; this.h = n * T;
+    const n = d.h ?? 3, nw = d.w ?? 1; this.w = nw * T; this.h = n * T;
     const r = g.room;
-    for (let i = 0; i < n; i++) this.tiles.push([d.x!, d.y! + i]);
-    this.img = g.scene.add.image(x + T / 2, y, d.art ?? 'gate_bars').setOrigin(0.5, 0).setDepth(DEPTH.props + 5);
+    for (let j = 0; j < nw; j++) for (let i = 0; i < n; i++) this.tiles.push([d.x! + j, d.y! + i]);
+    this.img = g.scene.add.image(x + (nw * T) / 2, y, d.art ?? 'gate_bars').setOrigin(0.5, 0).setDepth(DEPTH.props + 5);
     this.img.setScale(INV_ART * 0.5, (n * T) / this.img.height);
     if (d.art === 'deco_rockfall') this.img.setScale(INV_ART * 0.75).setOrigin(0.5, 0.15);
     this.open = this.shouldBeOpen() ? 1 : 0;

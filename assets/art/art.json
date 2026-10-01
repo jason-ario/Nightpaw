@@ -858,5 +858,101 @@
  "nur_portrait": {
   "w": 96,
   "h": 120
+ },
+ "town_lantern": {
+  "w": 256,
+  "h": 520
+ },
+ "town_house_boot": {
+  "w": 320,
+  "h": 340
+ },
+ "town_house_teapot": {
+  "w": 320,
+  "h": 260
+ },
+ "town_house_tin": {
+  "w": 200,
+  "h": 400
+ },
+ "town_shop": {
+  "w": 400,
+  "h": 330
+ },
+ "town_stitchery": {
+  "w": 320,
+  "h": 300
+ },
+ "town_sign": {
+  "w": 200,
+  "h": 140
+ },
+ "town_lamp": {
+  "w": 64,
+  "h": 200
+ },
+ "town_honesty": {
+  "w": 120,
+  "h": 110
+ },
+ "spool_body": {
+  "w": 72,
+  "h": 92
+ },
+ "spool_needle": {
+  "w": 56,
+  "h": 12
+ },
+ "wick_body": {
+  "w": 56,
+  "h": 96
+ },
+ "ks_felt": {
+  "w": 96,
+  "h": 96
+ },
+ "ks_thimble": {
+  "w": 96,
+  "h": 96
+ },
+ "ks_needle": {
+  "w": 96,
+  "h": 96
+ },
+ "ks_magnet": {
+  "w": 96,
+  "h": 96
+ },
+ "ks_shadow": {
+  "w": 96,
+  "h": 96
+ },
+ "ks_pins": {
+  "w": 96,
+  "h": 96
+ },
+ "ks_heart": {
+  "w": 96,
+  "h": 96
+ },
+ "ks_owl": {
+  "w": 96,
+  "h": 96
+ },
+ "ks_ember": {
+  "w": 96,
+  "h": 96
+ },
+ "ui_stitch": {
+  "w": 96,
+  "h": 96
+ },
+ "pt_spool": {
+  "w": 192,
+  "h": 192
+ },
+ "pt_wick": {
+  "w": 192,
+  "h": 192
  }
 }

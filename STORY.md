@@ -115,6 +115,27 @@ The Underneath is a vertical world: deeper means more forgotten.
 | **The Warden's Hoard** (2.4, needs wings) | Everything the Warden ever caught, in a heap. Tally marks that stop halfway. |
 | **The Updraft** | A vertical climb with the new double jump, up into the Drowned Nursery. Mira's voice calls down from above. Coming back to the Crossroads with wings gets **Shade 1: The Rain Box**. |
 
+## Candlewick (2.5)
+
+A hamlet of lost things in a cave above Nib's Nook: the ones who could still remember their own
+names when the Hearthlamp went dark. Houses made from a boot, a teapot, tin cans and a biscuit tin;
+one old lantern in the square, burning a little lower every night. The way up (the Lantern Stair)
+is choked by a rockfall until the Sunken Belfry's bell shakes it loose.
+
+- **Nib** opens his stall here (*Found Things*) and sells **keepsakes**. After the Music Box Queen
+  falls he goes up to Mousewick and leaves an honesty box.
+- **Ma Spool**, an old cotton reel in a shawl, darns extra stitches into Nightpaw's scarf so it can
+  carry more keepsakes. She gives him his first one (Felt Soles).
+- **Wick**, a candle burned down to a stub, lights the lantern every night although it never goes
+  out. When one of them goes quiet, there's an empty chair at a window in the morning.
+- **The Leaning Houses**: crooked houses to climb; the Owl's Eye at the top.
+
+**Keepsakes** are pinned to the scarf: each takes 1 to 3 stitches, and they are changed at any
+candle shrine. Felt Soles (faster), Sharpened Thimble (harder scratches), Long Needle (longer
+reach), Magnet Button (more buttons), Shadow Thread (dash recovers faster), Pincushion Lining (pins
+burst out when hurt), Spare Heartstring (+1 paw), Owl's Eye (more light around you; found), Ember
+Locket (every 10 hollow things put to rest returns a paw; found in the Warden's Hoard).
+
 ## Area 2 in detail: The Drowned Nursery
 
 *Built in 2.1: every room below is in `content/areas/nursery.json`, with the story in `content/cutscenes/nursery.json`. The Nursery ends the chapter at the plughole, with Mira's voice from Mousewick Market.*
